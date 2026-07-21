@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>铸影</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#04060b">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="铸影">
+<!--
+  铸影 · 英语一词汇宇宙 · P1 壳 v1（铸辞 2026-07）
+  形制承宪：tools/eng_vocab/DESIGN_铸影.md（三条元律：第一法+两失自揭 / 反审计 / 零编造）
+  内容法：CONTENT_GUIDE_VOCAB.md；数据：vocab_data.js（build_vocab.py 产，戳 meta.build）
+  深链：?selftest=1（VOCAB PASS 14/14）?reset=1 ?seed=N ?fam=根 ?w=词 ?review=1 ?pop=词 ?dict=词(转五更书词典页)
+  存档：ky_vocab_v1（短键+日粒度；金=渲染谓词不落盘；孤立数派生）；句柄 window.__V
+  共建：铸辞（2026.7，铸影奠基——磋商定案+机装层+壳 v1+试点三根）
+-->
+<style>
+/* 两黑一点金，色值直承数学宇宙；日间零动画；无可见滚动条；金唯渲染谓词。 */
+:root{
+  --paper:#04060b; --chrome:#0a0d15; --line:#171b24; --hair:#10131b;
+  --s0:#3f4450; --skel:#2a2e38; --s1:#8a8f98; --gold:#d8bf8a; --gold2:#efd9a4; --dun:#97906f;
+  --txt:#c9ccd3; --dim:#5c6068; --faint:#373b44; --faint2:#262a33;
+  --sans:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"Cascadia Mono",Consolas,monospace; --fz:1;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+button{touch-action:manipulation}
+::-webkit-scrollbar{width:0;height:0;display:none}
+html{font-size:calc(16px*var(--fz,1));scrollbar-width:none}
+body{background:var(--paper);color:var(--s1);font-family:var(--sans);height:100vh;overflow:hidden;
+  -webkit-font-smoothing:antialiased;user-select:none}
+button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;text-align:left}
+i,em{font-style:normal}.hide{display:none!important}
+#st{position:fixed;top:0;left:0;right:0;z-index:99;font:12px var(--mono);padding:.3em .8em;display:none}
+#st.on{display:block}#st.ok{color:#8fbf7f;background:#0a120a}#st.bad{color:#e08585;background:#160a0a}
+
+/* 视图容器 */
+.view{position:fixed;inset:0;display:none;flex-direction:column;padding:2.2rem 2.4rem 2.6rem}
+body[data-v="wall"] #vwall,body[data-v="room"] #vroom,body[data-v="fam"] #vfam,
+body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri{display:flex}
+
+/* —— 影壁 —— */
+#vwall h1{font-size:1.05rem;color:var(--dim);font-weight:400;letter-spacing:.4em;margin-bottom:1.2rem}
+#fband{display:flex;gap:.55rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.fcell{background:var(--chrome);border:1px solid var(--line);padding:.55rem .7rem;min-width:8.5rem;cursor:pointer}
+.fcell:hover{border-color:var(--faint)}
+.fcell .fn{color:var(--txt);font-size:.92rem}.fcell .fl{color:var(--dim);font-size:.7rem;margin-top:.15rem}
+.fcell .dots{margin-top:.4rem;display:flex;gap:3px;flex-wrap:wrap;max-width:9rem}
+.dot{width:7px;height:7px;border-radius:1px;background:var(--skel)}
+.dot.s1{background:var(--s1)}.dot.g{background:var(--gold)}.dot.dun{background:var(--dun)}
+.fcell.kaishan{border-color:var(--gold);}
+.fcell.kaishan .fl::after{content:" · 开山";color:var(--gold)}
+#bband{display:grid;grid-template-columns:repeat(auto-fill,minmax(2.1rem,1fr));gap:4px;overflow:hidden;flex:1;align-content:start}
+.bcell{height:1.5rem;background:var(--chrome);border:1px solid var(--hair);cursor:pointer;position:relative}
+.bcell>i{position:absolute;left:0;top:0;bottom:0;background:var(--faint2)}
+.bcell:hover{border-color:var(--faint)}
+.bcell b{position:absolute;right:.2em;bottom:0;font:9px var(--mono);color:var(--faint);font-weight:400}
+#wfoot{display:flex;justify-content:space-between;align-items:baseline;margin-top:1rem;font-size:.8rem;color:var(--dim)}
+#wfoot .act{color:var(--s1);margin-right:1.6em}
+#wfoot .act:hover{color:var(--txt)}
+#iso{font-family:var(--mono);color:var(--s0);cursor:default;position:relative}
+#iso b{color:var(--s1);font-weight:400}
+#isopanel{position:absolute;right:0;bottom:1.6em;background:var(--chrome);border:1px solid var(--line);
+  padding:.7em 1em;white-space:nowrap;display:none;font-size:.78rem;color:var(--dim);line-height:1.9}
+#iso:hover #isopanel{display:block}
+#isopanel em{color:var(--s1)}
+
+/* —— 房（手牌/开铸/长卷共用骨架） —— */
+#vroom{align-items:center;justify-content:center}
+#rcard{width:min(46rem,92vw);}
+#rtop{font-size:.72rem;color:var(--faint);letter-spacing:.25em;margin-bottom:1.1rem;display:flex;justify-content:space-between}
+#rtop .bk{cursor:pointer;color:var(--dim)}#rtop .bk:hover{color:var(--s1)}
+#rstem{font-size:1.12rem;color:var(--txt);line-height:1.75;margin-bottom:1.5rem;min-height:3.2rem}
+#rstem .bigw{font-size:2rem;letter-spacing:.06em;color:var(--gold2)}
+#rstem .mf{color:var(--dim);font-size:.95rem;margin-left:.8em}
+#rstem .seg{padding:0 .12em}
+#ropts{display:flex;flex-direction:column;gap:.5rem}
+.opt{border:1px solid var(--line);background:var(--chrome);padding:.7rem .95rem;color:var(--s1);
+  font-size:.98rem;line-height:1.6;cursor:pointer}
+.opt:hover{border-color:var(--faint)}
+.opt.pick{border-color:var(--s1);color:var(--txt)}
+.opt.ok{border-color:var(--gold);color:var(--gold2)}
+.opt.no{border-color:#5c3a3a;color:#9a7a7a}
+.optgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem}
+.optgrid .opt{text-align:center;padding:.55rem .3rem}
+#rjudge{margin-top:1.3rem;font-size:.92rem;line-height:1.8;color:var(--s1);display:none}
+#rjudge .jz{color:var(--dim)}
+#rjudge .more{color:var(--faint);cursor:pointer;font-size:.8rem}
+#rjudge .more:hover{color:var(--dim)}
+#rjudge .full{display:none;margin-top:.6em;color:var(--dim)}
+#rbar{margin-top:1.6rem;display:flex;gap:1.4rem;align-items:center;font-size:.85rem}
+#rgo{border:1px solid var(--faint);padding:.5rem 1.6rem;color:var(--txt);letter-spacing:.3em}
+#rgo:hover{border-color:var(--s1)}
+#rsteady{color:var(--faint);font-size:.78rem;cursor:pointer;border:1px solid transparent;padding:.3em .7em}
+#rsteady.on{color:var(--gold);border-color:var(--gold)}
+#rnote{color:var(--faint);font-size:.75rem}
+#rtimer{height:2px;background:var(--faint2);margin-bottom:1rem;display:none}
+#rtimer>i{display:block;height:100%;background:var(--gold);width:100%}
+
+/* —— 族页 / 批页 —— */
+#vfam h2,#vbatch h2{font-weight:400;color:var(--txt);font-size:1.1rem;margin-bottom:.4rem}
+.sub{color:var(--dim);font-size:.8rem;margin-bottom:1.1rem;line-height:1.7}
+.rows{flex:1;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;gap:.15rem .1rem;align-content:start}
+.row{display:flex;gap:.8em;padding:.32rem .5rem;cursor:pointer;font-size:.92rem;border:1px solid transparent;align-items:baseline}
+.row:hover{border-color:var(--hair);background:var(--chrome)}
+.row .w{color:var(--txt);min-width:9em}
+.row .zh{color:var(--dim);font-size:.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.row.st1 .w{color:var(--s1)}.row.stG .w{color:var(--gold)}.row.stD .w{color:var(--dun)}.row.st0 .w{color:var(--s0)}
+.pgbar{display:flex;gap:1.2em;margin-top:.9rem;font-size:.8rem;color:var(--dim)}
+.pgbar button:hover{color:var(--txt)}
+
+/* —— 点兵 —— */
+#vtri{align-items:center;justify-content:center;text-align:center}
+#triw{font-size:2.2rem;color:var(--txt);letter-spacing:.04em;margin-bottom:2rem}
+#tribtns{display:flex;gap:1rem;justify-content:center}
+#tribtns .opt{min-width:6.5em;text-align:center}
+#trinote{margin-top:2rem;color:var(--faint);font-size:.78rem}
+
+/* —— 词义泡 —— */
+#pop{position:fixed;z-index:80;max-width:24rem;background:var(--chrome);border:1px solid var(--line);
+  padding:.8rem 1rem;font-size:.85rem;line-height:1.7;display:none}
+#pop .pw{color:var(--gold2);font-size:1.05rem;margin-bottom:.3rem}
+#pop .ps{color:var(--s1)}#pop .ps i{color:var(--faint);margin-right:.5em;font-size:.75rem}
+#pop .plink{margin-top:.5rem;color:var(--faint);font-size:.75rem;cursor:pointer}
+#pop .plink:hover{color:var(--dim)}
+.wtap{cursor:default}
+#iso.show #isopanel{display:block}
+/* —— 移动端（每天主战场：iPhone 主屏 PWA）—— */
+@media (max-width:820px){
+  .view{padding:1.15rem .95rem calc(1.3rem + env(safe-area-inset-bottom))}
+  body[data-v="wall"] #vwall{display:block}
+  #vwall{overflow-y:auto}
+  #vwall h1{margin:0 0 .9rem;padding-top:env(safe-area-inset-top)}
+  #fband{gap:.5rem}
+  .fcell{flex:1 1 42%;min-width:0}
+  .fcell .dots{max-width:none}
+  #bband{grid-template-columns:repeat(auto-fill,minmax(2.7rem,1fr));overflow:visible;margin-bottom:4.5rem}
+  .bcell{height:2.3rem}
+  #wfoot{position:fixed;left:0;right:0;bottom:0;margin:0;padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom));
+    background:var(--paper);border-top:1px solid var(--hair)}
+  #wfoot .act{font-size:.95rem;margin-right:1.1em;padding:.4em .2em}
+  body[data-v="room"] #vroom{display:block}
+  #vroom{justify-content:flex-start;overflow-y:auto;padding-top:1.4rem}
+  #rcard{width:100%;padding-bottom:6.5rem}
+  #rstem{font-size:1.08rem}
+  .opt{padding:.95rem 1rem;font-size:1rem}
+  .optgrid{grid-template-columns:repeat(2,1fr)}
+  #rbar{position:fixed;left:.95rem;right:.95rem;bottom:calc(.75rem + env(safe-area-inset-bottom));
+    margin:0;background:var(--paper);padding-top:.55rem;border-top:1px solid var(--hair)}
+  #rgo{flex:1;text-align:center;padding:.9rem 0;letter-spacing:.5em}
+  .rows{grid-template-columns:1fr;overflow-y:auto}
+  .pgbar{padding-bottom:env(safe-area-inset-bottom)}
+  #tribtns .opt{min-width:5.2em;padding:1rem .4em;text-align:center}
+  #pop{max-width:88vw}
+}
+@media (max-width:520px){html{font-size:15px}}
+</style>
+<script src="vocab_data.js"></script>
+<script src="vocab_sync.js"></script>
+</head>
+<body data-v="wall">
+<div id="st"></div>
+
+<section id="vwall" class="view">
+  <h1>铸　影</h1>
+  <div id="fband"></div>
+  <div id="bband"></div>
+  <div id="wfoot">
+    <span>
+      <button class="act" id="ahand">走马灯</button>
+      <button class="act" id="aspeed">速度轮</button>
+      <button class="act" id="atri">点兵</button>
+    </span>
+    <span id="iso">孤立 <b>0</b><span id="isopanel"></span></span>
+  </div>
+</section>
+
+<section id="vroom" class="view">
+  <div id="rcard">
+    <div id="rtop"><span id="rt1"></span><button class="bk" id="rback">⟵ 影壁</button></div>
+    <div id="rtimer"><i></i></div>
+    <div id="rstem"></div>
+    <div id="ropts"></div>
+    <div id="rjudge"></div>
+    <div id="rbar">
+      <button id="rgo">继续</button>
+      <button id="rsteady">稳</button>
+      <span id="rnote"></span>
+    </div>
+  </div>
+</section>
+
+<section id="vfam" class="view">
+  <h2 id="famh"></h2><div class="sub" id="famsub"></div>
+  <div class="rows" id="famrows"></div>
+  <div class="pgbar"><button id="famforge">进入开铸 ⟶</button><button id="famback">⟵ 影壁</button></div>
+</section>
+
+<section id="vbatch" class="view">
+  <h2 id="bh"></h2><div class="sub" id="bsub"></div>
+  <div class="rows" id="brows"></div>
+  <div class="pgbar"><button id="bprev">← 前页</button><button id="bnext">后页 →</button>
+    <button id="blearn">逐词长卷 ⟶</button><button id="bback">⟵ 影壁</button></div>
+</section>
+
+<section id="vtri" class="view">
+  <div>
+    <div id="triw"></div>
+    <div id="tribtns">
+      <button class="opt" data-t="2">识</button>
+      <button class="opt" data-t="1">疑</button>
+      <button class="opt" data-t="0">生</button>
+    </div>
+    <div id="trinote"></div>
+  </div>
+</section>
+
+<div id="pop"></div>
+
+<script>
+"use strict";
+/* ===== boot 参数 ===== */
+var Q=new URLSearchParams(location.search);
+var ST=Q.has("selftest"), SEEDQ=Q.get("seed"), MEMONLY=ST||SEEDQ!=null;
+var VD=window.__VOCAB||null;
+function fatal(m){var st=document.getElementById("st");st.className="on bad";st.textContent="FATAL "+m;throw new Error(m);}
+if(!VD) fatal("vocab_data.js 缺席");
+
+/* ===== 工具 ===== */
+function $(s){return document.querySelector(s);}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+var _rs=SEEDQ?(parseInt(SEEDQ,10)||1):((Date.now()%2147483646)+1);
+function rnd(){_rs=_rs*16807%2147483647;return (_rs-1)/2147483646;}
+function ri(n){return Math.floor(rnd()*n);}
+function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=ri(i+1),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+var DAY0=Date.UTC(2026,0,1);
+function today(){return Math.floor((Date.now()-DAY0)/864e5);}
+var RUNG=[1,3,7,14,30,60];
+
+/* ===== 数据索引 ===== */
+var WORDS=Object.keys(VD.W);                              /* 全体词项（含词组） */
+var W1=WORDS.filter(function(w){return w.indexOf(" ")<0;});/* 单词层（干扰项/点兵用） */
+var FAMS=Object.keys(VD.R);
+var PAIRKEY={}; VD.P.forEach(function(p,i){PAIRKEY[p.a+"~"+p.b]=i;});
+function firstCn(w){var e=VD.W[w];return e&&e.s.length?e.s[0].cn:"";}
+function famKind(fid){var ch=VD.R[fid];return ch?(ch.kind||"root"):"root";}
+function totalItems(){return (VD.meta.words||0)+(VD.meta.phrases||0);}
+function dictHref(w){
+  var sub=/\/vocab\//.test(location.pathname);
+  return (sub?"../universe/":"universe.html")+"?dict="+encodeURIComponent(w);
+}
+
+/* ===== 存档（短键+日粒度；金/孤立/色皆渲染派生） ===== */
+var SKEY="ky_vocab_v1";
+function freshS(){return {w:{},f:{},p:{},tri:{cur:0,pr:[0,0,0,0,0]},meta:{ver:1,last:0,bud:35,day:{d:0,sec:0},g:[0,0],c:[0,0]}};}
+var S=loadS();
+function loadS(){
+  var s=freshS();
+  if(MEMONLY) return s;
+  try{var raw=localStorage.getItem(SKEY);if(!raw)return s;var d=JSON.parse(raw);return migrate(d);}catch(e){return s;}
+}
+function migrate(d){
+  var s=freshS();
+  if(!d||typeof d!=="object")return s;
+  Object.keys(d).forEach(function(k){ if(!(k in s)) s[k]=d[k]; });   /* 未知顶层键保留 */
+  if(d.w)s.w=d.w; if(d.f)s.f=d.f; if(d.p)s.p=d.p;
+  if(d.tri)s.tri={cur:d.tri.cur||0,pr:d.tri.pr||[0,0,0,0,0]};
+  if(d.meta){s.meta.ver=1;s.meta.last=d.meta.last||0;s.meta.bud=d.meta.bud||35;
+    s.meta.day=d.meta.day||{d:0,sec:0};s.meta.g=d.meta.g||[0,0];s.meta.c=d.meta.c||[0,0];}
+  return s;
+}
+function wv(w){var e=S.w[w];if(!e){e={r:-1,d:0,n:0,o:0,l:0,v:{},k:{},t:[],lf:[],s:0};S.w[w]=e;}
+  if(e.v===undefined)e.v={}; if(e.t===undefined)e.t=[]; if(e.lf===undefined)e.lf=[]; return e;}
+var saveT=null;
+function save(){ if(MEMONLY)return;
+  S.meta.last=Date.now();
+  clearTimeout(saveT);
+  saveT=setTimeout(function(){ try{
+    var blob=JSON.stringify(S);
+    if(blob.length>700*1024) note("存档 "+Math.round(blob.length/1024)+"KB · 近云同步上限");
+    localStorage.setItem(SKEY,blob);
+  }catch(e){} },400);
+}
+if(Q.has("reset")&&!MEMONLY){localStorage.removeItem(SKEY);S=freshS();history.replaceState(null,"",location.pathname);}
+
+/* ===== 第一法（元律一：无 commit 调 reveal 即 throw；两失自揭无罚） ===== */
+var LAW={armed:null,committed:false,fails:0};
+function arm(q){LAW.armed=q;LAW.committed=false;LAW.fails=0;}
+function commit(pick){if(!LAW.armed)throw new Error("no armed");LAW.committed=true;LAW.pick=pick;}
+function reveal(){if(!LAW.armed)return null;
+  if(!LAW.committed)throw new Error("第一法：先承诺后揭示");
+  var q=LAW.armed;LAW.armed=null;return q;}
+function autoReveal(){ /* 两失自揭：视作已承诺（无罚，不计对错） */
+  LAW.committed=true;LAW.pick=-2;return reveal();}
+
+/* ===== 金谓词 / 孤立数（渲染派生，永不落盘） ===== */
+function examSenses(w){ return [0]; } /* 临时考义=首义；错位表上线后由数据替换，陈金自动褪色 */
+function goldOf(w){var e=S.w[w];if(!e||!e.v)return false;
+  return examSenses(w).every(function(si){var v=e.v[si];return v&&v[1]>=2;});}
+function hasEdge(w){var e=S.w[w];if(!e)return false;
+  if(e.s&&VD.W[w].fam)return true;
+  if(e.v&&Object.keys(e.v).length)return true;
+  for(var k in S.p){if(S.p[k]&&S.p[k].o>=2&&k.split("~").indexOf(w)>=0)return true;}
+  return false;}
+function isoCount(){var n=0;WORDS.forEach(function(w){if(!hasEdge(w))n++;});return n;}
+
+/* ===== 计数器 ===== */
+function bump(pair,ok){pair[1]++;if(ok)pair[0]++;if(pair[1]>400){pair[0]=Math.round(pair[0]/2);pair[1]=Math.round(pair[1]/2);}}
+function pct(p){return p[1]?Math.round(100*p[0]/p[1])+"%":"—";}
+var KSEC={ctx:25,cloze:25,pair:15,kin:90,flash:4,touch:20,forge:60};
+function spend(kind){var d=today();if(S.meta.day.d!==d){S.meta.day={d:d,sec:0};}
+  S.meta.day.sec+=KSEC[kind]||15;}
+
+/* ===== 题引擎 ===== */
+function senseOptions(w,si){ /* 4 汉义：本词他义优先，再借他词首义；两两相异 */
+  var e=VD.W[w],corr=e.s[si].cn,opts=[corr],used={};used[corr]=1;
+  var others=shuf(e.s.map(function(s,i){return i;}).filter(function(i){return i!==si;}));
+  others.forEach(function(i){var c=e.s[i].cn;if(opts.length<4&&!used[c]){opts.push(c);used[c]=1;}});
+  var guard=0;
+  while(opts.length<4&&guard++<200){var ow=W1[ri(W1.length)],c=firstCn(ow);
+    if(ow!==w&&c&&!used[c]){opts.push(c);used[c]=1;}}
+  return shuf(opts).map(function(c){return {t:c,ok:c===corr};});
+}
+function probeSense(w){ /* 探针：优先未验考义→弱义→有池句义 */
+  var e=VD.W[w],st=wv(w),cand=examSenses(w).filter(function(si){var v=st.v[si];return !(v&&v[1]>=2)&&e.s[si];});
+  if(!cand.length){cand=Object.keys(st.k).map(Number).filter(function(si){return e.s[si];});}
+  if(!cand.length){cand=e.s.map(function(s,i){return i;});}
+  return cand[ri(cand.length)];
+}
+function poolOf(w,si){var s=VD.W[w].s[si];return (s&&s.x)?s.x:[];}
+function qCtx(w,firstTouch){
+  var e=VD.W[w];if(!e.s.length)return null;
+  var si=firstTouch?0:probeSense(w);
+  var pool=poolOf(w,si), sent=null;
+  if(!firstTouch&&pool.length){sent=pool[ri(pool.length)];}
+  var stem;
+  if(sent){stem='<span class="sw">'+wrapW(sent,w)+'</span>';}
+  else{stem='<span class="bigw">'+esc(w)+'</span>'+(VD.W[w].mf?'<span class="mf">'+esc(VD.W[w].mf)+'</span>':'');}
+  var s=e.s[si];
+  var rv='<b style="color:var(--gold2)">'+esc(w)+'</b> <span class="jz">'+esc(s.p||"")+(s.g?" ["+esc(s.g)+"]":"")+'</span> '+esc(s.cn)
+    +(s.a?'<div class="jz" style="margin-top:.4em">'+wrapW(s.a,w)+(s.az?'　<i style="color:var(--faint)">'+esc(s.az)+'</i>':'')+'</div>':'');
+  return {kind:firstTouch?"touch":"ctx",w:w,si:si,stem:stem,opts:senseOptions(w,si),rv:rv};
+}
+function qCloze(w){
+  var e=VD.W[w],si=probeSense(w),pool=poolOf(w,si);
+  if(!pool.length)return qCtx(w,false);
+  var sent=pool[ri(pool.length)];
+  var re=new RegExp("\\b"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\w*\\b","i");
+  if(!re.test(sent))return qCtx(w,false);
+  var stem=esc(sent).replace(re,"＿＿＿");
+  var opts=[{t:w,ok:true}],used={};used[w]=1;var guard=0;
+  while(opts.length<4&&guard++<300){var ow=W1[ri(W1.length)];
+    if(!used[ow]&&VD.W[ow].s.length&&Math.abs(ow.length-w.length)<5){opts.push({t:ow,ok:false});used[ow]=1;}}
+  var s=e.s[si];
+  return {kind:"cloze",w:w,si:si,stem:stem,opts:shuf(opts),grid:true,
+    rv:'<b style="color:var(--gold2)">'+esc(w)+'</b> '+esc(s.cn)};
+}
+var PARTICLES=["up","out","off","on","in","down","over","back","away","through"];
+function qClozeP(w){ /* 词组翼·粒子缺口：give ___ 选粒子 */
+  var e=VD.W[w],parts=w.split(" "),prt=parts[parts.length-1];
+  var si=probeSense(w),pool=poolOf(w,si);
+  var sent=pool.length?pool[ri(pool.length)]:(e.s[si]&&e.s[si].a);
+  if(!sent)return qCtx(w,false);
+  var re=new RegExp("\\b"+prt+"\\b","i");
+  if(!re.test(sent))return qCtx(w,false);
+  var stem=esc(sent).replace(re,"＿＿");
+  var opts=[{t:prt,ok:true}],used={};used[prt]=1;
+  shuf(PARTICLES).forEach(function(p){if(opts.length<4&&!used[p]){opts.push({t:p,ok:false});used[p]=1;}});
+  return {kind:"cloze",w:w,si:si,stem:stem,opts:shuf(opts),grid:true,
+    rv:'<b style="color:var(--gold2)">'+esc(w)+'</b> '+esc(e.s[si]?e.s[si].cn:"")};
+}
+function qClozeF(w){ /* 词组翼·骨架缺口：整个短语挖空，同章骨架互为干扰 */
+  var e=VD.W[w],fid=e.fam,ch=VD.R[fid];
+  var si=probeSense(w),pool=poolOf(w,si);
+  var sent=pool.length?pool[ri(pool.length)]:(e.s[si]&&e.s[si].a);
+  if(!sent)return qCtx(w,false);
+  var re=new RegExp(w.replace(/ /g,"\\s+"),"i");
+  if(!re.test(sent))return qCtx(w,false);
+  var stem=esc(sent).replace(re,"＿＿＿＿");
+  var opts=[{t:w,ok:true}],used={};used[w]=1;
+  var sibs=shuf((ch&&ch.members||[]).map(function(m){return m.w;}).filter(function(x){return x!==w&&VD.W[x];}));
+  sibs.forEach(function(x){if(opts.length<4&&!used[x]){opts.push({t:x,ok:false});used[x]=1;}});
+  var g2=0;
+  while(opts.length<4&&g2++<60){var ow=W1[ri(W1.length)];if(!used[ow]){opts.push({t:ow,ok:false});used[ow]=1;}}
+  return {kind:"cloze",w:w,si:si,stem:stem,opts:shuf(opts),grid:false,
+    rv:'<b style="color:var(--gold2)">'+esc(w)+'</b> '+esc(e.s[si]?e.s[si].cn:"")};
+}
+function qForW(w,firstTouch){ /* 题型路由：词组走翼题型 */
+  var e=VD.W[w];
+  if(!firstTouch&&e&&e.fam&&w.indexOf(" ")>=0){
+    var k=famKind(e.fam);
+    if(k==="particle"&&rnd()<.55)return qClozeP(w);
+    if(k==="frames"&&rnd()<.55)return qClozeF(w);
+  }
+  return qCtx(w,firstTouch);
+}
+function qPair(pk){
+  var p=VD.P[PAIRKEY[pk]],pickA=rnd()<.5,tw=pickA?p.a:p.b;
+  var cn=firstCn(tw);
+  return {kind:"pair",w:tw,pk:pk,si:0,stem:'「'+esc(cn)+'」——是哪一个？',grid:true,
+    opts:shuf([{t:p.a,ok:p.a===tw},{t:p.b,ok:p.b===tw}]),
+    rv:esc(p.v||"")};
+}
+function qKin(fid){
+  var ch=VD.R[fid],mem=ch.members.map(function(m){return m.w;}).filter(function(w){return VD.W[w];});
+  var trues=shuf(mem).slice(0,6),used={};trues.forEach(function(w){used[w]=1;});
+  var decoys=[],guard=0,isPh=famKind(fid)!=="root";
+  if(isPh){ /* 词组族的诱签=其他词组章成员 */
+    var others=[];FAMS.forEach(function(f2){if(f2!==fid&&famKind(f2)!=="root"){
+      (VD.R[f2].members||[]).forEach(function(m){if(VD.W[m.w])others.push(m.w);});}});
+    shuf(others).forEach(function(ow){if(decoys.length<6&&!used[ow]){decoys.push(ow);used[ow]=1;}});
+  }
+  while(decoys.length<6&&guard++<400){var ow=W1[ri(W1.length)];
+    if(!used[ow]&&!VD.W[ow].fam&&ow.length>3){decoys.push(ow);used[ow]=1;}}
+  return {kind:"kin",fid:fid,multi:true,picks:{},trues:trues,
+    stem:'拣出 <b style="color:var(--gold2)">'+esc(ch.lemma)+'</b>（'+esc(ch.gloss)+'）的家人（'+trues.length+' 个）',
+    opts:shuf(trues.concat(decoys)).map(function(w){return {t:w,ok:used[w]===1&&trues.indexOf(w)>=0};}),grid:true,
+    rv:esc(ch.pic)};
+}
+function qFlash(w){
+  var e=VD.W[w],phrase=(e.co&&e.co.length)?e.co[ri(e.co.length)]:w;
+  var si=0;
+  return {kind:"flash",w:w,si:si,timed:5000,stem:'<span class="bigw" style="font-size:1.3rem">'+esc(phrase)+'</span>',
+    opts:senseOptions(w,si),rv:'<b>'+esc(w)+'</b> '+esc(e.s.length?e.s[0].cn:"")};
+}
+function wrapW(sent,hl){ /* 句中词包 span 供双击查词；hl 词金显 */
+  return esc(sent).replace(/[A-Za-z][A-Za-z'-]*/g,function(m){
+    var lw=m.toLowerCase(),cls="wtap"+(hl&&lw.indexOf(hl.toLowerCase())===0?'" style="color:var(--gold2)':'');
+    return '<span class="'+cls+'" data-w="'+lw+'">'+m+"</span>";});
+}
+
+/* ===== 应答记账 ===== */
+function applyAnswer(q,ok,steady){
+  var d=today();
+  if(q.kind==="kin"){
+    var f=S.f[q.fid]||(S.f[q.fid]={r:0,d:0,b:-1,st:0});
+    f.r=ok?Math.min(f.r+1,2):0; f.d=d+[7,30,60][f.r]; spend("kin"); save(); return;
+  }
+  var w=q.w,e=wv(w),si=q.si;
+  e.n++; spend(q.kind);
+  e.t.push([d,q.kind==="ctx"?0:q.kind==="pair"?1:q.kind==="cloze"?2:q.kind==="flash"?4:5,ok?1:0,q.ms||0]);
+  if(e.t.length>2)e.t.shift();
+  if(q.kind==="touch"){ bump(S.meta.g,ok); }
+  else if(q.kind==="ctx"||q.kind==="cloze"){ bump(S.meta.c,ok); }
+  if(ok){
+    e.o++;
+    if(q.kind!=="flash"){ var v=e.v[si];if(!v){e.v[si]=[d,1];}else{v[1]++;} }
+    if(q.kind==="touch"){ e.s=1; e.r=steady?4:2; }
+    else if(e.r<0){e.r=1;}
+    else if(e.r<=1&&steady){e.r+=2;}
+    else{e.r=Math.min(e.r+1,5);}
+    if(q.kind==="pair"){var pp=S.p[q.pk]||(S.p[q.pk]={r:0,d:0,n:0,o:0});pp.n++;pp.o++;pp.r=Math.min(pp.r+1,5);pp.d=d+RUNG[pp.r];}
+  }else{
+    e.l++; e.k[si]=(e.k[si]||0)+1;
+    if(e.lf.indexOf(d)<0){e.lf.push(d);if(e.lf.length>3)e.lf.shift();}
+    e.r=Math.max(0,(e.r<0?0:e.r)-2);
+    if(q.kind==="touch"){e.s=1;}
+    if(q.kind==="pair"){var p2=S.p[q.pk]||(S.p[q.pk]={r:0,d:0,n:0,o:0});p2.n++;p2.r=0;p2.d=d+1;}
+  }
+  e.d=d+RUNG[Math.max(0,e.r)];
+  save();
+}
+function isLeech(w){var e=S.w[w];return !!e&&e.l>=3&&e.lf.length>=2;} /* 回炉：≥2 个不同日 */
+
+/* ===== 发牌（到期总数永不上屏） ===== */
+function dueList(){
+  var d=today(),out=[];
+  Object.keys(S.w).forEach(function(w){var e=S.w[w];
+    if(e.r>=0&&e.d<=d&&VD.W[w])out.push({w:w,over:d-e.d,wt:(VD.W[w].h?2:1)+VD.W[w].f/5});});
+  out.sort(function(a,b){return b.over*b.wt-a.over*a.wt;});
+  return out;
+}
+function buildHand(){
+  var due=dueList(),hand=[];
+  due.slice(0,12).forEach(function(it){
+    var w=it.w,q;
+    var pk=null;for(var k in PAIRKEY){if(k.split("~").indexOf(w)>=0){var pp=S.p[k];if(!pp||pp.d<=today()){pk=k;break;}}}
+    if(pk&&rnd()<.3)q=qPair(pk);
+    else if(w.indexOf(" ")>=0)q=qForW(w,false);
+    else if(rnd()<.35)q=qCloze(w);
+    else q=qCtx(w,false);
+    if(q)hand.push(q);
+  });
+  var d=today();
+  FAMS.forEach(function(fid){var f=S.f[fid];
+    if(f&&f.b===99&&f.d<=d&&hand.length<12)hand.push(qKin(fid));});
+  /* 手内序：pair 短件开手 → ctx/cloze 居中 → kin 收手 */
+  var order={pair:0,ctx:1,cloze:1,touch:1,kin:2};
+  hand.sort(function(a,b){return (order[a.kind]||1)-(order[b.kind]||1);});
+  return hand;
+}
+
+/* ===== 房渲染（手牌/长卷/速度轮共用） ===== */
+var ROOM={queue:[],idx:0,mode:"hand",fid:null,ret:"wall",t0:0,timer:null};
+function goView(v){document.body.dataset.v=v;}
+function note(m){$("#rnote").textContent=m||"";}
+function showQ(q){
+  arm(q);
+  ROOM.t0=Date.now();
+  $("#rt1").textContent=ROOM.label+(ROOM.queue.length?"　"+ROOM.idx+" / "+ROOM.queue.length:"");
+  $("#rstem").innerHTML=q.stem;
+  var box=$("#ropts");box.className=q.grid?"optgrid":"";box.id="ropts";
+  box.innerHTML=q.opts.map(function(o,i){return '<button class="opt" data-i="'+i+'">'+esc(o.t)+"</button>";}).join("");
+  $("#rjudge").style.display="none";$("#rjudge").innerHTML="";
+  $("#rgo").textContent=q.multi?"落子":"…";
+  $("#rsteady").classList.remove("on");
+  $("#rsteady").style.display=(q.kind==="touch"||q.kind==="ctx")?"":"none";
+  note("");
+  if(q.timed){$("#rtimer").style.display="block";var bar=$("#rtimer>i"),t0=Date.now();
+    ROOM.timer=setInterval(function(){var p=1-(Date.now()-t0)/q.timed;
+      if(p<=0){clearInterval(ROOM.timer);if(!LAW.committed){commit(-1);judge();}}
+      bar.style.width=Math.max(0,p*100)+"%";},80);}
+  else{$("#rtimer").style.display="none";}
+}
+function judge(){
+  var q=LAW.armed;if(!q)return;
+  q.ms=Date.now()-ROOM.t0;
+  if(ROOM.timer){clearInterval(ROOM.timer);ROOM.timer=null;}
+  var steady=$("#rsteady").classList.contains("on");
+  var ok;
+  if(q.multi){
+    var hit=0,miss=0;
+    q.opts.forEach(function(o,i){if(q.picks[i]&&o.ok)hit++;if(q.picks[i]&&!o.ok)miss++;});
+    ok=hit>=Math.min(4,q.trues.length)&&miss<=1;
+  }else{
+    ok=LAW.pick>=0&&q.opts[LAW.pick]&&q.opts[LAW.pick].ok;
+  }
+  reveal();
+  document.querySelectorAll("#ropts .opt").forEach(function(b,i){
+    var o=q.opts[i];
+    if(o.ok)b.classList.add("ok");
+    else if(q.multi?q.picks[i]:(i===LAW.pick))b.classList.add("no");
+  });
+  var jd=$("#rjudge");
+  jd.innerHTML=(ok?'<span style="color:var(--gold)">对。</span>':'<span style="color:#9a7a7a">不是这片影子。</span>')
+    +" "+q.rv
+    +(q.rvMore?'<div><span class="more">展开讲透</span><div class="full">'+q.rvMore+"</div></div>":"");
+  jd.style.display="block";
+  $("#rgo").textContent="继续";
+  if(!q.noRecord)applyAnswer(q,ok,steady);
+  ROOM.answered=true;
+}
+function nextQ(){
+  ROOM.answered=false;
+  if(ROOM.idx>=ROOM.queue.length){ endRoom(); return; }
+  showQ(ROOM.queue[ROOM.idx++]);
+}
+function endRoom(){
+  if(ROOM.mode==="hand"){
+    var more=dueList().length>0;
+    var sec=S.meta.day.sec,bud=S.meta.bud*60;
+    $("#rstem").innerHTML="这一手完了。"+(more?"":"　今日到期已清。");
+    $("#ropts").innerHTML="";$("#rjudge").style.display="none";$("#rtimer").style.display="none";
+    $("#rgo").textContent=more?"再抓一手":"回影壁";
+    $("#rsteady").style.display="none";
+    note(sec>bud?"今日约 "+Math.round(sec/60)+" 分钟 · 预算已满，再抓也行":"");
+    ROOM.endstate=more?"redeal":"wall";
+  }else if(ROOM.mode==="forge"){ forgeNext(); }
+  else{ goView("wall"); renderWall(); }
+}
+
+/* ===== 走马灯 / 长卷 / 速度轮入口 ===== */
+function startHand(){
+  var hand=buildHand();
+  if(!hand.length){goView("wall");renderWall();var el=$("#iso");return;}
+  ROOM={queue:hand,idx:0,mode:"hand",label:"走马灯",ret:"wall",answered:false};
+  goView("room");nextQ();
+}
+function startScroll(bi){
+  var list=VD.B[bi].filter(function(w){return !wv(w).s&&VD.W[w].s.length;}).slice(0,15);
+  if(!list.length){openBatch(bi);return;}
+  ROOM={queue:list.map(function(w){return qCtx(w,true);}),idx:0,mode:"scroll",label:"长卷 · 批"+(bi+1),ret:"batch",bi:bi};
+  goView("room");nextQ();
+}
+function startSpeed(){
+  var cand=Object.keys(S.w).filter(function(w){return S.w[w].s&&VD.W[w]&&VD.W[w].co;});
+  if(cand.length<4){cand=W1.filter(function(w){return VD.W[w].h&&VD.W[w].co;}).slice(0,200);}
+  var qs=shuf(cand).slice(0,10).map(qFlash);
+  ROOM={queue:qs,idx:0,mode:"speed",label:"速度轮（唯一计时场）",ret:"wall"};
+  goView("room");nextQ();
+}
+function startSingle(w){
+  var e=wv(w),q=e.s?qForW(w,false):qCtx(w,true);
+  ROOM={queue:[q],idx:0,mode:"single",label:esc(w),ret:"wall"};
+  goView("room");nextQ();
+}
+
+/* ===== 开铸（六拍 · 坐次 · 拍级断点） ===== */
+function seatsOf(ch){
+  var mem=ch.members.filter(function(m){return VD.W[m.w];});
+  var seats=[];for(var i=0;i<mem.length;i+=7)seats.push(mem.slice(i,i+7));
+  return seats;
+}
+function startForge(fid){
+  var ch=VD.R[fid];if(!ch)return;
+  var f=S.f[fid]||(S.f[fid]={r:0,d:0,b:0,st:0});
+  if(f.b===99){openFam(fid);return;}
+  ROOM={mode:"forge",fid:fid,label:"开铸 · "+esc(ch.lemma),ret:"fam",queue:[],idx:0};
+  goView("room");forgeBeat();
+}
+function forgeBeat(){
+  var fid=ROOM.fid,ch=VD.R[fid],f=S.f[fid],seats=seatsOf(ch),seat=seats[f.st]||seats[0];
+  var beats=[beatRoot,beatSplit,beatCast,beatProj,beatEdge,beatWall];
+  if(f.b>=beats.length){f.b=0;f.st++;save();
+    if(f.st>=seats.length){f.b=99;f.d=today()+7;save();openFam(fid);return;}
+    seat=seats[f.st];}
+  beats[f.b](ch,f,seat);
+}
+function forgeNext(){var f=S.f[ROOM.fid];f.b++;save();forgeBeat();}
+function beatRoot(ch,f,seat){
+  var forms=(ch.allo||[]).map(function(a){return a[0];}).filter(Boolean);
+  var corr=forms[0]||ch.id.replace(/^[pf]_/,"");
+  var decoys=[],guard=0;
+  if((ch.kind||"root")!=="root"){
+    shuf(PARTICLES).forEach(function(p){if(decoys.length<2&&p!==corr)decoys.push(p);});
+  }
+  while(decoys.length<2&&guard++<50){var ow=W1[ri(W1.length)].slice(0,4);
+    if(forms.indexOf(ow)<0&&ow.length>2&&ow!==corr)decoys.push(ow);}
+  var q={kind:"forge",noRecord:true,grid:true,
+    stem:'这一坐的字：'+seat.map(function(m){return '<b style="color:var(--txt)">'+esc(m.w)+"</b>";}).join("　")
+      +'<div style="margin-top:.8em;color:var(--dim);font-size:.85rem">它们共享的根段是——</div>',
+    opts:shuf([{t:corr,ok:true}].concat(decoys.map(function(d){return {t:d,ok:false};}))),
+    rv:'<b style="color:var(--gold2)">'+esc(ch.lemma)+"</b>（"+esc(ch.gloss)+"）　"+esc(ch.pic)
+      +'<div class="jz" style="margin-top:.5em">'+esc(ch.story)+"</div>"
+      +(ch.assim&&ch.assim.length?'<div class="jz" style="margin-top:.5em;color:var(--faint)">'+ch.assim.map(function(a){return esc(a[0])+"："+esc(a[1]);}).join("　")+"</div>":"")};
+  ROOM.queue=[q];ROOM.idx=0;ROOM.label="开铸 · 认根";nextQ();
+}
+function beatSplit(ch,f,seat){
+  var qs=seat.filter(function(m){return m.f;}).map(function(m){
+    var corr=(m.senses&&m.senses.length)?m.senses[0].zh:firstCn(m.w);
+    var opts=[{t:corr,ok:true}],used={};used[corr]=1;
+    shuf(seat.filter(function(x){return x.w!==m.w;})).forEach(function(x){
+      var c=(x.senses&&x.senses.length)?x.senses[0].zh:firstCn(x.w);
+      if(opts.length<4&&c&&!used[c]){opts.push({t:c,ok:false});used[c]=1;}});
+    return {kind:"forge",noRecord:true,w:m.w,
+      stem:'<span class="bigw">'+esc(m.w)+'</span><span class="mf">'+esc(m.f)+"</span>",
+      opts:shuf(opts),
+      rv:(m.senses&&m.senses.length&&m.senses[0].proj)?esc(m.senses[0].proj):esc(corr)};
+  });
+  ROOM.queue=qs;ROOM.idx=0;ROOM.label="开铸 · 拆形";nextQ();
+}
+function beatCast(ch,f,seat){
+  var reps=seat.filter(function(m){return m.f&&m.f.indexOf("+")>0&&m.senses&&m.senses.length;}).slice(0,3);
+  if(!reps.length){forgeNext();return;}
+  var tiles=[];seat.forEach(function(m){if(m.f)m.f.split("+").forEach(function(part){
+    var t=part.replace(/\(.*?\)/g,"").trim();if(t&&tiles.indexOf(t)<0)tiles.push(t);});});
+  var qs=reps.map(function(m){
+    var parts=m.f.split("+").map(function(p){return p.replace(/\(.*?\)/g,"").trim();});
+    return {kind:"cast",noRecord:false,w:m.w,si:0,castParts:parts,castPick:[],grid:true,
+      stem:'铸出——「'+esc(m.senses[0].zh)+'」<div style="color:var(--faint);font-size:.8rem;margin-top:.4em">按序点签</div><div id="castline" style="margin-top:.6em;color:var(--gold2);min-height:1.4em;letter-spacing:.1em"></div>',
+      opts:shuf(tiles).map(function(t){return {t:t,ok:parts.indexOf(t)>=0};}),
+      rv:'<b style="color:var(--gold2)">'+esc(m.w)+"</b>　"+esc(m.f)+(m.senses[0].proj?'<div class="jz">'+esc(m.senses[0].proj)+"</div>":"")};
+  });
+  ROOM.queue=qs;ROOM.idx=0;ROOM.label="开铸 · 铸词";nextQ();
+}
+function beatProj(ch,f,seat){
+  var head=null,max=0;
+  seat.forEach(function(m){if(m.senses&&m.senses.length>max){max=m.senses.length;head=m;}});
+  if(!head||max<2){forgeNext();return;}
+  var qs=head.senses.slice(0,6).map(function(s,i){
+    var opts=[{t:s.proj,ok:true}],used={};used[s.proj]=1;
+    shuf(head.senses.filter(function(x,j){return j!==i;})).forEach(function(x){
+      if(opts.length<4&&x.proj&&!used[x.proj]){opts.push({t:x.proj,ok:false});used[x.proj]=1;}});
+    return {kind:"forge",noRecord:true,
+      stem:'<b style="color:var(--gold2)">'+esc(head.w)+"</b>「"+esc(s.zh)+'」'
+        +(s.anchor&&s.anchor.en?'<div style="margin-top:.5em;font-size:.95rem">'+wrapW(s.anchor.en,head.w)+"</div>":"")
+        +'<div style="color:var(--dim);font-size:.85rem;margin-top:.6em">这片影子怎么从画里长出来——</div>',
+      opts:shuf(opts),
+      rv:(s.anchor&&s.anchor.zh?'<span class="jz">'+esc(s.anchor.zh)+"</span>":"")};
+  });
+  if(head.trap)qs[qs.length-1].rvMore=esc(head.trap);
+  ROOM.queue=qs;ROOM.idx=0;ROOM.label="开铸 · 投影";nextQ();
+}
+function beatEdge(ch,f,seat){
+  var cand=seat.filter(function(m){return poolOf(m.w,0).length;});
+  if(!cand.length){forgeNext();return;}
+  var qs=shuf(cand).slice(0,2).map(function(m){var q=qCtx(m.w,false);q.noRecord=false;return q;});
+  ROOM.queue=qs;ROOM.idx=0;ROOM.label="开铸 · 试锋";nextQ();
+}
+function beatWall(ch,f,seat){
+  var d=today();
+  seat.forEach(function(m){var e=wv(m.w);e.s=1;if(e.r<0){e.r=1;e.d=d+1;}});
+  save();
+  ROOM.queue=[{kind:"forge",noRecord:true,
+    stem:'上壁。'+seat.map(function(m){return '<b style="color:var(--s1)">'+esc(m.w)+"</b>";}).join("　"),
+    opts:[{t:"落定",ok:true}],
+    rv:'这一坐 '+seat.length+' 字挂上了 '+esc(ch.lemma)+' 的画。'}];
+  ROOM.idx=0;ROOM.label="开铸 · 上壁";nextQ();
+}
+
+/* ===== 影壁 / 族页 / 批页 / 点兵 ===== */
+function stateCls(w){var e=S.w[w];if(!e||!e.s)return "st0";
+  if(goldOf(w))return (e.d<today())?"stD":"stG";
+  return "st1";}
+function renderWall(){
+  var fb=$("#fband");
+  fb.innerHTML=FAMS.map(function(fid){
+    var ch=VD.R[fid],f=S.f[fid];
+    var dots=ch.members.filter(function(m){return VD.W[m.w];}).map(function(m){
+      var c=stateCls(m.w);return '<span class="dot '+(c==="stG"?"g":c==="stD"?"dun":c==="st1"?"s1":"")+'"></span>';}).join("");
+    var kaishan=(fid==="ten"&&(!f||f.b!==99))?" kaishan":"";
+    var kmark=ch.kind==="particle"?" · 粒子":ch.kind==="frames"?" · 骨架":"";
+    return '<div class="fcell'+kaishan+'" data-fam="'+fid+'"><div class="fn">'+esc(ch.lemma)+'</div>'
+      +'<div class="fl">'+esc(ch.gloss)+esc(kmark)+'</div><div class="dots">'+dots+"</div></div>";
+  }).join("");
+  var bb=$("#bband");
+  bb.innerHTML=VD.B.map(function(list,i){
+    var done=list.filter(function(w){var e=S.w[w];return e&&e.v&&Object.keys(e.v).length;}).length;
+    return '<div class="bcell" data-bi="'+i+'"><i style="width:'+Math.round(100*done/list.length)+'%"></i><b>'+(i+1)+"</b></div>";
+  }).join("");
+  var iso=isoCount();
+  $("#iso").innerHTML="孤立 <b>"+iso+"</b>"+isoPanel();
+}
+function isoPanel(){
+  var forged=0,total=0;
+  FAMS.forEach(function(fid){VD.R[fid].members.forEach(function(m){if(VD.W[m.w]){total++;var e=S.w[m.w];if(e&&e.s)forged++;}});});
+  var vsn=0;WORDS.forEach(function(w){var e=S.w[w];if(e&&e.v&&examSenses(w).every(function(si){var v=e.v[si];return v&&v[1]>=2;}))vsn++;});
+  var cleared=0,pairs=0;for(var k in PAIRKEY){pairs++;var pp=S.p[k];if(pp&&pp.o>=2)cleared++;}
+  return '<span id="isopanel">'
+    +"压缩："+FAMS.length+" 画悬 <em>"+forged+"</em> 字<br>"
+    +"生成命中 <em>"+pct(S.meta.g)+"</em>　新语境 <em>"+pct(S.meta.c)+"</em><br>"
+    +"对雠已清 <em>"+cleared+"</em>/"+pairs+"　考义已验 <em>"+vsn+"</em>/"+VD.meta.words
+    +"</span>";
+}
+var FAMPG={fid:null};
+function openFam(fid){
+  FAMPG.fid=fid;var ch=VD.R[fid],f=S.f[fid];
+  $("#famh").textContent=ch.lemma+" · "+ch.gloss;
+  $("#famsub").textContent=ch.pic;
+  $("#famrows").innerHTML=ch.members.filter(function(m){return VD.W[m.w];}).map(function(m){
+    return '<div class="row '+stateCls(m.w)+'" data-w="'+esc(m.w)+'"><span class="w">'+esc(m.w)+"</span>"
+      +'<span class="zh">'+esc(m.f||firstCn(m.w))+"</span></div>";}).join("");
+  $("#famforge").textContent=(f&&f.b===99)?"认亲一局 ⟶":(f&&(f.b>0||f.st>0))?"续铸（第 "+((f.st||0)+1)+" 坐第 "+((f.b||0)+1)+" 拍）⟶":"进入开铸 ⟶";
+  goView("fam");
+}
+var BATPG={bi:0,pg:0};
+function openBatch(bi){
+  BATPG.bi=bi;BATPG.pg=0;renderBatch();goView("batch");
+}
+function renderBatch(){
+  var list=VD.B[BATPG.bi],pg=BATPG.pg,slice=list.slice(pg*24,pg*24+24);
+  $("#bh").textContent="长卷 · 批 "+(BATPG.bi+1);
+  $("#bsub").textContent="按真题频铺开 · 第 "+(pg+1)+"/"+Math.ceil(list.length/24)+" 页";
+  $("#brows").innerHTML=slice.map(function(w){
+    return '<div class="row '+stateCls(w)+'" data-w="'+esc(w)+'"><span class="w">'+esc(w)+"</span>"
+      +'<span class="zh">'+esc(firstCn(w))+"</span></div>";}).join("");
+}
+function startTri(){
+  goView("tri");triNext();
+}
+function triNext(){
+  var cur=S.tri.cur;
+  if(cur>=WORDS.length){$("#triw").textContent="点兵毕。";$("#tribtns").style.display="none";
+    $("#trinote").textContent="先验已记，回影壁。";setTimeout(function(){goView("wall");renderWall();},900);return;}
+  var order=triOrder();
+  $("#triw").textContent=order[cur];
+  $("#trinote").textContent=(cur+1)+" / "+order.length+"　识=从 14 天档起（首审即考）· 疑=3 天 · 生=照常";
+}
+var _triOrder=null;
+function triOrder(){
+  if(_triOrder)return _triOrder;
+  _triOrder=W1.slice().sort(function(a,b){return (VD.W[b].h-VD.W[a].h)||(VD.W[b].f-VD.W[a].f)||(a<b?-1:1);});
+  return _triOrder;
+}
+
+/* ===== 词义泡 ===== */
+function popShow(w,x,y){
+  var e=VD.W[w];if(!e||!e.s.length)return;
+  var pop=$("#pop");
+  pop.innerHTML='<div class="pw">'+esc(w)+"</div>"
+    +e.s.slice(0,6).map(function(s){return '<div class="ps"><i>'+esc(s.p||"")+(s.g?" "+esc(s.g):"")+"</i>"+esc(s.cn)+"</div>";}).join("")
+    +(w.indexOf(" ")<0?'<div class="plink" data-dict="'+esc(w)+'">全本词典 ⟶</div>':"");
+  pop.style.display="block";
+  var W2=pop.offsetWidth,H2=pop.offsetHeight;
+  pop.style.left=Math.min(Math.max(8,x-W2/2),innerWidth-W2-8)+"px";
+  pop.style.top=Math.min(Math.max(8,y-H2-14),innerHeight-H2-8)+"px";
+}
+function popHide(){$("#pop").style.display="none";}
+
+/* ===== 事件 ===== */
+document.addEventListener("click",function(ev){
+  var t=ev.target;
+  if(!t.closest("#pop"))popHide();
+  var fc=t.closest(".fcell");if(fc){openFam(fc.dataset.fam);return;}
+  var bc=t.closest(".bcell");if(bc){openBatch(+bc.dataset.bi);return;}
+  if(t.id==="ahand"){startHand();return;}
+  if(t.id==="aspeed"){startSpeed();return;}
+  if(t.id==="atri"){startTri();return;}
+  if(t.id==="famback"||t.id==="bback"){goView("wall");renderWall();return;}
+  if(t.id==="famforge"){startForge(FAMPG.fid);return;}
+  if(t.id==="bprev"){if(BATPG.pg>0){BATPG.pg--;renderBatch();}return;}
+  if(t.id==="bnext"){if((BATPG.pg+1)*24<VD.B[BATPG.bi].length){BATPG.pg++;renderBatch();}return;}
+  if(t.id==="blearn"){startScroll(BATPG.bi);return;}
+  if(t.id==="rback"){if(ROOM.mode==="forge"){openFam(ROOM.fid);}else{goView("wall");renderWall();}return;}
+  var row=t.closest(".row");if(row){startSingle(row.dataset.w);return;}
+  if(t.id==="rsteady"){t.classList.toggle("on");return;}
+  var dl=t.closest("[data-dict]");if(dl){location.href=dictHref(dl.dataset.dict);return;}
+  if(t.closest("#iso")&&!t.closest("#isopanel")){$("#iso").classList.toggle("show");return;}
+  var tb=t.closest("#tribtns .opt");if(tb){
+    var order=triOrder(),w=order[S.tri.cur],lv=+tb.dataset.t,e=wv(w),d=today();
+    if(lv===2){e.r=3;e.d=d+14;}else if(lv===1){e.r=1;e.d=d+3;}
+    S.tri.cur++;save();triNext();return;}
+  var ob=t.closest("#ropts .opt");
+  if(ob&&LAW.armed&&!ROOM.answered){
+    var q=LAW.armed,i=+ob.dataset.i;
+    if(q.kind==="cast"){
+      var part=q.opts[i].t;q.castPick.push(part);ob.classList.add("pick");
+      var line=document.getElementById("castline");if(line)line.textContent=q.castPick.join(" + ");
+      if(q.castPick.length>=q.castParts.length){
+        var okc=q.castParts.every(function(p,j){return q.castPick[j]===p;});
+        commit(okc?0:-1);q.opts=[{t:q.castParts.join("+"),ok:true}];
+        q.si=0;judge();}
+      return;}
+    if(q.multi){q.picks[i]=!q.picks[i];ob.classList.toggle("pick");return;}
+    document.querySelectorAll("#ropts .opt").forEach(function(b){b.classList.remove("pick");});
+    ob.classList.add("pick");
+    commit(i);judge();return;
+  }
+  if(t.id==="rgo"){
+    if(LAW.armed&&!ROOM.answered){
+      var qq=LAW.armed;
+      if(qq.multi){commit(0);judge();return;}
+      LAW.fails++;
+      if(LAW.fails>=2){autoRevealShow();return;}
+      note("先落一子（再点一次=自揭，无罚）");return;
+    }
+    if(ROOM.endstate==="redeal"){ROOM.endstate=null;startHand();return;}
+    if(ROOM.endstate==="wall"){ROOM.endstate=null;goView("wall");renderWall();return;}
+    nextQ();return;
+  }
+  if(t.classList.contains("more")){var f=t.parentNode.querySelector(".full");if(f)f.style.display="block";t.style.display="none";return;}
+});
+function autoRevealShow(){
+  var q=LAW.armed;if(!q)return;
+  q.noRecord=true; /* 两失自揭无罚：不入账 */
+  LAW.committed=true;LAW.pick=-2;
+  judge();
+}
+document.addEventListener("dblclick",function(ev){
+  var t=ev.target.closest(".wtap,[data-w]");
+  if(t&&t.dataset.w){popShow(t.dataset.w,ev.clientX,ev.clientY);ev.preventDefault();}
+});
+/* 触屏双 tap 合成 */
+var _lt=0,_lx=0,_ly=0;
+document.addEventListener("touchend",function(ev){
+  var t=Date.now(),to=ev.changedTouches[0];
+  if(t-_lt<350&&Math.abs(to.clientX-_lx)<28&&Math.abs(to.clientY-_ly)<28){
+    var el=document.elementFromPoint(to.clientX,to.clientY);
+    if(el){var ww=el.closest(".wtap");if(ww&&ww.dataset.w)popShow(ww.dataset.w,to.clientX,to.clientY);}
+  }
+  _lt=t;_lx=to.clientX;_ly=to.clientY;
+},{passive:true});
+
+/* ===== selftest（VOCAB PASS 14/14；MEMONLY） ===== */
+function selftest(){
+  var st=$("#st"),fails=[],n=0;
+  function A(name,fn){n++;try{var r=fn();if(r!==true)fails.push(n+"."+name+(typeof r==="string"?"："+r:""));}
+    catch(e){fails.push(n+"."+name+"：throw "+e.message);}}
+  /* ① 第一法 */
+  A("第一法",function(){
+    arm({kind:"ctx",opts:[]});var threw=false;
+    try{reveal();}catch(e){threw=true;}
+    if(!threw)return "reveal 未拦";
+    arm({kind:"ctx",opts:[]});commit(0);if(!reveal())return "commit 后 reveal 失败";
+    return true;});
+  /* ② 引用闭合 */
+  A("引用闭合",function(){
+    for(var fid in VD.R){var ch=VD.R[fid];
+      for(var i=0;i<ch.members.length;i++){var w=ch.members[i].w;
+        if(!VD.W[w])return "章成员 "+w+" 不在 W";}}
+    var seen={};
+    for(var b=0;b<VD.B.length;b++)for(var j=0;j<VD.B[b].length;j++){var bw=VD.B[b][j];
+      if(!VD.W[bw])return "批词 "+bw+" 不在 W";
+      if(seen[bw])return "批词重复 "+bw;seen[bw]=1;
+      if(VD.W[bw].fam)return "章成员 "+bw+" 混入长卷";}
+    for(var k=0;k<VD.P.length;k++){if(!VD.W[VD.P[k].a]||!VD.W[VD.P[k].b])return "pair 词缺";}
+    return true;});
+  /* ③ 计数=build 戳记（词+词组两账） */
+  A("计数戳记",function(){
+    if(Object.keys(VD.W).length!==totalItems())return "W "+Object.keys(VD.W).length+"≠"+totalItems();
+    if(W1.length!==VD.meta.words)return "单词 "+W1.length+"≠"+VD.meta.words;
+    var sn=0;for(var w in VD.W)sn+=VD.W[w].s.length;
+    if(sn!==VD.meta.senses)return "senses "+sn+"≠"+VD.meta.senses;
+    return true;});
+  /* ④ 分流槽位 */
+  A("分流槽位",function(){
+    for(var fid in VD.R){var ch=VD.R[fid];
+      for(var i=0;i<ch.members.length;i++){var m=ch.members[i];
+        if(m.link==="live"&&!m.f)return fid+"."+m.w+" 活链无 f";
+        if(m.link==="dark"&&!m.scene)return fid+"."+m.w+" 暗链无 scene";}}
+    return true;});
+  /* ⑤ 锚句不入复习池 */
+  A("锚句禁池",function(){
+    for(var t2=0;t2<200;t2++){var w=WORDS[ri(WORDS.length)],e=VD.W[w];
+      for(var i=0;i<e.s.length;i++){var s=e.s[i];
+        if(s.x)for(var j=0;j<s.x.length;j++)if(s.x[j]===s.a)return w+" 池含锚";}}
+    return true;});
+  /* ⑥ 晋阶只认新语境：flash 不写 vs */
+  A("晋阶新语境",function(){
+    var bak=S;S=freshS();
+    var q=qFlash("sustain")||qFlash(WORDS[0]);q.ms=1;
+    applyAnswer(q,true,false);
+    var e=S.w[q.w],bad=e&&e.v&&Object.keys(e.v).length>0;
+    S=bak;return bad?"flash 写入 vs":true;});
+  /* ⑦ 首触三道 */
+  A("首触三道",function(){
+    var bak=S;S=freshS();var w=WORDS[5];
+    var q=qCtx(w,true);q.ms=1;applyAnswer(q,true,true);
+    if(S.w[w].r!==4)return "对+稳≠r4";
+    S=freshS();q=qCtx(w,true);q.ms=1;applyAnswer(q,true,false);
+    if(S.w[w].r!==2){S=bak;return "对≠r2";}
+    S=freshS();q=qCtx(w,true);q.ms=1;applyAnswer(q,false,false);
+    var r0=S.w[w].r;S=bak;return r0===0?true:"错≠r0";});
+  /* ⑧ 迁移 */
+  A("迁移",function(){
+    var old={w:{abandon:{r:1}},meta:{last:5},alien:{x:1}};
+    var m=migrate(old);
+    if(!m.tri||!m.meta||m.meta.bud!==35)return "默认未补";
+    if(!m.alien)return "未知键丢失";
+    var e=(function(){var bak=S;S=m;var r=wv("abandon");S=bak;return r;})();
+    return e.v!==undefined&&e.t!==undefined?true:"词档默认未补";});
+  /* ⑨ 投影律 */
+  A("投影律",function(){
+    var f=freshS(),blob=JSON.stringify(f);
+    if(/"gold"|"iso"|"color"/.test(blob))return "档含派生场";
+    var bak=S;S=f;var iso=isoCount();S=bak;
+    return iso===totalItems()?true:"新档孤立 "+iso+"≠"+totalItems();});
+  /* ⑩ 词典接线 */
+  A("词典接线",function(){
+    for(var t3=0;t3<30;t3++){var w=WORDS[ri(WORDS.length)];
+      if(VD.W[w].s.length&&!VD.W[w].s[0].cn)return w+" 无 cn";}
+    return typeof popShow==="function";});
+  /* ⑪ 干扰项合法 */
+  A("干扰项",function(){
+    for(var t4=0;t4<50;t4++){var w=WORDS[ri(WORDS.length)];
+      if(!VD.W[w].s.length)continue;
+      var q=qCtx(w,true),seen={};
+      for(var i=0;i<q.opts.length;i++){if(seen[q.opts[i].t])return w+" 选项重复";seen[q.opts[i].t]=1;}
+      var okn=q.opts.filter(function(o){return o.ok;}).length;
+      if(okn!==1)return w+" 正解数 "+okn;}
+    return true;});
+  /* ⑫ 合成满季档预算 */
+  A("满季档预算",function(){
+    var syn={w:{},f:{},p:{},tri:{cur:5512,pr:[1,1,1,1,1]},meta:freshS().meta};
+    WORDS.forEach(function(w){syn.w[w]={r:5,d:320,n:99,o:80,l:3,
+      v:{0:[300,3],1:[300,2]},k:{0:9},t:[[300,0,1,4100],[300,1,0,900]],lf:[300,301,302],s:1};});
+    FAMS.forEach(function(f2){syn.f[f2]={r:2,d:300,b:99,st:3};});
+    for(var k in PAIRKEY)syn.p[k]={r:5,d:300,n:9,o:8};
+    var kb=JSON.stringify(syn).length/1024;
+    return kb<900?true:"满季档 "+Math.round(kb)+"KB≥900";});
+  /* ⑬ 展示句纯净 */
+  A("展示纯净",function(){
+    for(var fid in VD.R){var ch=VD.R[fid];
+      for(var i=0;i<ch.members.length;i++){var ss=ch.members[i].senses||[];
+        for(var j=0;j<ss.length;j++){var an=ss[j].anchor;
+          if(an&&["L1","ox"].indexOf(an.src)<0)return fid+" anchor.src="+an.src;
+          if(an&&an.src==="L1"&&!/^20\d\d\./.test(an.ref||""))return fid+" L1 无 ref";}}}
+    return true;});
+  /* ⑭ 考义题源池 */
+  A("题源池",function(){
+    var degraded=0;
+    WORDS.forEach(function(w){var e=VD.W[w];
+      if(!e.s.length){degraded++;return;}
+      var si=examSenses(w)[0];
+      if(!e.s[si]||!(e.s[si].x&&e.s[si].x.length))degraded++;});
+    window.__V_degraded=degraded;
+    return degraded<totalItems()?true:"全库无池";});
+  /* ⑮ 词组翼：章合法+词组词条可出题 */
+  A("词组翼",function(){
+    var nPh=0;
+    for(var fid in VD.R){var ch=VD.R[fid],k=ch.kind||"root";
+      if(k==="root")continue;
+      for(var i=0;i<ch.members.length;i++){var m=ch.members[i],w=m.w;
+        if(w.indexOf(" ")<0)return fid+"."+w+" 非词组";
+        if(k==="particle"&&w.split(" ").pop()!==ch.id.replace(/^p_/,""))return fid+"."+w+" 粒子不符";
+        if(VD.W[w]){nPh++;
+          if(!VD.W[w].s.length)return w+" 词条无义";
+          if(!VD.W[w].s[0].a)return w+" 无锚句";}}}
+    if(VD.meta.phrases!==nPh&&VD.meta.phrases>0)return "词组计数 "+nPh+"≠"+VD.meta.phrases;
+    if(VD.meta.phrases>0){
+      var sample=null;
+      for(var w2 in VD.W){if(w2.indexOf(" ")>0&&famKind(VD.W[w2].fam)==="particle"){sample=w2;break;}}
+      if(sample){var q=qClozeP(sample);
+        if(!q||!q.opts||q.opts.filter(function(o){return o.ok;}).length!==1)return "粒子缺口题不可产";}}
+    return true;});
+  st.className="on "+(fails.length?"bad":"ok");
+  st.textContent=fails.length?("VOCAB FAIL "+fails.join(" ｜ ")):("VOCAB PASS "+n+"/"+n+" · build "+VD.meta.build+" · 池外降级 "+window.__V_degraded+" 词");
+  return fails;
+}
+
+/* ===== 云档同步挂载（sync_core 自家拷贝=vocab_sync.js；同域共享 ky_sync_cfg，token 一处贴全端用） ===== */
+function mountSync(){
+  if(!window.KySync)return;
+  try{
+    var _osv=save;
+    save=function(){_osv();try{KySync.saved();}catch(e){}};
+  }catch(e){}
+  try{
+    KySync.mount({
+      page:"vocab",
+      ready:function(){try{return typeof S==="object"&&!!S.w;}catch(e){return false;}},
+      blocked:function(){return !!MEMONLY;},
+      firstForce:Q.has("reset")?"pushAll":null,
+      stores:[{key:SKEY,
+        get:function(){try{return S;}catch(e){return null;}},
+        set:function(d){S=migrate(d);try{save();}catch(e){}}}],
+      applied:function(){try{if(document.body.dataset.v==="wall")renderWall();}catch(e){}}
+    });
+    if(!MEMONLY&&KySync.histShim){
+      KySync.histShim([{isOpen:function(){return document.body.dataset.v!=="wall";},
+        close:function(){goView("wall");renderWall();}}]);
+    }
+  }catch(e){}
+}
+
+/* ===== boot ===== */
+function boot(){
+  renderWall();
+  if(location.protocol.indexOf("http")===0&&"serviceWorker" in navigator){
+    try{navigator.serviceWorker.register("sw.js");}catch(e){}
+  }
+  if(ST){selftest();return;}
+  mountSync();
+  if(Q.has("dict")){location.href=dictHref(Q.get("dict"));return;}
+  if(Q.has("pop")){var pw=Q.get("pop");setTimeout(function(){popShow(pw,innerWidth/2,innerHeight/2);},80);}
+  if(Q.has("fam")&&VD.R[Q.get("fam")]){openFam(Q.get("fam"));return;}
+  if(Q.has("w")&&VD.W[Q.get("w")]){startSingle(Q.get("w"));return;}
+  if(Q.has("review")){startHand();return;}
+}
+window.__V={S:function(){return S;},VD:VD,save:save,selftest:selftest,goldOf:goldOf,isoCount:isoCount,
+  qCtx:qCtx,qCloze:qCloze,qKin:qKin,buildHand:buildHand,migrate:migrate,wv:wv,freshS:freshS};
+boot();
+</script>
+</body>
+</html>
