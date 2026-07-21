@@ -41,7 +41,8 @@ i,em{font-style:normal}.hide{display:none!important}
 /* 视图容器 */
 .view{position:fixed;inset:0;display:none;flex-direction:column;padding:2.2rem 2.4rem 2.6rem}
 body[data-v="wall"] #vwall,body[data-v="room"] #vroom,body[data-v="fam"] #vfam,
-body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri{display:flex}
+body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp{display:flex}
+#vhelp{flex-direction:column}
 
 /* —— 影壁 —— */
 #vwall h1{font-size:1.05rem;color:var(--dim);font-weight:400;letter-spacing:.4em;margin-bottom:1.2rem}
@@ -197,12 +198,29 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri{display:flex}
   <div id="bband"></div>
   <div id="wfoot">
     <span>
-      <button class="act" id="ahand">走马灯</button>
+      <button class="act" id="ahand">温故</button>
       <button class="act" id="aspeed">速度轮</button>
       <button class="act" id="atri">点兵</button>
+      <button class="act" id="ahelp">?</button>
     </span>
     <span id="iso">孤立 <b>0</b><span id="isopanel"></span></span>
   </div>
+</section>
+
+<section id="vhelp" class="view">
+  <h2 style="font-weight:400;color:var(--txt);font-size:1.15rem;margin-bottom:1rem">铸影是什么玩法</h2>
+  <div id="helpbody" style="overflow-y:auto;line-height:2;color:var(--s1);font-size:.95rem;max-width:44rem">
+    <p><b style="color:var(--gold2)">跟着金色走，就是全部玩法。</b>任何时刻界面上只有一个金色的「下一步」，不用自己安排。下面是每个东西在教学里干什么：</p>
+    <p><b style="color:var(--txt)">影壁</b>——这面墙。上排的格子是「族」：一幅画带出一家词（词根、粒子或骨架短语）；下排小格是<b style="color:var(--txt)">长卷</b>：不成家的词按真题出现频率排开。</p>
+    <p><b style="color:var(--txt)">开铸</b>——学新族的课，也是主菜。六步走：认根（认出全家共享的那段）→拆形（逐词猜意思）→铸词（自己拼出词）→投影（看每片意思怎么从画里长出来）→试锋（真句里认一认）→上壁（挂墙）。全程先选后揭，<b style="color:var(--txt)">错不扣分</b>，错两次自动揭示。中途退出没关系，进度记在每一步。</p>
+    <p><b style="color:var(--txt)">族页里的词条</b>——开铸前不用一个个点开（点了也只是看一眼词义）；铸完之后，它们就成了这家词的复习入口。</p>
+    <p><b style="color:var(--txt)">温故</b>——到期的词回来见一面。一次发一手（8-12 件）：读新句子选意思、辨析、填缺口。做完一手问你要不要再抓。<b style="color:var(--txt)">到期总数永远不显示</b>——没有欠账，只有这一手。</p>
+    <p><b style="color:var(--txt)">速度轮</b>——全系统唯一计时的地方，练「一眼认出」的考场反应。自愿进，平时做题永不计时。</p>
+    <p><b style="color:var(--txt)">点兵</b>——把你本来就认识的词快速报给系统（识/疑/生三拣），只影响排课顺序，不算成绩、不判对错。</p>
+    <p><b style="color:var(--txt)">金</b>——一个词的考义在<b style="color:var(--txt)">新句子</b>里对过两次才算金；靠猜蒙对进不了金，所以墙上的金全是真的。</p>
+    <p><b style="color:var(--txt)">孤立数</b>——右下角那个数：还没被任何画接住、也没在真句里验过的词的数量。每学一族、每验一词它就降。<b style="color:var(--gold2)">它降，就是你真的在变强。</b></p>
+  </div>
+  <div class="pgbar"><button id="helpback">⟵ 返回</button></div>
 </section>
 
 <section id="vroom" class="view">
@@ -550,6 +568,8 @@ function showQ(q){
   $("#rguide").textContent="▸ "+(GKIND[q.kind]||"先选后揭");
   $("#rgo").classList.remove("gnext");
   $("#rt1").textContent=ROOM.label+(ROOM.queue.length?"　"+ROOM.idx+" / "+ROOM.queue.length:"");
+  var _o=(ROOM.from||{}).v;
+  $("#rback").textContent="⟵ "+(_o==="fam"?"族页":_o==="batch"?"长卷":"影壁");
   $("#rstem").innerHTML=q.stem;
   var box=$("#ropts");box.className=q.grid?"optgrid":"";box.id="ropts";
   box.innerHTML=q.opts.map(function(o,i){return '<button class="opt" data-i="'+i+'">'+esc(o.t)+"</button>";}).join("");
@@ -612,32 +632,46 @@ function endRoom(){
     note(sec>bud?"今日约 "+Math.round(sec/60)+" 分钟 · 预算已满，再抓也行":"");
     ROOM.endstate=more?"redeal":"wall";
   }else if(ROOM.mode==="forge"){ forgeNext(); }
-  else{ goView("wall"); renderWall(); }
+  else if(ROOM.mode==="scroll"){ openBatch(ROOM.bi); }
+  else{ closeRoom(); }
 }
 
-/* ===== 走马灯 / 长卷 / 速度轮入口 ===== */
+/* ===== 温故 / 长卷 / 速度轮入口 ===== */
+function curOrigin(){ /* 进房前身处何页（返回栈用） */
+  var v=document.body.dataset.v;
+  if(v==="fam")return {v:"fam",fid:FAMPG.fid};
+  if(v==="batch")return {v:"batch",bi:BATPG.bi};
+  return {v:"wall"};
+}
+function closeRoom(){ /* 左滑/返回=退一层：回到进房前那页 */
+  var o=(ROOM&&ROOM.from)||{v:"wall"};
+  if(o.v==="fam"&&o.fid&&VD.R[o.fid]){openFam(o.fid);}
+  else if(o.v==="batch"&&o.bi!=null){openBatch(o.bi);}
+  else{goView("wall");renderWall();}
+}
 function startHand(){
   var hand=buildHand();
-  if(!hand.length){goView("wall");renderWall();var el=$("#iso");return;}
-  ROOM={queue:hand,idx:0,mode:"hand",label:"走马灯",ret:"wall",answered:false};
+  if(!hand.length){goView("wall");renderWall();return;}
+  ROOM={queue:hand,idx:0,mode:"hand",label:"温故",ret:"wall",from:{v:"wall"},answered:false};
   goView("room");nextQ();
 }
 function startScroll(bi){
   var list=VD.B[bi].filter(function(w){return !wv(w).s&&VD.W[w].s.length;}).slice(0,15);
   if(!list.length){openBatch(bi);return;}
-  ROOM={queue:list.map(function(w){return qCtx(w,true);}),idx:0,mode:"scroll",label:"长卷 · 批"+(bi+1),ret:"batch",bi:bi};
+  ROOM={queue:list.map(function(w){return qCtx(w,true);}),idx:0,mode:"scroll",label:"长卷 · 批"+(bi+1),ret:"batch",bi:bi,from:{v:"batch",bi:bi}};
   goView("room");nextQ();
 }
 function startSpeed(){
   var cand=Object.keys(S.w).filter(function(w){return S.w[w].s&&VD.W[w]&&VD.W[w].co;});
   if(cand.length<4){cand=W1.filter(function(w){return VD.W[w].h&&VD.W[w].co;}).slice(0,200);}
   var qs=shuf(cand).slice(0,10).map(qFlash);
-  ROOM={queue:qs,idx:0,mode:"speed",label:"速度轮（唯一计时场）",ret:"wall"};
+  ROOM={queue:qs,idx:0,mode:"speed",label:"速度轮（唯一计时场）",ret:"wall",from:{v:"wall"}};
   goView("room");nextQ();
 }
 function startSingle(w){
+  var from=curOrigin();
   var e=wv(w),q=e.s?qForW(w,false):qCtx(w,true);
-  ROOM={queue:[q],idx:0,mode:"single",label:esc(w),ret:"wall"};
+  ROOM={queue:[q],idx:0,mode:"single",label:esc(w),ret:"wall",from:from};
   goView("room");nextQ();
 }
 
@@ -651,7 +685,7 @@ function startForge(fid){
   var ch=VD.R[fid];if(!ch)return;
   var f=S.f[fid]||(S.f[fid]={r:0,d:0,b:0,st:0});
   if(f.b===99){openFam(fid);return;}
-  ROOM={mode:"forge",fid:fid,label:"开铸 · "+esc(ch.lemma),ret:"fam",queue:[],idx:0};
+  ROOM={mode:"forge",fid:fid,label:"开铸 · "+esc(ch.lemma),ret:"fam",from:{v:"fam",fid:fid},queue:[],idx:0};
   goView("room");forgeBeat();
 }
 function forgeBeat(){
@@ -753,7 +787,7 @@ function guideNext(){
   FAMORDER.forEach(function(fid){if(!mid){var f2=S.f[fid];if(f2&&f2.b!==99)mid=fid;}});
   if(mid)return {act:"fam",fid:mid,label:"续铸 "+VD.R[mid].lemma,
     tip:"上次停在第 "+((S.f[mid].st||0)+1)+" 坐第 "+(Math.min((S.f[mid].b||0),5)+1)+" 拍"};
-  if(dueList().length)return {act:"hand",label:"抓一手走马灯",tip:"到期复习优先 · 一手 8-12 件"};
+  if(dueList().length)return {act:"hand",label:"温故一手",tip:"到期的词回来见一面 · 8-12 件"};
   var nf=null;FAMORDER.forEach(function(fid){if(!nf&&!famForged(fid))nf=fid;});
   if(nf)return {act:"fam",fid:nf,label:"开铸 "+VD.R[nf].lemma+"（"+VD.R[nf].gloss+"）",
     tip:famKind(nf)==="root"?"新一族词根":"词组族 · 阅读题直接受益"};
@@ -815,7 +849,7 @@ var FAMPG={fid:null};
 function openFam(fid){
   FAMPG.fid=fid;var ch=VD.R[fid],f=S.f[fid];
   $("#famh").textContent=ch.lemma+" · "+ch.gloss;
-  var guideLn=(f&&f.b===99)?"":'<span class="gsub">▸ '+(f?"点下方金字续铸（进度都记着）":"点下方金字进入开铸——先认根，再逐词拆形")+"</span>";
+  var guideLn=(f&&f.b===99)?"":'<span class="gsub">▸ '+(f?"点下方金字续铸——进度记在每一步，不会丢":"先不用点上面的词（点了也只是看一眼）——直接点下方金字开铸，这家词会在课里逐个过；铸完之后这页就是复习入口")+"</span>";
   $("#famsub").innerHTML=guideLn+esc(ch.pic);
   $("#famforge").classList.toggle("gnext",!(f&&f.b===99));
   $("#famrows").innerHTML=ch.members.filter(function(m){return VD.W[m.w];}).map(function(m){
@@ -886,8 +920,17 @@ document.addEventListener("click",function(ev){
   if(t.id==="bprev"){if(BATPG.pg>0){BATPG.pg--;renderBatch();}return;}
   if(t.id==="bnext"){if((BATPG.pg+1)*24<VD.B[BATPG.bi].length){BATPG.pg++;renderBatch();}return;}
   if(t.id==="blearn"){startScroll(BATPG.bi);return;}
-  if(t.id==="rback"){if(ROOM.mode==="forge"){openFam(ROOM.fid);}else{goView("wall");renderWall();}return;}
-  var row=t.closest(".row");if(row){startSingle(row.dataset.w);return;}
+  if(t.id==="rback"){closeRoom();return;}
+  if(t.id==="ahelp"){goView("help");return;}
+  if(t.id==="helpback"){goView("wall");renderWall();return;}
+  var row=t.closest(".row");
+  if(row){
+    var rw=row.dataset.w;
+    if(document.body.dataset.v==="fam"&&!(S.w[rw]&&S.w[rw].s)){
+      popShow(rw,ev.clientX,ev.clientY);return;   /* 铸前点词=只看一眼，不出题 */
+    }
+    startSingle(rw);return;
+  }
   if(t.id==="rsteady"){t.classList.toggle("on");return;}
   var dl=t.closest("[data-dict]");if(dl){location.href=dictHref(dl.dataset.dict);return;}
   if(t.closest("#iso")&&!t.closest("#isopanel")){$("#iso").classList.toggle("show");return;}
@@ -1102,8 +1145,11 @@ function mountSync(){
       applied:function(){try{if(document.body.dataset.v==="wall")renderWall();}catch(e){}}
     });
     if(!MEMONLY&&KySync.histShim){
-      KySync.histShim([{isOpen:function(){return document.body.dataset.v!=="wall";},
-        close:function(){goView("wall");renderWall();}}]);
+      KySync.histShim([
+        {isOpen:function(){return document.body.dataset.v==="room";},close:closeRoom},
+        {isOpen:function(){return ["fam","batch","tri","help"].indexOf(document.body.dataset.v)>=0;},
+         close:function(){goView("wall");renderWall();}}
+      ]);
     }
   }catch(e){}
 }
