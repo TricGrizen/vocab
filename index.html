@@ -138,6 +138,23 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp
 #gbar:hover{background:var(--chrome)}
 .gnext{border-color:var(--gold)!important}
 #rguide{color:#b09a5e;font-size:.82rem;margin-bottom:.85rem;min-height:1.2em;letter-spacing:.02em}
+.ph{color:var(--dim);font-size:.85rem;margin-left:.7em;font-family:var(--mono)}
+button.say{color:var(--faint);font-size:.72rem;border:1px solid var(--hair);padding:.15em .55em;margin-left:.7em;vertical-align:middle}
+button.say:hover{color:var(--dim);border-color:var(--faint)}
+.tpiece{display:flex;gap:1em;align-items:baseline;margin:.34rem 0;font-size:.95rem}
+.tpiece b{color:var(--txt);font-weight:400;min-width:4.2em;font-family:var(--mono)}
+.tpiece span{color:var(--dim);line-height:1.6;flex:1}
+.tpiece.fold span{cursor:pointer}
+.tanchor{margin-top:.9rem;color:var(--s1);line-height:1.8}
+.trv{line-height:1.9}
+.trv .wp{color:var(--faint);font-size:.8rem;margin-bottom:.4rem}
+.trv .zh{color:var(--gold2);font-size:1.06rem}
+.trv .pj{color:var(--s1);margin:.3rem 0}
+.trv .az{color:var(--dim);font-size:.88rem}
+#rknow{color:var(--faint);font-size:.78rem;border:1px solid transparent;padding:.3em .7em}
+#rknow:hover{color:var(--dim)}
+.lawcard{line-height:2;color:var(--s1);font-size:.98rem}
+.lawcard b{color:var(--gold2);font-weight:400}
 #rgo.gnext{border-color:var(--gold);color:var(--gold2)}
 #famforge.gnext,#blearn.gnext{color:var(--gold2)}
 .gsub{color:var(--gold);display:block;margin-bottom:.35rem}
@@ -219,6 +236,8 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp
     <p><b style="color:var(--txt)">点兵</b>——把你本来就认识的词快速报给系统（识/疑/生三拣），只影响排课顺序，不算成绩、不判对错。</p>
     <p><b style="color:var(--txt)">金</b>——一个词的考义在<b style="color:var(--txt)">新句子</b>里对过两次才算金；靠猜蒙对进不了金，所以墙上的金全是真的。</p>
     <p><b style="color:var(--txt)">孤立数</b>——右下角那个数：还没被任何画接住、也没在真句里验过的词的数量。每学一族、每验一词它就降。<b style="color:var(--gold2)">它降，就是你真的在变强。</b></p>
+    <p><b style="color:var(--txt)">为什么这样设计</b>——这套系统故意反着四条老习惯来：①<b style="color:var(--txt)">句先义后</b>：先见词形和真句，意思是推出来的，不是顶在头上背的；②<b style="color:var(--txt)">音形合流</b>：每个词带音标和发音键，用耳朵一起记；③<b style="color:var(--txt)">生成先于判断</b>：初见一个词时不给选项让你蒙——材料给足（前缀的画、词根的画、真句），你在心里拼出意思再「亮出」对答案，自评只影响下次何时再见，不打分；选择题只出现在「验一道」和几天后的温故里，那时候选才有价值；④<b style="color:var(--txt)">错误无罚</b>：错是信息，不是罪。</p>
+    <p><b style="color:var(--txt)">当场闭环</b>——每个新词的学习当场走完（讲拆→推→揭→当场真句认一次），不把学习环节拖到几天后；几天后回来的只有复习。另外记住一条通则：<b style="color:var(--txt)">动词走现在干，名词长在分词干上</b>——所以 retain 的名词是 retention 不是 retainion，开山族里有整张讲卡。</p>
   </div>
   <div class="pgbar"><button id="helpback">⟵ 返回</button></div>
 </section>
@@ -234,6 +253,7 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp
     <div id="rbar">
       <button id="rgo">继续</button>
       <button id="rsteady">稳</button>
+      <button id="rknow" class="hide">已会，验一下</button>
       <span id="rnote"></span>
     </div>
   </div>
@@ -373,11 +393,12 @@ function spend(kind){var d=today();if(S.meta.day.d!==d){S.meta.day={d:d,sec:0};}
 /* ===== 题引擎 ===== */
 function senseOptions(w,si){ /* 4 汉义：本词他义优先，再借他词首义；两两相异 */
   var e=VD.W[w],corr=e.s[si].cn,opts=[corr],used={};used[corr]=1;
+  var burnt=(ROOM&&ROOM.usedCn)||{};   /* 去重腐：本房已当过正确答案的义不再作干扰 */
   var others=shuf(e.s.map(function(s,i){return i;}).filter(function(i){return i!==si;}));
-  others.forEach(function(i){var c=e.s[i].cn;if(opts.length<4&&!used[c]){opts.push(c);used[c]=1;}});
+  others.forEach(function(i){var c=e.s[i].cn;if(opts.length<4&&!used[c]&&!burnt[c]){opts.push(c);used[c]=1;}});
   var guard=0;
   while(opts.length<4&&guard++<200){var ow=W1[ri(W1.length)],c=firstCn(ow);
-    if(ow!==w&&c&&!used[c]){opts.push(c);used[c]=1;}}
+    if(ow!==w&&c&&!used[c]&&!burnt[c]){opts.push(c);used[c]=1;}}
   return shuf(opts).map(function(c){return {t:c,ok:c===corr};});
 }
 function probeSense(w){ /* 探针：优先未验考义→弱义→有池句义 */
@@ -394,10 +415,11 @@ function qCtx(w,firstTouch){
   if(!firstTouch&&pool.length){sent=pool[ri(pool.length)];}
   var stem;
   if(sent){stem='<span class="sw">'+wrapW(sent,w)+'</span>';}
-  else{stem='<span class="bigw">'+esc(w)+'</span>'+(VD.W[w].mf?'<span class="mf">'+esc(VD.W[w].mf)+'</span>':'');}
+  else{stem=headHtml(w)+(VD.W[w].mf?'<span class="mf">'+esc(VD.W[w].mf)+'</span>':'');}
   var s=e.s[si];
-  var rv='<b style="color:var(--gold2)">'+esc(w)+'</b> <span class="jz">'+esc(s.p||"")+(s.g?" ["+esc(s.g)+"]":"")+'</span> '+esc(s.cn)
-    +(s.a?'<div class="jz" style="margin-top:.4em">'+wrapW(s.a,w)+(s.az?'　<i style="color:var(--faint)">'+esc(s.az)+'</i>':'')+'</div>':'');
+  /* 句先义后：例句在上、词义压轴 */
+  var rv=(s.a?'<div class="jz" style="margin-bottom:.45em">'+wrapW(s.a,w)+(s.az?'　<i style="color:var(--faint)">'+esc(s.az)+'</i>':'')+'</div>':'')
+    +'<b style="color:var(--gold2)">'+esc(w)+'</b> <span class="jz">'+esc(s.p||"")+(s.g?" ["+esc(s.g)+"]":"")+'</span> '+esc(s.cn);
   return {kind:firstTouch?"touch":"ctx",w:w,si:si,stem:stem,opts:senseOptions(w,si),rv:rv};
 }
 function qCloze(w){
@@ -554,19 +576,137 @@ var ROOM={queue:[],idx:0,mode:"hand",fid:null,ret:"wall",t0:0,timer:null};
 function goView(v){document.body.dataset.v=v;}
 function note(m){$("#rnote").textContent=m||"";}
 var GKIND={
-  touch:"初见 · 凭直觉先选——错也无罚，这一选就是记忆的开工",
+  touch:"验一道 · 读句选义——对了直接进长间隔",
   ctx:"复习 · 读句子，选出它在这里的那片意思",
   cloze:"缺口 · 选正确的一块放回句中",
   pair:"辨析 · 认准这一义属于哪个",
   kin:"认亲 · 点出全部同族，再点「落子」",
   flash:"速度轮 · 限时抢答，练考场反应",
   forge:"先选后揭 · 错两次自动揭示，无罚",
+  teach:"初见 · 材料都在这——在心里拼出它的意思，想好点「亮出」",
+  gate:"认识它吗？认识就直接验一道；不认识就先学",
   cast:"铸词 · 按顺序点签块，拼出这个词"};
+/* 提示溶解：每类金字提示出现 3 次后隐去（帮助页永在） */
+function guideLine(kind){
+  var ob=S.meta.ob||(S.meta.ob={});
+  var k="gk_"+kind,n=ob[k]||0;
+  if(n>=3)return "";
+  ob[k]=n+1;save();
+  return GKIND[kind]?("▸ "+GKIND[kind]):"";
+}
+/* 构词块讲解：前缀画库 / 后缀小注 / 根形（allo 注） */
+var PREF={};(VD.PF||[]).forEach(function(p){p.forms.forEach(function(f2){if(!PREF[f2])PREF[f2]=p;});});
+var SUFF={"ion":"接在分词干上，把动作变成名词","tion":"接分词干的名词形","sion":"接分词干的名词形",
+  "ous":"…的（形容词尾）","al":"…的（形容词尾）","ive":"接分词干：有…倾向的","ment":"动作的名词形",
+  "ance":"名词形","ence":"名词形","ant":"…的人／…的","ent":"…的人／…的","ure":"名词形",
+  "ity":"性质名词","fy":"「使成为」（facere 的变身）","ate":"动词尾／…的","able":"可…的","ible":"可…的",
+  "or":"接分词干：…的人／物","er":"…的人／物","ic":"…的（形容词尾）","ly":"副词尾"};
+function pieceInfo(name,ch){
+  var n=name.toLowerCase();
+  if(PREF[n]){var p=PREF[n],ob=S.meta.ob||(S.meta.ob={}),k="pf_"+p.id,c=ob[k]||0;
+    if(c<2){ob[k]=c+1;save();return {t:"P",id:p.id,line:p.line};}
+    return {t:"P",id:p.id,line:p.pic+"（点看全解）",fold:1};}
+  if(ch){var row=null;(ch.allo||[]).forEach(function(a){if(a[0]===n)row=a;});
+    if(row)return {t:"R",line:esc(ch.gloss)+"——"+esc(row[1]||"本族的根")};
+    var rid=(ch.id||"").replace(/^[pf]_/,"");
+    if(n===rid)return {t:"R",line:esc(ch.gloss)+"——这一族的画"};}
+  if(SUFF[n])return {t:"S",line:SUFF[n]};
+  return null;
+}
+function sayWord(w){ /* 系统本地语音（OS 级 API，页面零出网） */
+  try{var u=new SpeechSynthesisUtterance(w);u.lang="en-GB";u.rate=.92;
+    speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}
+}
+function headHtml(w){
+  var e=VD.W[w]||{};
+  return '<span class="bigw">'+esc(w)+'</span>'
+    +(e.p?'<span class="ph">'+esc(/^\//.test(e.p)?e.p:"/"+e.p+"/")+'</span>':"")
+    +'<button class="say" data-say="'+esc(w)+'">发音</button>';
+}
+function piecesHtml(mf,ch){
+  if(!mf)return "";
+  return mf.split("+").map(function(part){
+    var name=part.replace(/\(.*?\)/g,"").trim();
+    var inline=(part.match(/\((.*?)\)/)||[])[1]||"";
+    var info=pieceInfo(name,ch);
+    var label=esc(name)+(inline?"（"+esc(inline)+"）":"");
+    if(!info)return '<div class="tpiece"><b>'+label+"</b></div>";
+    return '<div class="tpiece'+(info.fold?" fold":"")+'"><b>'+label+'</b><span'
+      +(info.fold?' data-pref="'+esc(info.id)+'"':"")+">"+esc(info.line)+"</span></div>";
+  }).join("");
+}
+function teachCardM(ch,m){ /* 开铸·授学卡（材料全给：音标/构词讲解/锚句，义后置） */
+  var w=m.w,e=VD.W[w]||{s:[]};
+  var sen=(m.senses&&m.senses.length)?m.senses:e.s.slice(0,2).map(function(s){
+    return {zh:s.cn,proj:"",en:s.a||"",az:s.az||""};});
+  var anEn=(sen[0]&&(sen[0].anchor&&sen[0].anchor.en||sen[0].en))||(e.s[0]&&e.s[0].a)||"";
+  return {kind:"teach",w:w,noRecord:true,chid:ch?ch.id:null,
+    sen:sen.map(function(s){return {zh:s.zh,proj:s.proj||"",
+      en:(s.anchor&&s.anchor.en)||s.en||"",az:(s.anchor&&s.anchor.zh)||s.az||""};}),
+    stem:headHtml(w)
+      +'<div style="margin-top:.7rem">'+piecesHtml(m.f||e.mf,ch)+"</div>"
+      +(anEn?'<div class="tanchor">'+wrapW(anEn,w)+"</div>":""),
+    opts:[],rv:""};
+}
+function teachCardW(w){var e=VD.W[w]||{s:[]};return teachCardM(null,{w:w,f:e.mf,senses:null});}
+function gateCard(w){ /* 长卷双门：认识→验一道；不认识→先学 */
+  return {kind:"gate",w:w,grid:true,noRecord:true,
+    stem:headHtml(w)+'<div style="margin-top:.9rem;color:var(--dim);font-size:.92rem">认识它吗？</div>',
+    opts:[{t:"认识，验一道",ok:true,know:1},{t:"不认识，先学",ok:true,know:0}],rv:""};
+}
+function popPref(id,x,y){
+  var p=null;(VD.PF||[]).forEach(function(e2){if(e2.id===id)p=e2;});
+  if(!p)return;
+  var pop=$("#pop");
+  pop.innerHTML='<div class="pw">'+esc(p.forms.join(" / "))+'</div>'
+    +'<div class="ps">'+esc(p.pic)+'</div>'
+    +'<div class="ps" style="color:var(--dim)">'+esc(p.line)+"</div>"
+    +p.ex.map(function(e3){return '<div class="ps"><i>'+esc(e3[0])+"</i>"+esc(e3[1])+"</div>";}).join("");
+  pop.style.display="block";
+  var W2=pop.offsetWidth,H2=pop.offsetHeight;
+  pop.style.left=Math.min(Math.max(8,x-W2/2),innerWidth-W2-8)+"px";
+  pop.style.top=Math.min(Math.max(8,y-H2-14),innerHeight-H2-8)+"px";
+}
+function teachReveal(q){ /* 亮出：路径行→投影→义→锚句汉义；自评两键 */
+  var e=VD.W[q.w]||{};
+  var html='<div class="trv">'+(e.wp?'<div class="wp">'+esc(e.wp)+"</div>":"");
+  q.sen.slice(0,3).forEach(function(s){
+    html+=(s.proj?'<div class="pj">'+esc(s.proj)+"</div>":"")
+        +'<div class="zh">'+esc(s.zh)+"</div>"
+        +(s.az?'<div class="az">'+esc(s.az)+"</div>":"");
+  });
+  html+="</div>";
+  $("#rjudge").innerHTML=html;$("#rjudge").style.display="block";
+  $("#ropts").className="optgrid";
+  $("#ropts").innerHTML='<button class="opt" data-self="1">推着了</button><button class="opt" data-self="0">偏了</button>';
+  $("#rgo").classList.add("hide");
+  $("#rguide").textContent=guideLine("teach")?"▸ 自评一下——只影响下次何时再见，不打分":"";
+  q.phase=2;ROOM.answered=true;
+}
+function applyTeach(w,selfOk){
+  var e=wv(w),d=today();
+  e.s=1;if(e.r<0||e.r===0){e.r=selfOk?1:0;}
+  e.d=d+RUNG[Math.max(0,e.r)];
+  bump(S.meta.g,!!selfOk);spend("touch");save();
+}
+function lawCard(){ /* 双干律通则卡：只讲一次 */
+  (S.meta.ob||(S.meta.ob={})).dg=1;save();
+  return {kind:"lawcard",noRecord:true,
+    stem:'<div class="lawcard"><b>一条管半个拉丁层的规矩</b><br>'
+      +'拉丁动词有两种「躯干」。一种是<b>现在干</b>：动词平时用的形，比如 tenē-、mitt-。'
+      +'另一种叫<b>分词干</b>——别被名字吓到，它就是「已经做完」的那个形，好比英语 take 变成 taken：tenē- 做完了是 tent-，mitt- 做完了是 miss-。<br>'
+      +'英语把两种干分了工：<b>动词多半从现在干来</b>（-tain、-mit、-tend）；<b>名词和形容词长在分词干上</b>——尾巴 -ion／-ive／-or 只接分词干：'
+      +'retain→re<b>tent</b>ion、permit→per<b>miss</b>ion、extend→ex<b>tens</b>ion。<br>'
+      +'所以 tain 和 tent 不是两种随意拼法：<b>tain 当动词用，tent 是名词的地基</b>。往后见到 -ion，往前找那个分词干就行。（少数法语自造的名词是例外，遇到会标明。）</div>',
+    opts:[{t:"知道了",ok:true}],rv:"两个干，一个规矩：动词走现在干，名词长在分词干上。"};
+}
 function showQ(q){
   arm(q);
   ROOM.t0=Date.now();
-  $("#rguide").textContent="▸ "+(GKIND[q.kind]||"先选后揭");
+  $("#rguide").textContent=(function(){var g=guideLine(q.kind);return g||"";})();
   $("#rgo").classList.remove("gnext");
+  $("#rgo").classList.remove("hide");
+  $("#rknow").classList.toggle("hide",q.kind!=="teach");
   $("#rt1").textContent=ROOM.label+(ROOM.queue.length?"　"+ROOM.idx+" / "+ROOM.queue.length:"");
   var _o=(ROOM.from||{}).v;
   $("#rback").textContent="⟵ "+(_o==="fam"?"族页":_o==="batch"?"长卷":"影壁");
@@ -574,7 +714,9 @@ function showQ(q){
   var box=$("#ropts");box.className=q.grid?"optgrid":"";box.id="ropts";
   box.innerHTML=q.opts.map(function(o,i){return '<button class="opt" data-i="'+i+'">'+esc(o.t)+"</button>";}).join("");
   $("#rjudge").style.display="none";$("#rjudge").innerHTML="";
-  $("#rgo").textContent=q.multi?"落子":"…";
+  $("#rgo").textContent=q.multi?"落子":(q.kind==="teach"?"亮出":"…");
+  $("#rgo").classList.toggle("hide",q.kind==="gate");
+  if(q.kind==="teach")$("#rgo").classList.add("gnext");
   $("#rsteady").classList.remove("on");
   $("#rsteady").style.display=(q.kind==="touch"||q.kind==="ctx")?"":"none";
   note("");
@@ -610,7 +752,8 @@ function judge(){
   jd.style.display="block";
   $("#rgo").textContent="继续";
   $("#rgo").classList.add("gnext");
-  $("#rguide").textContent="▸ 读判词，点「继续」";
+  var corr=null;q.opts.forEach(function(o){if(o.ok&&!corr)corr=o.t;});
+  if(corr&&ROOM.usedCn)ROOM.usedCn[corr]=1;
   if(!q.noRecord)applyAnswer(q,ok,steady);
   ROOM.answered=true;
 }
@@ -652,26 +795,26 @@ function closeRoom(){ /* 左滑/返回=退一层：回到进房前那页 */
 function startHand(){
   var hand=buildHand();
   if(!hand.length){goView("wall");renderWall();return;}
-  ROOM={queue:hand,idx:0,mode:"hand",label:"温故",ret:"wall",from:{v:"wall"},answered:false};
+  ROOM={queue:hand,idx:0,mode:"hand",label:"温故",ret:"wall",from:{v:"wall"},usedCn:{},answered:false};
   goView("room");nextQ();
 }
 function startScroll(bi){
   var list=VD.B[bi].filter(function(w){return !wv(w).s&&VD.W[w].s.length;}).slice(0,15);
   if(!list.length){openBatch(bi);return;}
-  ROOM={queue:list.map(function(w){return qCtx(w,true);}),idx:0,mode:"scroll",label:"长卷 · 批"+(bi+1),ret:"batch",bi:bi,from:{v:"batch",bi:bi}};
+  ROOM={queue:list.map(gateCard),idx:0,mode:"scroll",label:"长卷 · 批"+(bi+1),ret:"batch",bi:bi,from:{v:"batch",bi:bi},usedCn:{}};
   goView("room");nextQ();
 }
 function startSpeed(){
   var cand=Object.keys(S.w).filter(function(w){return S.w[w].s&&VD.W[w]&&VD.W[w].co;});
   if(cand.length<4){cand=W1.filter(function(w){return VD.W[w].h&&VD.W[w].co;}).slice(0,200);}
   var qs=shuf(cand).slice(0,10).map(qFlash);
-  ROOM={queue:qs,idx:0,mode:"speed",label:"速度轮（唯一计时场）",ret:"wall",from:{v:"wall"}};
+  ROOM={queue:qs,idx:0,mode:"speed",label:"速度轮（唯一计时场）",ret:"wall",from:{v:"wall"},usedCn:{}};
   goView("room");nextQ();
 }
 function startSingle(w){
   var from=curOrigin();
   var e=wv(w),q=e.s?qForW(w,false):qCtx(w,true);
-  ROOM={queue:[q],idx:0,mode:"single",label:esc(w),ret:"wall",from:from};
+  ROOM={queue:[q],idx:0,mode:"single",label:esc(w),ret:"wall",from:from,usedCn:{}};
   goView("room");nextQ();
 }
 
@@ -685,7 +828,7 @@ function startForge(fid){
   var ch=VD.R[fid];if(!ch)return;
   var f=S.f[fid]||(S.f[fid]={r:0,d:0,b:0,st:0});
   if(f.b===99){openFam(fid);return;}
-  ROOM={mode:"forge",fid:fid,label:"开铸 · "+esc(ch.lemma),ret:"fam",from:{v:"fam",fid:fid},queue:[],idx:0};
+  ROOM={mode:"forge",fid:fid,label:"开铸 · "+esc(ch.lemma),ret:"fam",from:{v:"fam",fid:fid},queue:[],idx:0,usedCn:{}};
   goView("room");forgeBeat();
 }
 function forgeBeat(){
@@ -713,21 +856,14 @@ function beatRoot(ch,f,seat){
     rv:'<b style="color:var(--gold2)">'+esc(ch.lemma)+"</b>（"+esc(ch.gloss)+"）　"+esc(ch.pic)
       +'<div class="jz" style="margin-top:.5em">'+esc(ch.story)+"</div>"
       +(ch.assim&&ch.assim.length?'<div class="jz" style="margin-top:.5em;color:var(--faint)">'+ch.assim.map(function(a){return esc(a[0])+"："+esc(a[1]);}).join("　")+"</div>":"")};
-  ROOM.queue=[q];ROOM.idx=0;ROOM.label="开铸 · 认根";nextQ();
+  var queue=[q];
+  if((ch.kind||"root")==="root"&&!(S.meta.ob&&S.meta.ob.dg))queue.push(lawCard());
+  ROOM.queue=queue;ROOM.idx=0;ROOM.label="开铸 · 认根";nextQ();
 }
 function beatSplit(ch,f,seat){
-  var qs=seat.filter(function(m){return m.f;}).map(function(m){
-    var corr=(m.senses&&m.senses.length)?m.senses[0].zh:firstCn(m.w);
-    var opts=[{t:corr,ok:true}],used={};used[corr]=1;
-    shuf(seat.filter(function(x){return x.w!==m.w;})).forEach(function(x){
-      var c=(x.senses&&x.senses.length)?x.senses[0].zh:firstCn(x.w);
-      if(opts.length<4&&c&&!used[c]){opts.push({t:c,ok:false});used[c]=1;}});
-    return {kind:"forge",noRecord:true,w:m.w,
-      stem:'<span class="bigw">'+esc(m.w)+'</span><span class="mf">'+esc(m.f)+"</span>",
-      opts:shuf(opts),
-      rv:(m.senses&&m.senses.length&&m.senses[0].proj)?esc(m.senses[0].proj):esc(corr)};
-  });
-  ROOM.queue=qs;ROOM.idx=0;ROOM.label="开铸 · 拆形";nextQ();
+  var qs=seat.filter(function(m){return m.f;}).map(function(m){return teachCardM(ch,m);});
+  if(!qs.length){forgeNext();return;}
+  ROOM.queue=qs;ROOM.idx=0;ROOM.label="开铸 · 逐词讲拆";nextQ();
 }
 function beatCast(ch,f,seat){
   var reps=seat.filter(function(m){return m.f&&m.f.indexOf("+")>0&&m.senses&&m.senses.length;}).slice(0,3);
@@ -752,9 +888,9 @@ function beatProj(ch,f,seat){
     shuf(head.senses.filter(function(x,j){return j!==i;})).forEach(function(x){
       if(opts.length<4&&x.proj&&!used[x.proj]){opts.push({t:x.proj,ok:false});used[x.proj]=1;}});
     return {kind:"forge",noRecord:true,
-      stem:'<b style="color:var(--gold2)">'+esc(head.w)+"</b>「"+esc(s.zh)+'」'
-        +(s.anchor&&s.anchor.en?'<div style="margin-top:.5em;font-size:.95rem">'+wrapW(s.anchor.en,head.w)+"</div>":"")
-        +'<div style="color:var(--dim);font-size:.85rem;margin-top:.6em">这片影子怎么从画里长出来——</div>',
+      stem:(s.anchor&&s.anchor.en?'<div class="tanchor" style="margin:0 0 .7em">'+wrapW(s.anchor.en,head.w)+"</div>":"")
+        +'<b style="color:var(--gold2)">'+esc(head.w)+"</b> 的「"+esc(s.zh)+'」'
+        +'<div style="color:var(--dim);font-size:.85rem;margin-top:.5em">这片影子怎么从画里长出来——</div>',
       opts:shuf(opts),
       rv:(s.anchor&&s.anchor.zh?'<span class="jz">'+esc(s.anchor.zh)+"</span>":"")};
   });
@@ -908,7 +1044,17 @@ function popHide(){$("#pop").style.display="none";}
 /* ===== 事件 ===== */
 document.addEventListener("click",function(ev){
   var t=ev.target;
+  var sy=t.closest("[data-say]");if(sy){sayWord(sy.dataset.say);return;}
+  var pfd=t.closest("[data-pref]");if(pfd){popPref(pfd.dataset.pref,ev.clientX,ev.clientY);return;}
   if(!t.closest("#pop"))popHide();
+  /* teach 自评两键（揭示后） */
+  var se=t.closest("#ropts [data-self]");
+  if(se&&ROOM.answered){var qs2=ROOM.queue[ROOM.idx-1];
+    if(qs2&&qs2.kind==="teach"&&qs2.phase===2){applyTeach(qs2.w,se.dataset.self==="1");nextQ();return;}}
+  /* 已会 → 换验证卡 */
+  if(t.id==="rknow"&&LAW.armed&&LAW.armed.kind==="teach"&&!ROOM.answered){
+    var qt=LAW.armed;commit(-1);reveal();
+    var q3=qCtx(qt.w,true);ROOM.queue[ROOM.idx-1]=q3;showQ(q3);return;}
   if(t.closest("#gbar")){guideGo(GCUR);return;}
   var fc=t.closest(".fcell");if(fc){openFam(fc.dataset.fam);return;}
   var bc=t.closest(".bcell");if(bc){openBatch(+bc.dataset.bi);return;}
@@ -939,6 +1085,12 @@ document.addEventListener("click",function(ev){
     if(lv===2){e.r=3;e.d=d+14;}else if(lv===1){e.r=1;e.d=d+3;}
     S.tri.cur++;save();triNext();return;}
   var ob=t.closest("#ropts .opt");
+  if(ob&&LAW.armed&&!ROOM.answered&&LAW.armed.kind==="gate"){
+    var qg=LAW.armed,ig=+ob.dataset.i;
+    commit(ig);reveal();
+    var q2=(qg.opts[ig].know===1)?qCtx(qg.w,true):teachCardW(qg.w);
+    ROOM.queue[ROOM.idx-1]=q2;showQ(q2);return;
+  }
   if(ob&&LAW.armed&&!ROOM.answered){
     var q=LAW.armed,i=+ob.dataset.i;
     if(q.kind==="cast"){
@@ -946,8 +1098,19 @@ document.addEventListener("click",function(ev){
       var line=document.getElementById("castline");if(line)line.textContent=q.castPick.join(" + ");
       if(q.castPick.length>=q.castParts.length){
         var okc=q.castParts.every(function(p,j){return q.castPick[j]===p;});
-        commit(okc?0:-1);q.opts=[{t:q.castParts.join("+"),ok:true}];
-        q.si=0;judge();}
+        commit(okc?0:-1);reveal();
+        document.querySelectorAll("#ropts .opt").forEach(function(b){
+          var tt=b.textContent;
+          if(q.castParts.indexOf(tt)>=0)b.classList.add("ok");
+          else if(q.castPick.indexOf(tt)>=0)b.classList.add("no");
+        });
+        var jd=$("#rjudge");
+        jd.innerHTML=(okc?'<span style="color:var(--gold)">铸成。</span> ':'<span style="color:#9a7a7a">差一签。</span> ')+q.rv;
+        jd.style.display="block";
+        $("#rgo").textContent="继续";$("#rgo").classList.add("gnext");
+        $("#rguide").textContent="";
+        q.ms=Date.now()-ROOM.t0;applyAnswer(q,okc,false);ROOM.answered=true;
+      }
       return;}
     if(q.multi){q.picks[i]=!q.picks[i];ob.classList.toggle("pick");return;}
     document.querySelectorAll("#ropts .opt").forEach(function(b){b.classList.remove("pick");});
@@ -957,6 +1120,7 @@ document.addEventListener("click",function(ev){
   if(t.id==="rgo"){
     if(LAW.armed&&!ROOM.answered){
       var qq=LAW.armed;
+      if(qq.kind==="teach"){commit(0);reveal();teachReveal(qq);return;}
       if(qq.multi){commit(0);judge();return;}
       LAW.fails++;
       if(LAW.fails>=2){autoRevealShow();return;}
@@ -1040,15 +1204,22 @@ function selftest(){
     applyAnswer(q,true,false);
     var e=S.w[q.w],bad=e&&e.v&&Object.keys(e.v).length>0;
     S=bak;return bad?"flash 写入 vs":true;});
-  /* ⑦ 首触三道 */
-  A("首触三道",function(){
+  /* ⑦ 双门与授学 */
+  A("双门授学",function(){
     var bak=S;S=freshS();var w=WORDS[5];
     var q=qCtx(w,true);q.ms=1;applyAnswer(q,true,true);
-    if(S.w[w].r!==4)return "对+稳≠r4";
-    S=freshS();q=qCtx(w,true);q.ms=1;applyAnswer(q,true,false);
-    if(S.w[w].r!==2){S=bak;return "对≠r2";}
+    if(S.w[w].r!==4)return "验一道 对+稳≠r4";
     S=freshS();q=qCtx(w,true);q.ms=1;applyAnswer(q,false,false);
-    var r0=S.w[w].r;S=bak;return r0===0?true:"错≠r0";});
+    if(S.w[w].r!==0){S=bak;return "验一道 错≠r0";}
+    S=freshS();applyTeach(w,true);
+    if(S.w[w].r!==1||!S.w[w].s){S=bak;return "授学 自评对≠r1";}
+    S=freshS();applyTeach(w,false);
+    var r0=S.w[w].r;var g=gateCard(w),t1=teachCardM(null,{w:"sustain",f:VD.W.sustain&&VD.W.sustain.mf,senses:null});
+    S=bak;
+    if(r0!==0)return "授学 自评偏≠r0";
+    if(!g.opts||g.opts.length!==2)return "门卡异常";
+    if(!t1.stem||t1.stem.indexOf("tpiece")<0)return "授学卡无构词讲解";
+    return true;});
   /* ⑧ 迁移 */
   A("迁移",function(){
     var old={w:{abandon:{r:1}},meta:{last:5},alien:{x:1}};
@@ -1164,6 +1335,14 @@ function boot(){
   mountSync();
   if(Q.has("dict")){location.href=dictHref(Q.get("dict"));return;}
   if(Q.has("pop")){var pw=Q.get("pop");setTimeout(function(){popShow(pw,innerWidth/2,innerHeight/2);},80);}
+  if(Q.has("teach")&&VD.W[Q.get("teach")]){
+    var tw=Q.get("teach");
+    var qT=(function(){var fid=VD.W[tw].fam;
+      if(fid&&VD.R[fid]){var mm=null;VD.R[fid].members.forEach(function(m){if(m.w===tw)mm=m;});
+        if(mm)return teachCardM(VD.R[fid],mm);}
+      return teachCardW(tw);})();
+    ROOM={queue:[qT],idx:0,mode:"single",label:esc(tw),ret:"wall",from:{v:"wall"},usedCn:{}};
+    goView("room");nextQ();return;}
   if(Q.has("fam")&&VD.R[Q.get("fam")]){openFam(Q.get("fam"));return;}
   if(Q.has("w")&&VD.W[Q.get("w")]){startSingle(Q.get("w"));return;}
   if(Q.has("review")){startHand();return;}
