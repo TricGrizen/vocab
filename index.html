@@ -160,8 +160,15 @@ button.say:hover{color:var(--dim);border-color:var(--faint)}
 .rootrv .rnote{color:var(--dim);font-size:.85rem;margin-top:.55rem}
 #famstory{color:var(--s1);line-height:2;font-size:.97rem;margin:.4rem 0 .9rem;max-width:44rem}
 #fampref{margin:0 0 1rem;color:var(--dim);font-size:.85rem}
-#fampref span{color:var(--s1);font-family:var(--mono);margin-right:1em;cursor:pointer;border-bottom:1px solid var(--hair)}
-#fampref span:hover{color:var(--txt)}
+/* 可交互标金调——一眼可辨「这里能点」 */
+#fampref span,[data-pref]{color:#b09a5e;font-family:var(--mono);margin-right:1em;cursor:pointer;border-bottom:1px dotted #6b5d3a}
+#fampref span:hover,[data-pref]:hover{color:var(--gold2);border-bottom-color:var(--gold)}
+.tpiece.fold span{color:#b09a5e}
+#famstory.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#famstg{color:var(--faint);font-size:.78rem;cursor:pointer;padding:.2em .5em;border:1px solid transparent}
+#famstg:hover{color:var(--dim)}
+#wallrep .rows{margin-top:.6rem}
+#wallrep .wnote{color:var(--dim);font-size:.88rem;margin-top:.4rem}
 #rprev{color:var(--faint);font-size:.78rem;border:1px solid transparent;padding:.3em .7em}
 #rprev:hover{color:var(--dim)}
 /* 义项卡片：多义边界用卡片划清 */
@@ -271,6 +278,16 @@ button.say:hover{color:var(--dim);border-color:var(--faint)}
     <p><b style="color:var(--txt)">孤立数</b>——右下角那个数：还没被任何画接住、也没在真句里验过的词的数量。每学一族、每验一词它就降。<b style="color:var(--gold2)">它降，就是你真的在变强。</b></p>
     <p><b style="color:var(--txt)">为什么这样设计</b>——这套系统故意反着四条老习惯来：①<b style="color:var(--txt)">句先义后</b>：先见词形和真句，意思是推出来的，不是顶在头上背的；②<b style="color:var(--txt)">音形合流</b>：每个词带音标和发音键，用耳朵一起记；③<b style="color:var(--txt)">生成先于判断</b>：初见一个词时不给选项让你蒙——材料给足（前缀的画、词根的画、真句），你在心里拼出意思再「亮出」对答案，自评只影响下次何时再见，不打分；选择题只出现在「验一道」和几天后的温故里，那时候选才有价值；④<b style="color:var(--txt)">错误无罚</b>：错是信息，不是罪。</p>
     <p><b style="color:var(--txt)">当场闭环</b>——每个新词的学习当场走完（讲拆→推→揭→当场真句认一次），不把学习环节拖到几天后；几天后回来的只有复习。另外记住一条通则：<b style="color:var(--txt)">动词走现在干，名词长在分词干上</b>——所以 retain 的名词是 retention 不是 retainion，开山族里有整张讲卡。</p>
+    <p><b style="color:var(--txt)">每种题的代价（全部明牌）</b>——总原则：<b style="color:var(--gold2)">错永远不扣任何东西，只改变下次见面的时间</b>。<br>
+    · <b style="color:var(--txt)">授学卡</b>（开铸逐词/长卷「不认识」）：无对错——看完=明天首验。<br>
+    · <b style="color:var(--txt)">验一道</b>（长卷「认识」/已会键）：对+标稳→30 天后见；对→7 天后见；错→明天见。<br>
+    · <b style="color:var(--txt)">试锋</b>（开铸当场真句）：对→后天档并给该义记一次「已验」；错→明天见+该义标弱（之后优先再考）。<br>
+    · <b style="color:var(--txt)">温故·选义/缺口</b>：对→间隔升一档（1→3→7→14→30→60 天）；低档上对+标稳→跳两档；错→降两档（最低=明天）+该义标弱。同一词三次错且分散在两天以上→进「回炉」换教法（不是惩罚）。<br>
+    · <b style="color:var(--txt)">辨析对</b>：对→这对的间隔升档，对满两次=对雠清除；错→这对明天重来。<br>
+    · <b style="color:var(--txt)">认亲</b>：拣对→族钟升（7→30→60 天）；错→族钟回 7 天。不动任何单词的档。<br>
+    · <b style="color:var(--txt)">速度轮</b>：只记速度，什么档都不动。<br>
+    · <b style="color:var(--txt)">认根/铸词/上壁</b>：纯学习环节，只记进度，无对错入档。<br>
+    金（墙上最亮那档）只有一条路：<b style="color:var(--txt)">同一个词的考义在两次不同的新句子里作对</b>——蒙对进不了金。</p>
   </div>
   <div class="pgbar"><button id="helpback">⟵ 返回</button></div>
 </section>
@@ -950,7 +967,7 @@ function beatCast(ch,f,seat){
     var t=part.replace(/\(.*?\)/g,"").trim();if(t&&tiles.indexOf(t)<0)tiles.push(t);});});
   var qs=reps.map(function(m){
     var parts=m.f.split("+").map(function(p){return p.replace(/\(.*?\)/g,"").trim();});
-    return {kind:"cast",noRecord:false,w:m.w,si:0,castParts:parts,castPick:[],grid:true,
+    return {kind:"cast",noRecord:true,w:m.w,si:0,castParts:parts,castPick:[],grid:true,
       stem:'铸出——「'+esc(m.senses[0].zh)+'」<div style="color:var(--faint);font-size:.8rem;margin-top:.4em">按序点签</div><div id="castline" style="margin-top:.6em;color:var(--gold2);min-height:1.4em;letter-spacing:.1em"></div>',
       opts:shuf(tiles).map(function(t){return {t:t,ok:parts.indexOf(t)>=0};}),
       rv:'<b style="color:var(--gold2)">'+esc(m.w)+"</b>　"+esc(m.f)+(m.senses[0].proj?'<div class="jz">'+esc(m.senses[0].proj)+"</div>":"")};
@@ -968,9 +985,11 @@ function beatWall(ch,f,seat){
   seat.forEach(function(m){var e=wv(m.w);e.s=1;if(e.r<0){e.r=1;e.d=d+1;}});
   save();
   ROOM.queue=[{kind:"forge",noRecord:true,
-    stem:'上壁。'+seat.map(function(m){return '<b style="color:var(--s1)">'+esc(m.w)+"</b>";}).join("　"),
+    stem:'<div id="wallrep">上壁——这一坐挂上了 '+esc(ch.lemma)+' 的画。'
+      +'<div class="wnote">全家骨架在此，点任何一个词复看精析；看好了点「落定」。</div>'
+      +'<div class="rows">'+famRowsHtml(ch)+"</div></div>",
     opts:[{t:"落定",ok:true}],
-    rv:'这一坐 '+seat.length+' 字挂上了 '+esc(ch.lemma)+' 的画。'}];
+    rv:'落定。明天它们会回来见第一面。'}];
   ROOM.idx=0;ROOM.label="开铸 · 上壁";nextQ();
 }
 
@@ -1042,12 +1061,24 @@ function isoPanel(){
     +"</span>";
 }
 var FAMPG={fid:null};
+function famRowsHtml(ch){ /* 族谱表骨架（族页/上壁拍共用；点行展开精析卡） */
+  return (ch.members||[]).filter(function(m){return VD.W[m.w];}).map(function(m){
+    return '<div class="row '+stateCls(m.w)+'" data-w="'+esc(m.w)+'"><span class="w">'+esc(m.w)+"</span>"
+      +'<span class="zh">'+esc(m.f||firstCn(m.w))+"</span></div>";}).join("");
+}
 function openFam(fid){
   FAMPG.fid=fid;var ch=VD.R[fid],f=S.f[fid];
   $("#famh").textContent=ch.lemma+" · "+ch.gloss;
   var guideLn=(f&&f.b===99)?"":'<span class="gsub">▸ '+(f?"点下方金字续铸——进度记在每一步，不会丢":"先不用点上面的词（点了也只是看一眼）——直接点下方金字开铸，这家词会在课里逐个过；铸完之后这页就是复习入口")+"</span>";
   $("#famsub").innerHTML=guideLn+esc(ch.pic);
-  $("#famstory").textContent=ch.story||"";
+  var st0=$("#famstory");
+  st0.textContent=ch.story||"";
+  var clamped=!!f;                                  /* 进过族默认收起，反复操作表格不占屏 */
+  st0.classList.toggle("clamp",clamped);
+  var tg=document.getElementById("famstg");
+  if(!tg){tg=document.createElement("button");tg.id="famstg";st0.after(tg);}
+  tg.textContent=clamped?"展开全文 ▾":"收起 ▴";
+  tg.style.display=(ch.story&&ch.story.length>60)?"":"none";
   var prefs=[],seenP={};
   (ch.members||[]).forEach(function(m){var ps=(m.f||"").split("+");
     ps.forEach(function(part,pi){
@@ -1058,9 +1089,7 @@ function openFam(fid){
   $("#fampref").innerHTML=prefs.length?("这家用到的前缀（点一个看它的画）：　"
     +prefs.map(function(p){return '<span data-pref="'+esc(p[1])+'">'+esc(p[0])+"</span>";}).join("")):"";
   $("#famforge").classList.toggle("gnext",!(f&&f.b===99));
-  $("#famrows").innerHTML=ch.members.filter(function(m){return VD.W[m.w];}).map(function(m){
-    return '<div class="row '+stateCls(m.w)+'" data-w="'+esc(m.w)+'"><span class="w">'+esc(m.w)+"</span>"
-      +'<span class="zh">'+esc(m.f||firstCn(m.w))+"</span></div>";}).join("");
+  $("#famrows").innerHTML=famRowsHtml(ch);
   $("#famforge").textContent=(f&&f.b===99)?"认亲一局 ⟶":(f&&(f.b>0||f.st>0))?"续铸（第 "+((f.st||0)+1)+" 坐第 "+((f.b||0)+1)+" 拍）⟶":"进入开铸 ⟶";
   goView("fam");pushNav(1);
 }
@@ -1146,14 +1175,18 @@ document.addEventListener("click",function(ev){
       nextQ();}return;}
   if(t.id==="ahelp"){goView("help");pushNav(1);return;}
   if(t.id==="helpback"){goView("wall");renderWall();return;}
+  if(t.id==="famstg"){var st1=$("#famstory");
+    var was=st1.classList.toggle("clamp");
+    t.textContent=was?"展开全文 ▾":"收起 ▴";return;}
   var row=t.closest(".row");
   if(row){
     var rw=row.dataset.w;
-    if(document.body.dataset.v==="fam"){ /* 族谱表：点行=展开该词精析卡片（骨架→细节） */
+    var inWall=row.closest("#wallrep");
+    if(document.body.dataset.v==="fam"||inWall){ /* 族谱表：点行=展开该词精析卡片（族页/上壁拍同用） */
       var nx=row.nextElementSibling;
       if(nx&&nx.classList.contains("frowx")){nx.remove();return;}
-      document.querySelectorAll("#famrows .frowx").forEach(function(x){x.remove();});
-      var chf=VD.R[FAMPG.fid],mmf=null;
+      document.querySelectorAll(".frowx").forEach(function(x){x.remove();});
+      var chf=VD.R[inWall?ROOM.fid:FAMPG.fid],mmf=null;
       (chf&&chf.members||[]).forEach(function(m){if(m.w===rw)mmf=m;});
       var senf=(mmf&&mmf.senses&&mmf.senses.length)
         ?mmf.senses.map(function(s){return {zh:s.zh,proj:s.proj||"",
@@ -1198,7 +1231,7 @@ document.addEventListener("click",function(ev){
         jd.style.display="block";
         $("#rgo").textContent="继续";$("#rgo").classList.add("gnext");
         $("#rguide").textContent="";
-        q.ms=Date.now()-ROOM.t0;applyAnswer(q,okc,false);ROOM.answered=true;
+        q.ms=Date.now()-ROOM.t0;if(!q.noRecord)applyAnswer(q,okc,false);ROOM.answered=true;
       }
       return;}
     if(q.multi){q.picks[i]=!q.picks[i];ob.classList.toggle("pick");return;}
