@@ -105,7 +105,8 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp
 /* —— 族页 / 批页 —— */
 #vfam h2,#vbatch h2{font-weight:400;color:var(--txt);font-size:1.1rem;margin-bottom:.4rem}
 .sub{color:var(--dim);font-size:.8rem;margin-bottom:1.1rem;line-height:1.7}
-.rows{flex:1;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;gap:.15rem .1rem;align-content:start}
+#vfam,#vbatch{overflow-y:auto}
+.rows{flex:none;overflow:visible;display:grid;grid-template-columns:1fr 1fr;gap:.15rem .1rem;align-content:start}
 .row{display:flex;gap:.8em;padding:.32rem .5rem;cursor:pointer;font-size:.92rem;border:1px solid transparent;align-items:baseline}
 .row:hover{border-color:var(--hair);background:var(--chrome)}
 .row .w{color:var(--txt);min-width:9em}
@@ -163,6 +164,25 @@ button.say:hover{color:var(--dim);border-color:var(--faint)}
 #fampref span:hover{color:var(--txt)}
 #rprev{color:var(--faint);font-size:.78rem;border:1px solid transparent;padding:.3em .7em}
 #rprev:hover{color:var(--dim)}
+/* 义项卡片：多义边界用卡片划清 */
+.scard{border:1px solid var(--line);background:var(--chrome);padding:.6rem .85rem;margin:.5rem 0;line-height:1.85}
+.scard .szh{color:var(--gold2);font-size:1.02rem}
+.scard .spj{color:var(--s1);margin-top:.15rem}
+.scard .sen{color:var(--s1);margin-top:.3rem;font-size:.9rem}
+.scard .saz{color:var(--dim);font-size:.85rem}
+/* 房顶轮转栏：拍段+词序，随机跳转 */
+#rtoc{display:flex;flex-wrap:wrap;gap:.35rem .5rem;margin-bottom:.9rem}
+#rtoc .tb{border:1px solid var(--hair);color:var(--dim);padding:.18em .6em;font-size:.75rem;cursor:pointer}
+#rtoc .tb:hover{border-color:var(--faint);color:var(--s1)}
+#rtoc .tb.cur{border-color:var(--gold);color:var(--gold2)}
+#rtoc .tw{border:1px dashed var(--hair);color:var(--faint);padding:.18em .55em;font-size:.75rem;cursor:pointer;font-family:var(--mono)}
+#rtoc .tw:hover{color:var(--s1)}
+#rtoc .tw.cur{border-color:var(--gold);border-style:solid;color:var(--gold2)}
+/* 族谱表：行点开=精析卡片，铺开不内滚 */
+.frowx{grid-column:1/-1;padding:.15rem .4rem .6rem;border-left:2px solid var(--hair);margin:0 0 .3rem .4rem}
+.frowx .vbtn{color:var(--faint);font-size:.78rem;border:1px solid var(--hair);padding:.3em .8em;margin-top:.4rem;display:inline-block}
+.frowx .vbtn:hover{color:var(--dim);border-color:var(--faint)}
+.row .exp{color:var(--faint);font-size:.75rem;margin-left:.6em}
 #rknow{color:var(--faint);font-size:.78rem;border:1px solid transparent;padding:.3em .7em}
 #rknow:hover{color:var(--dim)}
 .lawcard{line-height:2;color:var(--s1);font-size:.98rem}
@@ -194,7 +214,8 @@ button.say:hover{color:var(--dim);border-color:var(--faint)}
   #rbar{position:fixed;left:.95rem;right:.95rem;bottom:calc(.75rem + env(safe-area-inset-bottom));
     margin:0;background:var(--paper);padding-top:.55rem;border-top:1px solid var(--hair)}
   #rgo{flex:1;text-align:center;padding:.9rem 0;letter-spacing:.5em}
-  .rows{grid-template-columns:1fr;overflow-y:auto;gap:.1rem}
+  body[data-v="fam"] #vfam,body[data-v="batch"] #vbatch{display:block}
+  .rows{grid-template-columns:1fr;gap:.1rem}
   .row{padding:.62rem .55rem}
   .row .w{min-width:7.6em;font-size:1.1rem}
   .row .zh{font-size:.95rem}
@@ -257,6 +278,7 @@ button.say:hover{color:var(--dim);border-color:var(--faint)}
 <section id="vroom" class="view">
   <div id="rcard">
     <div id="rtop"><span id="rt1"></span><button class="bk" id="rback">⟵ 影壁</button></div>
+    <div id="rtoc" class="hide"></div>
     <div id="rguide"></div>
     <div id="rtimer"><i></i></div>
     <div id="rstem"></div>
@@ -693,31 +715,32 @@ function popPref(id,x,y){
   pop.style.left=Math.min(Math.max(8,x-W2/2),innerWidth-W2-8)+"px";
   pop.style.top=Math.min(Math.max(8,y-H2-14),innerHeight-H2-8)+"px";
 }
-function teachReveal(q){ /* 亮出：路径行→投影→义→锚句汉义；自评两键 */
+function senseCardsHtml(sen,w){ /* 义项卡片：边界分明，投影+义+锚句一卡一义 */
+  return (sen||[]).map(function(s){
+    return '<div class="scard">'
+      +(s.proj?'<div class="spj">'+esc(s.proj)+"</div>":"")
+      +'<div class="szh">'+esc(s.zh)+"</div>"
+      +(s.en?'<div class="sen">'+wrapW(s.en,w)+"</div>":"")
+      +(s.az?'<div class="saz">'+esc(s.az)+"</div>":"")
+      +"</div>";}).join("");
+}
+function teachReveal(q){ /* 亮出：路径行 + 全义卡片铺开（无自评——看完点继续） */
   var e=VD.W[q.w]||{};
-  var html='<div class="trv">'+(e.wp?'<div class="wp">'+esc(e.wp)+"</div>":"");
-  q.sen.slice(0,3).forEach(function(s){
-    html+=(s.proj?'<div class="pj">'+esc(s.proj)+"</div>":"")
-        +'<div class="zh">'+esc(s.zh)+"</div>"
-        +(s.az?'<div class="az">'+esc(s.az)+"</div>":"");
-  });
-  html+="</div>";
-  $("#rjudge").innerHTML=html;$("#rjudge").style.display="block";
-  $("#ropts").className="optgrid";
-  $("#ropts").innerHTML='<button class="opt" data-self="1">推着了</button><button class="opt" data-self="0">偏了</button>';
-  $("#rgo").classList.add("hide");
-  var ob2=S.meta.ob||(S.meta.ob={});
-  if((ob2.se||0)<3){ob2.se=(ob2.se||0)+1;save();
-    $("#rguide").textContent="▸ 随手记一笔就好——怎么选都不影响安排，明天都会再见一面";}
-  else{$("#rguide").textContent="";}
+  $("#rjudge").innerHTML='<div class="trv">'
+    +(e.wp?'<div class="wp">'+esc(e.wp)+"</div>":"")
+    +senseCardsHtml(q.sen,q.w)+"</div>";
+  $("#rjudge").style.display="block";
+  $("#ropts").innerHTML="";
+  $("#rgo").textContent="继续";$("#rgo").classList.add("gnext");
+  $("#rguide").textContent="";
+  applyTeach(q.w);
   q.phase=2;ROOM.answered=true;
 }
-function applyTeach(w,selfOk){
-  /* 自评无决策权：模糊判断不配当决策点——怎么选都是明天首验；selfOk 只进生成命中率仪表 */
+function applyTeach(w){
   var e=wv(w),d=today();
   e.s=1;if(e.r<1)e.r=1;
   e.d=d+1;
-  bump(S.meta.g,!!selfOk);spend("touch");save();
+  spend("touch");save();
 }
 function lawCard(){ /* 双干律通则卡：只讲一次 */
   (S.meta.ob||(S.meta.ob={})).dg=1;save();
@@ -752,6 +775,8 @@ function showQ(q){
   $("#rsteady").classList.remove("on");
   $("#rsteady").style.display=(q.kind==="touch"||q.kind==="ctx")?"":"none";
   note("");
+  if(ROOM.mode==="forge"&&VD.R[ROOM.fid]){var _ff=S.f[ROOM.fid];if(_ff&&_ff.b!==99)fbTOC(VD.R[ROOM.fid],_ff,null);}
+  else{$("#rtoc").classList.add("hide");}
   if(q.timed){$("#rtimer").style.display="block";var bar=$("#rtimer>i"),t0=Date.now();
     ROOM.timer=setInterval(function(){var p=1-(Date.now()-t0)/q.timed;
       if(p<=0){clearInterval(ROOM.timer);if(!LAW.committed){commit(-1);judge();}}
@@ -868,13 +893,24 @@ function startForge(fid){
   ROOM={mode:"forge",fid:fid,label:"开铸 · "+esc(ch.lemma),ret:"fam",from:{v:"fam",fid:fid},queue:[],idx:0,usedCn:{}};
   goView("room");pushNav(2);forgeBeat();
 }
+var FBEATS=["认根","逐词讲拆","铸词","试锋","上壁"];
+function fbTOC(ch,f,seat){ /* 轮转栏：拍段+（逐词拍时）词序，可随机跳转 */
+  var html=FBEATS.map(function(n,i){
+    return '<span class="tb'+(i===f.b?" cur":"")+'" data-tocb="'+i+'">'+esc(n)+"</span>";}).join("");
+  if(f.b===1){
+    html+=ROOM.queue.map(function(q2,i){
+      return '<span class="tw'+(i===ROOM.idx-1?" cur":"")+'" data-tocw="'+i+'">'+esc(q2.w||"")+"</span>";}).join("");
+  }
+  $("#rtoc").innerHTML=html;$("#rtoc").classList.remove("hide");
+}
 function forgeBeat(){
   var fid=ROOM.fid,ch=VD.R[fid],f=S.f[fid],seats=seatsOf(ch),seat=seats[f.st]||seats[0];
-  var beats=[beatRoot,beatSplit,beatCast,beatProj,beatEdge,beatWall];
+  var beats=[beatRoot,beatSplit,beatCast,beatEdge,beatWall];
   if(f.b>=beats.length){f.b=0;f.st++;save();
     if(f.st>=seats.length){f.b=99;f.d=today()+7;save();openFam(fid);return;}
     seat=seats[f.st];}
   beats[f.b](ch,f,seat);
+  fbTOC(ch,f,seat);
 }
 function forgeNext(){var f=S.f[ROOM.fid];f.b++;save();forgeBeat();}
 function beatRoot(ch,f,seat){
@@ -920,24 +956,6 @@ function beatCast(ch,f,seat){
       rv:'<b style="color:var(--gold2)">'+esc(m.w)+"</b>　"+esc(m.f)+(m.senses[0].proj?'<div class="jz">'+esc(m.senses[0].proj)+"</div>":"")};
   });
   ROOM.queue=qs;ROOM.idx=0;ROOM.label="开铸 · 铸词";nextQ();
-}
-function beatProj(ch,f,seat){
-  var head=null,max=0;
-  seat.forEach(function(m){if(m.senses&&m.senses.length>max){max=m.senses.length;head=m;}});
-  if(!head||max<2){forgeNext();return;}
-  var qs=head.senses.slice(0,6).map(function(s,i){
-    var opts=[{t:s.proj,ok:true}],used={};used[s.proj]=1;
-    shuf(head.senses.filter(function(x,j){return j!==i;})).forEach(function(x){
-      if(opts.length<4&&x.proj&&!used[x.proj]){opts.push({t:x.proj,ok:false});used[x.proj]=1;}});
-    return {kind:"forge",noRecord:true,
-      stem:(s.anchor&&s.anchor.en?'<div class="tanchor" style="margin:0 0 .7em">'+wrapW(s.anchor.en,head.w)+"</div>":"")
-        +'<b style="color:var(--gold2)">'+esc(head.w)+"</b> 的「"+esc(s.zh)+'」'
-        +'<div style="color:var(--dim);font-size:.85rem;margin-top:.5em">这片影子怎么从画里长出来——</div>',
-      opts:shuf(opts),
-      rv:(s.anchor&&s.anchor.zh?'<span class="jz">'+esc(s.anchor.zh)+"</span>":"")};
-  });
-  if(head.trap)qs[qs.length-1].rvMore=esc(head.trap);
-  ROOM.queue=qs;ROOM.idx=0;ROOM.label="开铸 · 投影";nextQ();
 }
 function beatEdge(ch,f,seat){
   var cand=seat.filter(function(m){return poolOf(m.w,0).length;});
@@ -1099,10 +1117,13 @@ document.addEventListener("click",function(ev){
   var sy=t.closest("[data-say]");if(sy){sayWord(sy.dataset.say);return;}
   var pfd=t.closest("[data-pref]");if(pfd){popPref(pfd.dataset.pref,ev.clientX,ev.clientY);return;}
   if(!t.closest("#pop"))popHide();
-  /* teach 自评两键（揭示后） */
-  var se=t.closest("#ropts [data-self]");
-  if(se&&ROOM.answered){var qs2=ROOM.queue[ROOM.idx-1];
-    if(qs2&&qs2.kind==="teach"&&qs2.phase===2){applyTeach(qs2.w,se.dataset.self==="1");nextQ();return;}}
+  var vb=t.closest("[data-verify]");
+  if(vb){startSingle(vb.dataset.verify);return;}
+  var tb=t.closest("#rtoc .tb");
+  if(tb&&ROOM.mode==="forge"){var fb=S.f[ROOM.fid];fb.b=+tb.dataset.tocb;save();forgeBeat();return;}
+  var tw=t.closest("#rtoc .tw");
+  if(tw&&ROOM.mode==="forge"){ROOM.idx=+tw.dataset.tocw;ROOM.answered=false;
+    var qj=ROOM.queue[ROOM.idx];if(qj){if(qj.kind==="teach")qj.phase=0;ROOM.idx++;showQ(qj);}return;}
   /* 已会 → 换验证卡 */
   if(t.id==="rknow"&&LAW.armed&&LAW.armed.kind==="teach"&&!ROOM.answered){
     var qt=LAW.armed;commit(-1);reveal();
@@ -1128,8 +1149,20 @@ document.addEventListener("click",function(ev){
   var row=t.closest(".row");
   if(row){
     var rw=row.dataset.w;
-    if(document.body.dataset.v==="fam"&&!(S.w[rw]&&S.w[rw].s)){
-      popShow(rw,ev.clientX,ev.clientY);return;   /* 铸前点词=只看一眼，不出题 */
+    if(document.body.dataset.v==="fam"){ /* 族谱表：点行=展开该词精析卡片（骨架→细节） */
+      var nx=row.nextElementSibling;
+      if(nx&&nx.classList.contains("frowx")){nx.remove();return;}
+      document.querySelectorAll("#famrows .frowx").forEach(function(x){x.remove();});
+      var chf=VD.R[FAMPG.fid],mmf=null;
+      (chf&&chf.members||[]).forEach(function(m){if(m.w===rw)mmf=m;});
+      var senf=(mmf&&mmf.senses&&mmf.senses.length)
+        ?mmf.senses.map(function(s){return {zh:s.zh,proj:s.proj||"",
+            en:(s.anchor&&s.anchor.en)||"",az:(s.anchor&&s.anchor.zh)||""};})
+        :(VD.W[rw]?VD.W[rw].s.slice(0,4).map(function(s){return {zh:s.cn,proj:"",en:s.a||"",az:s.az||""};}):[]);
+      var dx=document.createElement("div");dx.className="frowx";
+      dx.innerHTML=senseCardsHtml(senf,rw)
+        +((S.w[rw]&&S.w[rw].s)?'<button class="vbtn" data-verify="'+esc(rw)+'">验一道 ⟶</button>':"");
+      row.after(dx);return;
     }
     startSingle(rw);return;
   }
@@ -1267,12 +1300,11 @@ function selftest(){
     if(S.w[w].r!==4)return "验一道 对+稳≠r4";
     S=freshS();q=qCtx(w,true);q.ms=1;applyAnswer(q,false,false);
     if(S.w[w].r!==0){S=bak;return "验一道 错≠r0";}
-    S=freshS();applyTeach(w,true);
-    if(S.w[w].r!==1||!S.w[w].s){S=bak;return "授学 自评对≠r1";}
-    S=freshS();applyTeach(w,false);
-    var r0=S.w[w].r;var g=gateCard(w),t1=teachCardM(null,{w:"sustain",f:VD.W.sustain&&VD.W.sustain.mf,senses:null});
+    S=freshS();applyTeach(w);
+    var r0=S.w[w].r,s0=S.w[w].s;
+    var g=gateCard(w),t1=teachCardM(null,{w:"sustain",f:VD.W.sustain&&VD.W.sustain.mf,senses:null});
     S=bak;
-    if(r0!==1)return "自评应无决策权：偏也应 r1";
+    if(r0!==1||!s0)return "授学≠r1";
     if(!g.opts||g.opts.length!==2)return "门卡异常";
     if(!t1.stem||t1.stem.indexOf("tpiece")<0)return "授学卡无构词讲解";
     return true;});
