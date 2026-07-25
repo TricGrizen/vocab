@@ -190,10 +190,10 @@ button.say:hover{color:var(--dim);border-color:var(--faint)}
 .frowx .vbtn{color:var(--faint);font-size:.78rem;border:1px solid var(--hair);padding:.3em .8em;margin-top:.4rem;display:inline-block}
 .frowx .vbtn:hover{color:var(--dim);border-color:var(--faint)}
 .row .exp{color:var(--faint);font-size:.75rem;margin-left:.6em}
-#rknow{color:var(--faint);font-size:.78rem;border:1px solid transparent;padding:.3em .7em}
-#rknow:hover{color:var(--dim)}
 .lawcard{line-height:2;color:var(--s1);font-size:.98rem}
 .lawcard b{color:var(--gold2);font-weight:400}
+#rstar{display:block;margin-top:.8rem;padding:.55rem .8rem;border:1px solid var(--gold);color:var(--gold2);font-size:.9rem;cursor:pointer}
+#rstar.staroff{border-color:var(--hair);color:var(--faint)}
 #rgo.gnext{border-color:var(--gold);color:var(--gold2)}
 #famforge.gnext,#blearn.gnext{color:var(--gold2)}
 .gsub{color:var(--gold);display:block;margin-bottom:.35rem}
@@ -255,9 +255,9 @@ button.say:hover{color:var(--dim);border-color:var(--faint)}
   <div id="bband"></div>
   <div id="wfoot">
     <span>
-      <button class="act" id="ahand">温故</button>
-      <button class="act" id="aspeed">速度轮</button>
-      <button class="act" id="atri">点兵</button>
+      <button class="act" id="ahand">复习</button>
+      <button class="act" id="aspeed">限时练</button>
+      <button class="act" id="atri">标已会</button>
       <button class="act" id="ahelp">?</button>
     </span>
     <span id="iso">孤立 <b>0</b><span id="isopanel"></span></span>
@@ -268,25 +268,25 @@ button.say:hover{color:var(--dim);border-color:var(--faint)}
   <h2 style="font-weight:400;color:var(--txt);font-size:1.15rem;margin-bottom:1rem">铸影是什么玩法</h2>
   <div id="helpbody" style="overflow-y:auto;line-height:2;color:var(--s1);font-size:.95rem;max-width:44rem">
     <p><b style="color:var(--gold2)">跟着金色走，就是全部玩法。</b>任何时刻界面上只有一个金色的「下一步」，不用自己安排。下面是每个东西在教学里干什么：</p>
-    <p><b style="color:var(--txt)">影壁</b>——这面墙。上排的格子是「族」：一幅画带出一家词（词根、粒子或骨架短语）；下排小格是<b style="color:var(--txt)">长卷</b>：不成家的词按真题出现频率排开。</p>
-    <p><b style="color:var(--txt)">开铸</b>——学新族的课，也是主菜。六步走：认根（认出全家共享的那段）→拆形（逐词猜意思）→铸词（自己拼出词）→投影（看每片意思怎么从画里长出来）→试锋（真句里认一认）→上壁（挂墙）。全程先选后揭，<b style="color:var(--txt)">错不扣分</b>，错两次自动揭示。中途退出没关系，进度记在每一步。</p>
-    <p><b style="color:var(--txt)">族页里的词条</b>——开铸前不用一个个点开（点了也只是看一眼词义）；铸完之后，它们就成了这家词的复习入口。</p>
-    <p><b style="color:var(--txt)">温故</b>——到期的词回来见一面。一次发一手（8-12 件）：读新句子选意思、辨析、填缺口。做完一手问你要不要再抓。<b style="color:var(--txt)">到期总数永远不显示</b>——没有欠账，只有这一手。</p>
-    <p><b style="color:var(--txt)">速度轮</b>——全系统唯一计时的地方，练「一眼认出」的考场反应。自愿进，平时做题永不计时。</p>
-    <p><b style="color:var(--txt)">点兵</b>——把你本来就认识的词快速报给系统（识/疑/生三拣），只影响排课顺序，不算成绩、不判对错。</p>
+    <p><b style="color:var(--txt)">主页两条带</b>——上排格子是「词族」：一幅画带出一家词（同词根、同小品词或同类短语）；下排小格是「词单」：暂不成家的词按真题出现频率排开。</p>
+    <p><b style="color:var(--txt)">学新族</b>——主菜。五步走：找词根 → 逐词讲解（构词与来历讲透后，逐个意思过例句：先猜、再点看释义）→ 拼词 → 例句自测（每个意思配一个没见过的新句子；星号点熄＝学明白）→ 本章小结（全家表复看一遍）。全程<b style="color:var(--txt)">错不扣分</b>；中途退出没关系，进度记在每一步。</p>
+    <p><b style="color:var(--txt)">词族页的表格</b>——学之前不用逐个点开；点任何一行可展开精析卡，学完后这里就是复习入口（卡内有「验一道」）。</p>
+    <p><b style="color:var(--txt)">复习</b>——到期的词回来见一面。一次一组（8-12 题）：读新句选意思、辨析、填缺口。做完问你要不要再来一组。<b style="color:var(--txt)">到期总数永远不显示</b>——没有欠账，只有这一组。</p>
+    <p><b style="color:var(--txt)">限时练</b>——全系统唯一计时的地方，练「一眼认出」的考场反应。自愿进，平时做题永不计时。</p>
+    <p><b style="color:var(--txt)">标已会</b>——把你本来就认识的词快速报给系统（认识／模糊／陌生三选），只影响排课顺序，不算成绩、不判对错。</p>
     <p><b style="color:var(--txt)">金</b>——一个词的考义在<b style="color:var(--txt)">新句子</b>里对过两次才算金；靠猜蒙对进不了金，所以墙上的金全是真的。</p>
     <p><b style="color:var(--txt)">孤立数</b>——右下角那个数：还没被任何画接住、也没在真句里验过的词的数量。每学一族、每验一词它就降。<b style="color:var(--gold2)">它降，就是你真的在变强。</b></p>
     <p><b style="color:var(--txt)">为什么这样设计</b>——这套系统故意反着四条老习惯来：①<b style="color:var(--txt)">句先义后</b>：先见词形和真句，意思是推出来的，不是顶在头上背的；②<b style="color:var(--txt)">音形合流</b>：每个词带音标和发音键，用耳朵一起记；③<b style="color:var(--txt)">生成先于判断</b>：初见一个词时不给选项让你蒙——材料给足（前缀的画、词根的画、真句），你在心里拼出意思再「亮出」对答案，自评只影响下次何时再见，不打分；选择题只出现在「验一道」和几天后的温故里，那时候选才有价值；④<b style="color:var(--txt)">错误无罚</b>：错是信息，不是罪。</p>
     <p><b style="color:var(--txt)">当场闭环</b>——每个新词的学习当场走完（讲拆→推→揭→当场真句认一次），不把学习环节拖到几天后；几天后回来的只有复习。另外记住一条通则：<b style="color:var(--txt)">动词走现在干，名词长在分词干上</b>——所以 retain 的名词是 retention 不是 retainion，开山族里有整张讲卡。</p>
     <p><b style="color:var(--txt)">每种题的代价（全部明牌）</b>——总原则：<b style="color:var(--gold2)">错永远不扣任何东西，只改变下次见面的时间</b>。<br>
-    · <b style="color:var(--txt)">授学卡</b>（开铸逐词/长卷「不认识」）：无对错——看完=明天首验。<br>
-    · <b style="color:var(--txt)">验一道</b>（长卷「认识」/已会键）：对+标稳→30 天后见；对→7 天后见；错→明天见。<br>
-    · <b style="color:var(--txt)">试锋</b>（开铸当场真句）：对→后天档并给该义记一次「已验」；错→明天见+该义标弱（之后优先再考）。<br>
-    · <b style="color:var(--txt)">温故·选义/缺口</b>：对→间隔升一档（1→3→7→14→30→60 天）；低档上对+标稳→跳两档；错→降两档（最低=明天）+该义标弱。同一词三次错且分散在两天以上→进「回炉」换教法（不是惩罚）。<br>
+    · <b style="color:var(--txt)">讲解卡</b>（学新族逐词／词单选「不认识」）：无对错——看完=明天首验。<br>
+    · <b style="color:var(--txt)">验一道</b>（词单选「认识」／词族表卡内）：对+标稳→30 天后见；对→7 天后见；错→明天见。<br>
+    · <b style="color:var(--txt)">例句自测</b>（学完当场，每义一个新句子）：无对错——星号点熄＝学明白；星号留着＝该义标弱，之后优先再考。<br>
+    · <b style="color:var(--txt)">复习·选义/缺口</b>：对→间隔升一档（1→3→7→14→30→60 天）；低档上对+标稳→跳两档；错→降两档（最低=明天）+该义标弱。同一词三次错且分散在两天以上→进「回炉」换教法（不是惩罚）。<br>
     · <b style="color:var(--txt)">辨析对</b>：对→这对的间隔升档，对满两次=对雠清除；错→这对明天重来。<br>
-    · <b style="color:var(--txt)">认亲</b>：拣对→族钟升（7→30→60 天）；错→族钟回 7 天。不动任何单词的档。<br>
-    · <b style="color:var(--txt)">速度轮</b>：只记速度，什么档都不动。<br>
-    · <b style="color:var(--txt)">认根/铸词/上壁</b>：纯学习环节，只记进度，无对错入档。<br>
+    · <b style="color:var(--txt)">选同族</b>：选对→这一族的钟升（7→30→60 天）；错→回 7 天。不动任何单词的档。<br>
+    · <b style="color:var(--txt)">限时练</b>：只记速度，什么档都不动。<br>
+    · <b style="color:var(--txt)">找词根/逐词讲解/拼词/本章小结</b>：纯学习环节，只记进度，无对错入档。<br>
     金（墙上最亮那档）只有一条路：<b style="color:var(--txt)">同一个词的考义在两次不同的新句子里作对</b>——蒙对进不了金。</p>
   </div>
   <div class="pgbar"><button id="helpback">⟵ 返回</button></div>
@@ -294,7 +294,7 @@ button.say:hover{color:var(--dim);border-color:var(--faint)}
 
 <section id="vroom" class="view">
   <div id="rcard">
-    <div id="rtop"><span id="rt1"></span><button class="bk" id="rback">⟵ 影壁</button></div>
+    <div id="rtop"><span id="rt1"></span><button class="bk" id="rback">⟵ 主页</button></div>
     <div id="rtoc" class="hide"></div>
     <div id="rguide"></div>
     <div id="rtimer"><i></i></div>
@@ -304,7 +304,6 @@ button.say:hover{color:var(--dim);border-color:var(--faint)}
     <div id="rbar">
       <button id="rgo">继续</button>
       <button id="rsteady">稳</button>
-      <button id="rknow" class="hide">已会，验一下</button>
       <button id="rprev" class="hide">⟵ 上一张</button>
       <span id="rnote"></span>
     </div>
@@ -315,14 +314,14 @@ button.say:hover{color:var(--dim);border-color:var(--faint)}
   <h2 id="famh"></h2><div class="sub" id="famsub"></div>
   <div id="famstory"></div><div id="fampref"></div>
   <div class="rows" id="famrows"></div>
-  <div class="pgbar"><button id="famforge">进入开铸 ⟶</button><button id="famback">⟵ 影壁</button></div>
+  <div class="pgbar"><button id="famforge">进入开铸 ⟶</button><button id="famback">⟵ 主页</button></div>
 </section>
 
 <section id="vbatch" class="view">
   <h2 id="bh"></h2><div class="sub" id="bsub"></div>
   <div class="rows" id="brows"></div>
   <div class="pgbar"><button id="bprev">← 前页</button><button id="bnext">后页 →</button>
-    <button id="blearn">逐词长卷 ⟶</button><button id="bback">⟵ 影壁</button></div>
+    <button id="blearn">逐词学 ⟶</button><button id="bback">⟵ 主页</button></div>
 </section>
 
 <section id="vtri" class="view">
@@ -547,7 +546,7 @@ function qKin(fid){
   while(decoys.length<6&&guard++<400){var ow=W1[ri(W1.length)];
     if(!used[ow]&&!VD.W[ow].fam&&ow.length>3){decoys.push(ow);used[ow]=1;}}
   return {kind:"kin",fid:fid,multi:true,picks:{},trues:trues,
-    stem:'拣出 <b style="color:var(--gold2)">'+esc(ch.lemma)+'</b>（'+esc(ch.gloss)+'）的家人（'+trues.length+' 个）',
+    stem:'选出 <b style="color:var(--gold2)">'+esc(ch.lemma)+'</b>（'+esc(ch.gloss)+'）的家人（'+trues.length+' 个）',
     opts:shuf(trues.concat(decoys)).map(function(w){return {t:w,ok:used[w]===1&&trues.indexOf(w)>=0};}),grid:true,
     rv:esc(ch.pic)};
 }
@@ -639,16 +638,18 @@ window.addEventListener("popstate",function(){
 });
 function note(m){$("#rnote").textContent=m||"";}
 var GKIND={
-  touch:"验一道 · 读句选义——对了直接进长间隔",
-  ctx:"复习 · 读句子，选出它在这里的那片意思",
-  cloze:"缺口 · 选正确的一块放回句中",
-  pair:"辨析 · 认准这一义属于哪个",
-  kin:"认亲 · 点出全部同族，再点「落子」",
-  flash:"速度轮 · 限时抢答，练考场反应",
-  forge:"先选后揭 · 错两次自动揭示，无罚",
-  teach:"初见 · 材料都在这——在心里拼出它的意思，想好点「亮出」",
-  gate:"认识它吗？认识就直接验一道；不认识就先学",
-  cast:"铸词 · 按顺序点签块，拼出这个词"};
+  touch:"读句子，选出这个词在这里的意思——答对进长间隔",
+  ctx:"复习 · 读句子，选出这个词此处的意思",
+  cloze:"选一个词放进空里",
+  pair:"这两个词长得像——这一义属于哪个？",
+  kin:"把同一家族的词都点出来，再点「提交」",
+  flash:"限时 · 看搭配选意思",
+  forge:"先选后揭——错两次自动揭示，无罚",
+  intro:"先看构词与来历——接下来逐个意思过例句",
+  senset:"读这句英文，先猜这个词的意思——想好了点「看释义」",
+  probe:"没见过的新句子——读懂了点「看解释」；释义下的星号点熄＝这个意思学明白了",
+  gate:"认识就直接验一道；不认识就先学",
+  cast:"按顺序点签块，拼出这个词"};
 /* 提示溶解：每类金字提示出现 3 次后隐去（帮助页永在） */
 function guideLine(kind){
   var ob=S.meta.ob||(S.meta.ob={});
@@ -700,20 +701,36 @@ function piecesHtml(mf,ch){
       +(info.fold?' data-pref="'+esc(info.id)+'"':"")+">"+esc(info.line)+"</span></div>";
   }).join("");
 }
-function teachCardM(ch,m){ /* 开铸·授学卡（材料全给：音标/构词讲解/锚句，义后置） */
+function senseBySid(w,sid){var e=VD.W[w];if(!e)return null;
+  for(var i=0;i<e.s.length;i++)if(e.s[i].sd===sid)return e.s[i];
+  return null;}
+function normSen(m,e){ /* 章义优先，机器义兜底 */
+  return (m.senses&&m.senses.length)?m.senses.map(function(s){return {zh:s.zh,proj:s.proj||"",
+      sid:s.sid||"",en:(s.anchor&&s.anchor.en)||s.en||"",az:(s.anchor&&s.anchor.zh)||s.az||""};})
+    :e.s.slice(0,2).map(function(s){return {zh:s.cn,proj:"",sid:s.sd||"",en:s.a||"",az:s.az||""};});
+}
+function teachCardM(ch,m){ /* 词首讲解卡：音标+构词逐块讲解+来历路径（先懂来历，义随后逐个过） */
   var w=m.w,e=VD.W[w]||{s:[]};
-  var sen=(m.senses&&m.senses.length)?m.senses:e.s.slice(0,2).map(function(s){
-    return {zh:s.cn,proj:"",en:s.a||"",az:s.az||""};});
-  var anEn=(sen[0]&&(sen[0].anchor&&sen[0].anchor.en||sen[0].en))||(e.s[0]&&e.s[0].a)||"";
-  return {kind:"teach",w:w,noRecord:true,chid:ch?ch.id:null,
-    sen:sen.map(function(s){return {zh:s.zh,proj:s.proj||"",
-      en:(s.anchor&&s.anchor.en)||s.en||"",az:(s.anchor&&s.anchor.zh)||s.az||""};}),
+  return {kind:"intro",w:w,noRecord:true,
     stem:headHtml(w)
       +'<div style="margin-top:.7rem">'+piecesHtml(m.f||e.mf,ch)+"</div>"
-      +(anEn?'<div class="tanchor">'+wrapW(anEn,w)+"</div>":""),
+      +(e.wp?'<div class="trv"><div class="wp" style="margin-top:.7rem">'+esc(e.wp)+"</div></div>":""),
     opts:[],rv:""};
 }
-function teachCardW(w){var e=VD.W[w]||{s:[]};return teachCardM(null,{w:w,f:e.mf,senses:null});}
+function sensetCards(ch,m){ /* 逐义猜测卡：先英文例句→猜→点「看释义」揭 义+讲解 */
+  var w=m.w,e=VD.W[w]||{s:[]};
+  return normSen(m,e).filter(function(s){return s.en;}).map(function(s,i){
+    return {kind:"senset",w:w,noRecord:true,si:i,
+      stem:'<div class="tanchor" style="margin-top:0">'+wrapW(s.en,w)+"</div>"
+        +'<div style="color:var(--dim);font-size:.88rem;margin-top:.7em"><b style="color:var(--s1)">'+esc(w)+"</b> 在这句里是什么意思？</div>",
+      rvHtml:'<div class="scard">'
+        +(s.proj?'<div class="spj">'+esc(s.proj)+"</div>":"")
+        +'<div class="szh">'+esc(s.zh)+"</div>"
+        +(s.az?'<div class="saz">'+esc(s.az)+"</div>":"")+"</div>",
+      opts:[]};});
+}
+function teachSeq(ch,m){return [teachCardM(ch,m)].concat(sensetCards(ch,m));}
+function teachCardW(w){var e=VD.W[w]||{s:[]};return teachSeq(null,{w:w,f:e.mf,senses:null});}
 function gateCard(w){ /* 长卷双门：认识→验一道；不认识→先学 */
   return {kind:"gate",w:w,grid:true,noRecord:true,
     stem:headHtml(w)+'<div style="margin-top:.9rem;color:var(--dim);font-size:.92rem">认识它吗？</div>',
@@ -741,18 +758,6 @@ function senseCardsHtml(sen,w){ /* 义项卡片：边界分明，投影+义+锚�
       +(s.az?'<div class="saz">'+esc(s.az)+"</div>":"")
       +"</div>";}).join("");
 }
-function teachReveal(q){ /* 亮出：路径行 + 全义卡片铺开（无自评——看完点继续） */
-  var e=VD.W[q.w]||{};
-  $("#rjudge").innerHTML='<div class="trv">'
-    +(e.wp?'<div class="wp">'+esc(e.wp)+"</div>":"")
-    +senseCardsHtml(q.sen,q.w)+"</div>";
-  $("#rjudge").style.display="block";
-  $("#ropts").innerHTML="";
-  $("#rgo").textContent="继续";$("#rgo").classList.add("gnext");
-  $("#rguide").textContent="";
-  applyTeach(q.w);
-  q.phase=2;ROOM.answered=true;
-}
 function applyTeach(w){
   var e=wv(w),d=today();
   e.s=1;if(e.r<1)e.r=1;
@@ -776,19 +781,20 @@ function showQ(q){
   $("#rguide").textContent=(function(){var g=guideLine(q.kind);return g||"";})();
   $("#rgo").classList.remove("gnext");
   $("#rgo").classList.remove("hide");
-  $("#rknow").classList.toggle("hide",q.kind!=="teach");
   var pvq=ROOM.queue[ROOM.idx-2];
   $("#rprev").classList.toggle("hide",!(ROOM.idx>1&&pvq&&pvq.noRecord===true));
   $("#rt1").textContent=ROOM.label+(ROOM.queue.length?"　"+ROOM.idx+" / "+ROOM.queue.length:"");
   var _o=(ROOM.from||{}).v;
-  $("#rback").textContent="⟵ "+(_o==="fam"?"族页":_o==="batch"?"长卷":"影壁");
+  $("#rback").textContent="⟵ "+(_o==="fam"?"词族页":_o==="batch"?"词单":"主页");
   $("#rstem").innerHTML=q.stem;
   var box=$("#ropts");box.className=q.grid?"optgrid":"";box.id="ropts";
   box.innerHTML=q.opts.map(function(o,i){return '<button class="opt" data-i="'+i+'">'+esc(o.t)+"</button>";}).join("");
   $("#rjudge").style.display="none";$("#rjudge").innerHTML="";
-  $("#rgo").textContent=q.multi?"落子":(q.kind==="teach"?"亮出":"…");
+  $("#rgo").textContent=q.multi?"提交":(q.kind==="senset"?"看释义":q.kind==="probe"?"看解释":q.kind==="intro"?"下一步":"…");
   $("#rgo").classList.toggle("hide",q.kind==="gate");
-  if(q.kind==="teach")$("#rgo").classList.add("gnext");
+  if(q.kind==="senset"||q.kind==="probe"||q.kind==="intro")$("#rgo").classList.add("gnext");
+  if(q.kind==="intro"){ROOM.answered=true;
+    if(!q._ap){q._ap=1;applyTeach(q.w);}}
   $("#rsteady").classList.remove("on");
   $("#rsteady").style.display=(q.kind==="touch"||q.kind==="ctx")?"":"none";
   note("");
@@ -840,9 +846,9 @@ function endRoom(){
   if(ROOM.mode==="hand"){
     var more=dueList().length>0;
     var sec=S.meta.day.sec,bud=S.meta.bud*60;
-    $("#rstem").innerHTML="这一手完了。"+(more?"":"　今日到期已清。");
+    $("#rstem").innerHTML="这一组完了。"+(more?"":"　今日到期已清。");
     $("#ropts").innerHTML="";$("#rjudge").style.display="none";$("#rtimer").style.display="none";
-    $("#rgo").textContent=more?"再抓一手":"回影壁";
+    $("#rgo").textContent=more?"再来一组":"回主页";
     $("#rgo").classList.add("gnext");
     $("#rguide").textContent="";
     $("#rsteady").style.display="none";
@@ -869,20 +875,20 @@ function closeRoom(){ /* 左滑/返回=退一层：回到进房前那页 */
 function startHand(){
   var hand=buildHand();
   if(!hand.length){goView("wall");renderWall();return;}
-  ROOM={queue:hand,idx:0,mode:"hand",label:"温故",ret:"wall",from:{v:"wall"},usedCn:{},answered:false};
+  ROOM={queue:hand,idx:0,mode:"hand",label:"复习",ret:"wall",from:{v:"wall"},usedCn:{},answered:false};
   goView("room");pushNav(2);nextQ();
 }
 function startScroll(bi){
   var list=VD.B[bi].filter(function(w){return !wv(w).s&&VD.W[w].s.length;}).slice(0,15);
   if(!list.length){openBatch(bi);return;}
-  ROOM={queue:list.map(gateCard),idx:0,mode:"scroll",label:"长卷 · 批"+(bi+1),ret:"batch",bi:bi,from:{v:"batch",bi:bi},usedCn:{}};
+  ROOM={queue:list.map(gateCard),idx:0,mode:"scroll",label:"词单 · 批"+(bi+1),ret:"batch",bi:bi,from:{v:"batch",bi:bi},usedCn:{}};
   goView("room");pushNav(2);nextQ();
 }
 function startSpeed(){
   var cand=Object.keys(S.w).filter(function(w){return S.w[w].s&&VD.W[w]&&VD.W[w].co;});
   if(cand.length<4){cand=W1.filter(function(w){return VD.W[w].h&&VD.W[w].co;}).slice(0,200);}
   var qs=shuf(cand).slice(0,10).map(qFlash);
-  ROOM={queue:qs,idx:0,mode:"speed",label:"速度轮（唯一计时场）",ret:"wall",from:{v:"wall"},usedCn:{}};
+  ROOM={queue:qs,idx:0,mode:"speed",label:"限时练（全系统唯一计时处）",ret:"wall",from:{v:"wall"},usedCn:{}};
   goView("room");pushNav(2);nextQ();
 }
 function startSingle(w){
@@ -899,7 +905,7 @@ function seatsOf(ch){
   return seats;
 }
 function startKin(fid){ /* 铸完的族：认亲一局（拼拣真族） */
-  ROOM={queue:[qKin(fid)],idx:0,mode:"single",label:"认亲 · "+esc(VD.R[fid].lemma),
+  ROOM={queue:[qKin(fid)],idx:0,mode:"single",label:"选同族 · "+esc(VD.R[fid].lemma),
         ret:"fam",from:{v:"fam",fid:fid},usedCn:{}};
   goView("room");pushNav(2);nextQ();
 }
@@ -907,16 +913,18 @@ function startForge(fid){
   var ch=VD.R[fid];if(!ch)return;
   var f=S.f[fid]||(S.f[fid]={r:0,d:0,b:0,st:0});
   if(f.b===99){startKin(fid);return;}
-  ROOM={mode:"forge",fid:fid,label:"开铸 · "+esc(ch.lemma),ret:"fam",from:{v:"fam",fid:fid},queue:[],idx:0,usedCn:{}};
+  ROOM={mode:"forge",fid:fid,label:"学 "+esc(ch.lemma),ret:"fam",from:{v:"fam",fid:fid},queue:[],idx:0,usedCn:{}};
   goView("room");pushNav(2);forgeBeat();
 }
-var FBEATS=["认根","逐词讲拆","铸词","试锋","上壁"];
+var FBEATS=["找词根","逐词讲解","拼词","例句自测","本章小结"];
 function fbTOC(ch,f,seat){ /* 轮转栏：拍段+（逐词拍时）词序，可随机跳转 */
   var html=FBEATS.map(function(n,i){
     return '<span class="tb'+(i===f.b?" cur":"")+'" data-tocb="'+i+'">'+esc(n)+"</span>";}).join("");
-  if(f.b===1){
+  if(f.b===1||f.b===3){ /* 逐词讲解 / 例句自测：逐项子目录，词·义序可跳 */
     html+=ROOM.queue.map(function(q2,i){
-      return '<span class="tw'+(i===ROOM.idx-1?" cur":"")+'" data-tocw="'+i+'">'+esc(q2.w||"")+"</span>";}).join("");
+      var lb=q2.w||"";
+      if(q2.kind==="senset"||q2.kind==="probe")lb+="·"+((q2.si||0)+1);
+      return '<span class="tw'+(i===ROOM.idx-1?" cur":"")+'" data-tocw="'+i+'">'+esc(lb)+"</span>";}).join("");
   }
   $("#rtoc").innerHTML=html;$("#rtoc").classList.remove("hide");
 }
@@ -953,12 +961,13 @@ function beatRoot(ch,f,seat){
       +'<div class="rnote">前缀（sus、ob、con 这些）的来历，下一步逐词讲清——现在不用记。这家人的全篇故事在族页里，随时可读。</div></div>'};
   var queue=[q];
   if((ch.kind||"root")==="root"&&!(S.meta.ob&&S.meta.ob.dg))queue.push(lawCard());
-  ROOM.queue=queue;ROOM.idx=0;ROOM.label="开铸 · 认根";nextQ();
+  ROOM.queue=queue;ROOM.idx=0;ROOM.label="找词根";nextQ();
 }
 function beatSplit(ch,f,seat){
-  var qs=seat.filter(function(m){return m.f;}).map(function(m){return teachCardM(ch,m);});
+  var qs=[];
+  seat.filter(function(m){return m.f;}).forEach(function(m){qs=qs.concat(teachSeq(ch,m));});
   if(!qs.length){forgeNext();return;}
-  ROOM.queue=qs;ROOM.idx=0;ROOM.label="开铸 · 逐词讲拆";nextQ();
+  ROOM.queue=qs;ROOM.idx=0;ROOM.label="逐词讲解";nextQ();
 }
 function beatCast(ch,f,seat){
   var reps=seat.filter(function(m){return m.f&&m.f.indexOf("+")>0&&m.senses&&m.senses.length;}).slice(0,3);
@@ -972,43 +981,59 @@ function beatCast(ch,f,seat){
       opts:shuf(tiles).map(function(t){return {t:t,ok:parts.indexOf(t)>=0};}),
       rv:'<b style="color:var(--gold2)">'+esc(m.w)+"</b>　"+esc(m.f)+(m.senses[0].proj?'<div class="jz">'+esc(m.senses[0].proj)+"</div>":"")};
   });
-  ROOM.queue=qs;ROOM.idx=0;ROOM.label="开铸 · 铸词";nextQ();
+  ROOM.queue=qs;ROOM.idx=0;ROOM.label="拼词";nextQ();
 }
-function beatEdge(ch,f,seat){
-  var cand=seat.filter(function(m){return poolOf(m.w,0).length;});
-  if(!cand.length){forgeNext();return;}
-  var qs=shuf(cand).slice(0,2).map(function(m){var q=qCtx(m.w,false);q.noRecord=false;return q;});
-  ROOM.queue=qs;ROOM.idx=0;ROOM.label="开铸 · 试锋";nextQ();
+function beatEdge(ch,f,seat){ /* 例句自测：每义配一个学习时没见过的新例句；星号点熄=学明白 */
+  var qs=[];
+  seat.forEach(function(m){
+    var e=VD.W[m.w]||{s:[]};
+    normSen(m,e).forEach(function(s,i){
+      var cs=s.sid?senseBySid(m.w,s.sid):(e.s[i]||null);
+      var pool=(cs&&cs.x)||[];
+      var en=pool.length?pool[ri(pool.length)]:null;
+      if(!en||en===s.en)en=pool.length>1?pool[(pool.indexOf(en)+1)%pool.length]:en;
+      if(!en)return;
+      qs.push({kind:"probe",w:m.w,noRecord:true,si:i,starLit:true,
+        stem:'<div class="tanchor" style="margin-top:0">'+wrapW(en,m.w)+"</div>"
+          +'<div style="color:var(--dim);font-size:.88rem;margin-top:.7em">没见过的新句子——先自己读懂 <b style="color:var(--s1)">'+esc(m.w)+"</b></div>",
+        rvHtml:'<div class="scard"><div class="szh">'+esc(s.zh)+"</div>"
+          +(s.proj?'<div class="spj">'+esc(s.proj)+"</div>":"")+"</div>"
+          +'<button id="rstar" class="staron" data-star="1">★ 还要再看&nbsp;&nbsp;<i style="color:var(--faint);font-style:normal">点一下熄掉＝这个意思我学明白了</i></button>',
+        opts:[]});
+    });
+  });
+  if(!qs.length){forgeNext();return;}
+  ROOM.queue=qs;ROOM.idx=0;ROOM.label="例句自测";nextQ();
 }
 function beatWall(ch,f,seat){
   var d=today();
   seat.forEach(function(m){var e=wv(m.w);e.s=1;if(e.r<0){e.r=1;e.d=d+1;}});
   save();
   ROOM.queue=[{kind:"forge",noRecord:true,
-    stem:'<div id="wallrep">上壁——这一坐挂上了 '+esc(ch.lemma)+' 的画。'
-      +'<div class="wnote">全家骨架在此，点任何一个词复看精析；看好了点「落定」。</div>'
+    stem:'<div id="wallrep">小结——这一组挂上了 '+esc(ch.lemma)+' 的画。'
+      +'<div class="wnote">全家骨架在此，点任何一个词复看精析；看好了点「完成」。</div>'
       +'<div class="rows">'+famRowsHtml(ch)+"</div></div>",
-    opts:[{t:"落定",ok:true}],
-    rv:'落定。明天它们会回来见第一面。'}];
-  ROOM.idx=0;ROOM.label="开铸 · 上壁";nextQ();
+    opts:[{t:"完成",ok:true}],
+    rv:'完成。明天它们会回来见第一面。'}];
+  ROOM.idx=0;ROOM.label="本章小结";nextQ();
 }
 
 /* ===== 影壁 / 族页 / 批页 / 点兵 ===== */
 function guideNext(){
   if(VD.R.ten&&!famForged("ten")){var f0=S.f.ten;
-    return {act:"fam",fid:"ten",label:f0?"续铸开山族 tenēre":"从开山族 tenēre 开始",
+    return {act:"fam",fid:"ten",label:f0?"继续学第一族 tenēre":"从第一族 tenēre 学起",
             tip:"第一课就是教程 · 一坐约十来分钟"};}
   var mid=null;
   FAMORDER.forEach(function(fid){if(!mid){var f2=S.f[fid];if(f2&&f2.b!==99)mid=fid;}});
-  if(mid)return {act:"fam",fid:mid,label:"续铸 "+VD.R[mid].lemma,
-    tip:"上次停在第 "+((S.f[mid].st||0)+1)+" 坐第 "+(Math.min((S.f[mid].b||0),5)+1)+" 拍"};
-  if(dueList().length)return {act:"hand",label:"温故一手",tip:"到期的词回来见一面 · 8-12 件"};
+  if(mid)return {act:"fam",fid:mid,label:"继续学 "+VD.R[mid].lemma,
+    tip:"上次学到第 "+((S.f[mid].st||0)+1)+" 组第 "+(Math.min((S.f[mid].b||0),5)+1)+" 步"};
+  if(dueList().length)return {act:"hand",label:"复习一组",tip:"到期的词回来见一面 · 8-12 件"};
   var nf=null;FAMORDER.forEach(function(fid){if(!nf&&!famForged(fid))nf=fid;});
-  if(nf)return {act:"fam",fid:nf,label:"开铸 "+VD.R[nf].lemma+"（"+VD.R[nf].gloss+"）",
+  if(nf)return {act:"fam",fid:nf,label:"开始学 "+VD.R[nf].lemma+"（"+VD.R[nf].gloss+"）",
     tip:famKind(nf)==="root"?"新一族词根":"词组族 · 阅读题直接受益"};
   for(var bi=0;bi<VD.B.length;bi++){
     if(VD.B[bi].some(function(w){return !(S.w[w]&&S.w[w].s);}))
-      return {act:"batch",bi:bi,label:"长卷 · 批 "+(bi+1)+" 逐词推进",tip:"按真题频铺开"};}
+      return {act:"batch",bi:bi,label:"词单 · 批 "+(bi+1)+" 逐词学",tip:"按真题频铺开"};}
   return {act:"speed",label:"速度轮 · 磨考场反应",tip:""};
 }
 var GCUR=null;
@@ -1069,7 +1094,7 @@ function famRowsHtml(ch){ /* 族谱表骨架（族页/上壁拍共用；点行�
 function openFam(fid){
   FAMPG.fid=fid;var ch=VD.R[fid],f=S.f[fid];
   $("#famh").textContent=ch.lemma+" · "+ch.gloss;
-  var guideLn=(f&&f.b===99)?"":'<span class="gsub">▸ '+(f?"点下方金字续铸——进度记在每一步，不会丢":"先不用点上面的词（点了也只是看一眼）——直接点下方金字开铸，这家词会在课里逐个过；铸完之后这页就是复习入口")+"</span>";
+  var guideLn=(f&&f.b===99)?"":'<span class="gsub">▸ '+(f?"点下方金字继续学——进度记在每一步，不会丢":"先不用点上面的词（点了也只是看一眼）——直接点下方金字开始学，这家词会在课里逐个过；学完之后这页就是复习入口")+"</span>";
   $("#famsub").innerHTML=guideLn+esc(ch.pic);
   var st0=$("#famstory");
   st0.textContent=ch.story||"";
@@ -1090,7 +1115,7 @@ function openFam(fid){
     +prefs.map(function(p){return '<span data-pref="'+esc(p[1])+'">'+esc(p[0])+"</span>";}).join("")):"";
   $("#famforge").classList.toggle("gnext",!(f&&f.b===99));
   $("#famrows").innerHTML=famRowsHtml(ch);
-  $("#famforge").textContent=(f&&f.b===99)?"认亲一局 ⟶":(f&&(f.b>0||f.st>0))?"续铸（第 "+((f.st||0)+1)+" 坐第 "+((f.b||0)+1)+" 拍）⟶":"进入开铸 ⟶";
+  $("#famforge").textContent=(f&&f.b===99)?"选同族测验 ⟶":(f&&(f.b>0||f.st>0))?"继续学（第 "+((f.st||0)+1)+" 组第 "+((f.b||0)+1)+" 步）⟶":"开始学这一族 ⟶";
   goView("fam");pushNav(1);
 }
 var BATPG={bi:0,pg:0};
@@ -1099,9 +1124,9 @@ function openBatch(bi){
 }
 function renderBatch(){
   var list=VD.B[BATPG.bi],pg=BATPG.pg,slice=list.slice(pg*24,pg*24+24);
-  $("#bh").textContent="长卷 · 批 "+(BATPG.bi+1);
+  $("#bh").textContent="词单 · 批 "+(BATPG.bi+1);
   var hasNew=list.some(function(w){return !(S.w[w]&&S.w[w].s);});
-  $("#bsub").innerHTML=(hasNew?'<span class="gsub">▸ 点下方金字「逐词长卷」，一词约二十秒</span>':"")
+  $("#bsub").innerHTML=(hasNew?'<span class="gsub">▸ 点下方金字「逐词学」，一词约二十秒</span>':"")
     +"按真题频铺开 · 第 "+(pg+1)+"/"+Math.ceil(list.length/24)+" 页";
   $("#blearn").classList.toggle("gnext",hasNew);
   $("#brows").innerHTML=slice.map(function(w){
@@ -1153,10 +1178,6 @@ document.addEventListener("click",function(ev){
   var tw=t.closest("#rtoc .tw");
   if(tw&&ROOM.mode==="forge"){ROOM.idx=+tw.dataset.tocw;ROOM.answered=false;
     var qj=ROOM.queue[ROOM.idx];if(qj){if(qj.kind==="teach")qj.phase=0;ROOM.idx++;showQ(qj);}return;}
-  /* 已会 → 换验证卡 */
-  if(t.id==="rknow"&&LAW.armed&&LAW.armed.kind==="teach"&&!ROOM.answered){
-    var qt=LAW.armed;commit(-1);reveal();
-    var q3=qCtx(qt.w,true);ROOM.queue[ROOM.idx-1]=q3;showQ(q3);return;}
   if(t.closest("#gbar")){guideGo(GCUR);return;}
   var fc=t.closest(".fcell");if(fc){openFam(fc.dataset.fam);return;}
   var bc=t.closest(".bcell");if(bc){openBatch(+bc.dataset.bi);return;}
@@ -1210,8 +1231,10 @@ document.addEventListener("click",function(ev){
   if(ob&&LAW.armed&&!ROOM.answered&&LAW.armed.kind==="gate"){
     var qg=LAW.armed,ig=+ob.dataset.i;
     commit(ig);reveal();
-    var q2=(qg.opts[ig].know===1)?qCtx(qg.w,true):teachCardW(qg.w);
-    ROOM.queue[ROOM.idx-1]=q2;showQ(q2);return;
+    if(qg.opts[ig].know===1){var q2=qCtx(qg.w,true);ROOM.queue[ROOM.idx-1]=q2;showQ(q2);return;}
+    var cards=teachCardW(qg.w);
+    Array.prototype.splice.apply(ROOM.queue,[ROOM.idx-1,1].concat(cards));
+    ROOM.idx=ROOM.idx-1;nextQ();return;
   }
   if(ob&&LAW.armed&&!ROOM.answered){
     var q=LAW.armed,i=+ob.dataset.i;
@@ -1239,10 +1262,22 @@ document.addEventListener("click",function(ev){
     ob.classList.add("pick");
     commit(i);judge();return;
   }
+  var stx=t.closest("#rstar");
+  if(stx&&ROOM.answered){var qp=ROOM.queue[ROOM.idx-1];
+    if(qp&&qp.kind==="probe"){qp.starLit=!qp.starLit;
+      stx.classList.toggle("staroff",!qp.starLit);
+      stx.innerHTML=qp.starLit
+        ?'★ 还要再看&nbsp;&nbsp;<i style="color:var(--faint);font-style:normal">点一下熄掉＝这个意思我学明白了</i>'
+        :'☆ 学明白了&nbsp;&nbsp;<i style="font-style:normal">（再点可点回）</i>';}
+    return;}
   if(t.id==="rgo"){
     if(LAW.armed&&!ROOM.answered){
       var qq=LAW.armed;
-      if(qq.kind==="teach"){commit(0);reveal();teachReveal(qq);return;}
+      if(qq.kind==="senset"||qq.kind==="probe"){
+        commit(0);reveal();
+        $("#rjudge").innerHTML=qq.rvHtml;$("#rjudge").style.display="block";
+        $("#rgo").textContent="下一步";$("#rgo").classList.add("gnext");
+        $("#rguide").textContent="";ROOM.answered=true;return;}
       if(qq.multi){commit(0);judge();return;}
       LAW.fails++;
       if(LAW.fails>=2){autoRevealShow();return;}
@@ -1250,6 +1285,9 @@ document.addEventListener("click",function(ev){
     }
     if(ROOM.endstate==="redeal"){ROOM.endstate=null;startHand();return;}
     if(ROOM.endstate==="wall"){ROOM.endstate=null;goView("wall");renderWall();return;}
+    var qadv=ROOM.queue[ROOM.idx-1];
+    if(qadv&&qadv.kind==="probe"&&qadv.starLit){ /* 星未熄=这义还要再看：标弱，明天优先 */
+      var ep=wv(qadv.w);ep.k[qadv.si]=(ep.k[qadv.si]||0)+1;save();}
     nextQ();return;
   }
   if(t.classList.contains("more")){var f=t.parentNode.querySelector(".full");if(f)f.style.display="block";t.style.display="none";return;}
@@ -1451,11 +1489,11 @@ function boot(){
   if(Q.has("pop")){var pw=Q.get("pop");setTimeout(function(){popShow(pw,innerWidth/2,innerHeight/2);},80);}
   if(Q.has("teach")&&VD.W[Q.get("teach")]){
     var tw=Q.get("teach");
-    var qT=(function(){var fid=VD.W[tw].fam;
+    var qsT=(function(){var fid=VD.W[tw].fam;
       if(fid&&VD.R[fid]){var mm=null;VD.R[fid].members.forEach(function(m){if(m.w===tw)mm=m;});
-        if(mm)return teachCardM(VD.R[fid],mm);}
+        if(mm)return teachSeq(VD.R[fid],mm);}
       return teachCardW(tw);})();
-    ROOM={queue:[qT],idx:0,mode:"single",label:esc(tw),ret:"wall",from:{v:"wall"},usedCn:{}};
+    ROOM={queue:qsT,idx:0,mode:"single",label:esc(tw),ret:"wall",from:{v:"wall"},usedCn:{}};
     goView("room");nextQ();return;}
   if(Q.has("fam")&&VD.R[Q.get("fam")]){openFam(Q.get("fam"));return;}
   if(Q.has("w")&&VD.W[Q.get("w")]){startSingle(Q.get("w"));return;}
