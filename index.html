@@ -920,11 +920,16 @@ var FBEATS=["找词根","逐词讲解","拼词","例句自测","本章小结"];
 function fbTOC(ch,f,seat){ /* 轮转栏：拍段+（逐词拍时）词序，可随机跳转 */
   var html=FBEATS.map(function(n,i){
     return '<span class="tb'+(i===f.b?" cur":"")+'" data-tocb="'+i+'">'+esc(n)+"</span>";}).join("");
-  if(f.b===1||f.b===3){ /* 逐词讲解 / 例句自测：逐项子目录，词·义序可跳 */
-    html+=ROOM.queue.map(function(q2,i){
-      var lb=q2.w||"";
-      if(q2.kind==="senset"||q2.kind==="probe")lb+="·"+((q2.si||0)+1);
-      return '<span class="tw'+(i===ROOM.idx-1?" cur":"")+'" data-tocw="'+i+'">'+esc(lb)+"</span>";}).join("");
+  if(f.b===1||f.b===3){ /* 逐词讲解 / 例句自测：按词合并成一签（词.义数），点跳该词起点 */
+    var groups=[],gcur=null;
+    ROOM.queue.forEach(function(q2,i){
+      if(!gcur||gcur.w!==q2.w){gcur={w:q2.w,start:i,n:0};groups.push(gcur);}
+      gcur.n++;gcur.end=i;
+    });
+    html+=groups.map(function(g){
+      var cur=(ROOM.idx-1)>=g.start&&(ROOM.idx-1)<=g.end;
+      var lb=g.w+(g.n>1?"."+g.n:"");
+      return '<span class="tw'+(cur?" cur":"")+'" data-tocw="'+g.start+'">'+esc(lb)+"</span>";}).join("");
   }
   $("#rtoc").innerHTML=html;$("#rtoc").classList.remove("hide");
 }
