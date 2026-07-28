@@ -23,6 +23,9 @@
   修缮三（2026-07）＝返回栈重构（history.state 带层 payload＋popstate 单点渲染＋处理器内零同步 pushState，
        治 iOS 侧滑「闪主页→卡几秒→落族页」）／族页组级入口 #famgrp（已过组回看·当前组继续·未到组暗灰）
        ／主页底带再压（#wfoot 上距与上下衬压到点按红线）
+  修缮四（2026-07-28）＝主页底栏一行化：字号簇上迁头行「铸　影」旁（双实例 #fzhead/#fzfoot，
+       CSS 按 820 断点各显其一；委托改 data-fz、读数改 .fzpct 全体同步），底栏移动档剩五件必一行
+       （.act 右距 .8→.55em；h1 chrome 封顶 34px 让出头行横向空间）。桌面（>820）一切不动。
   存档：ky_vocab_v1（短键+日粒度；金=渲染谓词不落盘；孤立数派生）；句柄 window.__V
   共建：铸辞（2026.7，铸影奠基——磋商定案+机装层+壳 v1+试点三根）
 -->
@@ -83,7 +86,8 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp
 #wfoot .act:hover{color:var(--txt)}
 #wfoot .fzb{font-size:min(.72rem,20px);margin-right:.7em}
 .fzg{white-space:nowrap}                                    /* A−/%/A+ 三键同进退，换行不拆散 */
-#fzpct{font-variant-numeric:tabular-nums}
+.fzpct{font-variant-numeric:tabular-nums}
+#fzhead{display:none}   /* 修缮四：字号簇头行实例（移动档才现）——桌面只留底栏原位，fz1 几何零漂移 */
 .bandlab{font-size:.72rem;color:var(--faint);letter-spacing:.2em;margin:.2rem 0 .5rem}
 #iso{font-family:var(--mono);color:var(--s0);cursor:default;position:relative}
 #iso b{color:var(--s1);font-weight:400}
@@ -260,7 +264,16 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
   html{font-size:calc(17px*var(--fz,1))}
   .view{padding:calc(.9rem + var(--sat)) .95rem calc(1.3rem + var(--sab))}
   #vwall{overflow-y:auto;padding-bottom:0}   /* 影壁底衬归 sticky #wfoot 独家携带（单次律） */
-  #vwall h1{margin:0 0 .9rem}                /* 顶衬只由 .view 出一次（原此处重复 env → 双倍顶衬） */
+  #vwall h1{margin:0 0 .9rem;display:flex;align-items:baseline;font-size:min(1.05rem,34px)}
+    /* 顶衬只由 .view 出一次（原此处重复 env → 双倍顶衬）
+       修缮四：头行＝「铸　影」居左 + 字号簇 margin-left:auto 靠右，基线对齐；
+       标题＝ chrome，按追记十二钉扎律封顶 34px（1.05rem×17px 基准 ⇒ fz≤1.90 不咬＝1.5/1.56 旧观分毫不动；
+       fz2.4 才收住：42.8→34px，让出头行横向空间给字号簇——428 未钳宽下也不挤不折） */
+  #fzhead{display:flex;align-items:baseline;gap:.5em;margin-left:auto;
+    letter-spacing:normal;font-size:min(.9rem,17px);color:var(--dim)}
+  #fzhead .fzb{padding:.75em .5em;color:var(--dim)}   /* 点按面 47.5css≈40.7 物理（428 钳内），过红线 */
+  #fzhead .fzb:hover{color:var(--s1)}
+  #fzfoot{display:none}                      /* 修缮四：底栏移动档剩五件（复习/限时练/标已会/?/孤立）＝必一行 */
   #fband{gap:.5rem}
   .fcell{flex:1 1 42%;min-width:0}
   .fcell .dots{max-width:none}
@@ -270,13 +283,25 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
   #wfoot{margin:.3rem -.95rem 0;padding:.35em .95rem calc(.35em + var(--sab));
     border-top:1px solid var(--hair);align-items:center;font-size:min(.95rem,18px);
     row-gap:.25em;
-    padding-right:2.6em}                      /* 右让 ⇅ 云档钮（vocab_sync 钉 right:10px/bottom:44px） */
+    padding-right:2.9em}                      /* 右让 ⇅ 云档钮（2.6→2.9em＝52.2css 槽，容 47css 见方点按面） */
+  /* 修缮四·补令 A：⇅ 云档钮归位——从 bottom:44px 收进一行底栏带内的右让槽。
+     ① 只在影壁改钉（body[data-v="wall"]）：房内 #rbar 是 fixed 底栏，若一并下移会压住「稳／GO」键；
+        族页/词单/帮助无 fixed 底栏，维持原位＝零波及。
+     ② 选择器特异度 (1id+1属性+1类型) > sync 注入的 #kysync-btn (1id)，故无需 !important。
+     ③ 几何：钮 47css 见方（428 钳内 ≈40.2 物理，过点按红线）居 52.2css 槽中（左右各余 ~2.6）；
+        竖向对齐底栏文字行中线——行高 39.1 + 上衬 .35em(6.3) + 描边 1px ⇒ 距底 sab+2px 起，
+        中线 sab+25.5 对文字行中线 sab+25.85，误差 .35px。滚动中它 fixed 常驻、底栏 sticky，页尾对齐。 */
+  body[data-v="wall"] #kysync-btn{right:3px;bottom:calc(var(--sab,0px) + 2px);
+    width:47px;height:47px;line-height:47px}
     /* 修缮二 B：上外距 1rem→.6rem；底衬全壳唯此一处（#vwall padding-bottom:0），黑边不再叠算
        修缮三 H：再压一档——上距 .6→.3rem、上下衬 .5→.35em、换行槽 .4→.25em。
        余下高度＝两行点按目标本身（.act 39.1css/33.5物理、#iso 35.4css）＋1px 描边：
-       再压就得动 .act/#iso 自身衬垫＝直接削点按面，触 ≥40px 物理红线，故到此为止（量值见交卷报告）。 */
-  #wfoot .act{font-size:1em;margin-right:.8em;padding:.42em .18em}
-  #wfoot .fzb{font-size:.95em;margin-right:.45em}
+       再压就得动 .act/#iso 自身衬垫＝直接削点按面，触 ≥40px 物理红线，故到此为止（量值见交卷报告）。
+       修缮四：字号簇上迁头行后只剩一行——#wfoot 实测 128.9css（428 未钳宽·三行）／92.6（500 钳内·两行）
+       双双压到 52.7css（一行，三档 fz 同值；.act/#iso 衬垫仍分毫未动）。 */
+  #wfoot .act{font-size:1em;margin-right:.55em;padding:.42em .18em}
+    /* 修缮四：字号簇上迁头行后剩五件，右距 .8→.55em＝428 未钳宽 + fz2.4 亦一行有余（量值见交卷）；
+       .act 自身衬垫（点按面）分毫不动。原 #wfoot .fzb 移动档覆写随 #fzfoot 隐藏一并撤（死规则） */
   #iso{font-size:.95em;margin-left:auto;padding:.45em .1em}  /* 底栏换行时孤立数仍靠右＝悬展面板 right:0 恒在屏内 */
   #isopanel{font-size:.82rem;max-width:86vw;bottom:2em}   /* 仪表＝内容，随 --fz 长；宽触顶即折行内滚 */
   body[data-v="room"] #vroom{display:block}
@@ -332,7 +357,9 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
 <div id="st"></div>
 
 <section id="vwall" class="view">
-  <h1>铸　影</h1>
+  <h1>铸　影<span class="fzg" id="fzhead"><button class="fzb" data-fz="-">A−</button><button
+    class="fzb fzpct" data-fz="0" title="点击＝恢复本机默认字号">100%</button><button
+    class="fzb" data-fz="+">A+</button></span></h1>
   <div id="gbar"></div>
   <div class="bandlab">词族 · 每族一幅画，从画学词</div>
   <div id="fband"></div>
@@ -344,9 +371,9 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
       <button class="act" id="aspeed">限时练</button>
       <button class="act" id="atri">标已会</button>
       <button class="act" id="ahelp">?</button>
-      <span class="fzg"><button class="act fzb" id="fzdn">A−</button>
-      <button class="act fzb" id="fzpct" title="点击＝恢复本机默认字号">100%</button>
-      <button class="act fzb" id="fzup">A+</button></span>
+      <span class="fzg" id="fzfoot"><button class="act fzb" data-fz="-">A−</button>
+      <button class="act fzb fzpct" data-fz="0" title="点击＝恢复本机默认字号">100%</button>
+      <button class="act fzb" data-fz="+">A+</button></span>
     </span>
     <span id="iso">孤立 <b>0</b><span id="isopanel"></span></span>
   </div>
@@ -461,7 +488,8 @@ function dictHref(w){
 }
 /* ===== 全局字号（--fz 同乘桌面 16px / 移动 17px 基准；域 .7~2.4 步 .08） =====
    追记十二 大字加固：平台默认＝移动 1.5 / 桌面 1（判据与 17px 基准同断点 820px）；
-   老存值只要落在新域内一律原样生效（1.56 零迁移）；?fz=N（.5~3）只生效不落盘；#fzpct 点击=回平台默认。 */
+   老存值只要落在新域内一律原样生效（1.56 零迁移）；?fz=N（.5~3）只生效不落盘；.fzpct 点击=回平台默认。
+   修缮四：字号簇双实例（#fzhead 头行·移动档／#fzfoot 底栏·桌面档），委托按 data-fz，读数按 .fzpct 全体刷新。 */
 var FZKEY="ky_vocab_fz",FZMIN=.7,FZMAX=2.4,FZSTEP=.08;
 var FZQ=(function(){var v=parseFloat(Q.get("fz"));
   return (!v||isNaN(v))?null:Math.min(3,Math.max(.5,v));})();
@@ -475,7 +503,8 @@ function fzRead(){if(FZQ!=null)return FZQ;
 var FZ=fzRead();
 function fzApply(){document.documentElement.style.setProperty("--fz",String(FZ));
   document.documentElement.classList.toggle("fzbig",FZ>1.04);  /* 大字档：只切排版分支，不改任何数据/逻辑 */
-  var p=document.getElementById("fzpct");if(p)p.textContent=Math.round(FZ*100)+"%";}
+  var pc=Math.round(FZ*100)+"%";                                /* 修缮四：读数双实例（头行/底栏）同步 */
+  document.querySelectorAll(".fzpct").forEach(function(p){p.textContent=pc;});}
 function fzSave(){if(fzWritable()){try{localStorage.setItem(FZKEY,String(FZ));}catch(e){}}}
 function fzStep(d){
   FZ=Math.round(Math.max(FZMIN,Math.min(FZMAX,FZ+d))*100)/100;
@@ -1465,9 +1494,9 @@ document.addEventListener("click",function(ev){
     if(pq&&pq.noRecord===true){ROOM.idx-=2;ROOM.answered=false;
       if(pq.kind==="teach")pq.phase=0;
       nextQ();}return;}
-  if(t.id==="fzup"){fzStep(FZSTEP);return;}
-  if(t.id==="fzdn"){fzStep(-FZSTEP);return;}
-  if(t.id==="fzpct"){fzReset();return;}
+  var fzk=t.closest("[data-fz]");            /* 修缮四：字号簇双实例＝按 data-fz 委托（math #fzctl 同款） */
+  if(fzk){var fzd=fzk.getAttribute("data-fz");
+    if(fzd==="+")fzStep(FZSTEP);else if(fzd==="-")fzStep(-FZSTEP);else fzReset();return;}
   if(t.id==="ahelp"){goView("help");navGo({v:"help"});return;}
   if(t.id==="helpback"){navBack();return;}
   if(t.id==="famstg"){var st1=$("#famstory");
@@ -1733,10 +1762,18 @@ function selftest(){
       if(sample){var q=qClozeP(sample);
         if(!q||!q.opts||q.opts.filter(function(o){return o.ok;}).length!==1)return "粒子缺口题不可产";}}
     return true;});
-  /* ⑯ 字号器（追记十二 大字加固）：域/平台默认/老存值零迁移/基准×fz/读数与重置/?fz 不落盘 */
+  /* ⑯ 字号器（追记十二 大字加固；修缮四 双实例）：域/平台默认/老存值零迁移/基准×fz/读数与重置/?fz 不落盘
+     ——修缮四追加：读数至少一枚在场、每簇 data-fz 三键齐（-/0/+）、两实例读数同步、重置回平台默认。 */
   A("字号器",function(){
     if(FZMIN!==.7||FZMAX!==2.4||FZSTEP!==.08)return "域 "+FZMIN+"~"+FZMAX+" 步 "+FZSTEP;
-    if(!$("#fzpct"))return "无百分比读数键";
+    var pcs=document.querySelectorAll(".fzpct");
+    if(!pcs.length)return "无百分比读数键";
+    var gs=[document.getElementById("fzhead"),document.getElementById("fzfoot")];
+    for(var gi=0;gi<gs.length;gi++){                                  /* 双实例各自三键齐（缺一即坏委托） */
+      if(!gs[gi])return "缺字号簇实例 "+gi;
+      var ks=gs[gi].querySelectorAll("[data-fz]"),sig=[];
+      for(var ki=0;ki<ks.length;ki++)sig.push(ks[ki].getAttribute("data-fz"));
+      if(sig.sort().join("")!=="-0+".split("").sort().join(""))return "簇"+gi+" 键位 "+sig.join(",");}
     if(typeof fzReset!=="function"||typeof fzDefault!=="function")return "无重置/平台默认";
     var mob=fzMobile();
     if(fzDefault()!==(mob?1.5:1))return "平台默认 "+fzDefault()+"（mobile="+mob+"）";
@@ -1748,15 +1785,22 @@ function selftest(){
     if(w1!==false)return "?fz 在场竟可落盘";
     if(w2!==true)return "常态竟不可落盘";
     if(fzWritable()!==false)return "selftest 竟可落盘";
-    /* 基准×fz：?fz=2 ⇒ html computed = (移动17|桌面16)×2 */
+    /* 基准×fz：?fz=2 ⇒ html computed = (移动17|桌面16)×2；读数两实例同步 */
     var base=mob?17:16,keep=FZ,before=null,after=null;
     try{before=localStorage.getItem(FZKEY);}catch(e){}
     FZ=2;fzApply();
-    var got=parseFloat(getComputedStyle(document.documentElement).fontSize),pc=$("#fzpct").textContent;
+    var got=parseFloat(getComputedStyle(document.documentElement).fontSize),pc=[];
+    for(var pi=0;pi<pcs.length;pi++)pc.push(pcs[pi].textContent);
+    fzReset();                                       /* 重置＝回平台默认（读数随之全体刷新） */
+    var rz=FZ,rt=[];
+    for(var ri=0;ri<pcs.length;ri++)rt.push(pcs[ri].textContent);
     FZ=keep;fzApply();
     try{after=localStorage.getItem(FZKEY);}catch(e){}
     if(Math.abs(got-base*2)>.6)return "html "+got+"px≠基准"+base+"×2";
-    if(pc!=="200%")return "读数 "+pc;
+    if(pc.join("|").replace(/200%\|?/g,"")!=="")return "读数不同步 "+pc.join("|");
+    if(rz!==fzDefault())return "重置未回平台默认 "+rz;
+    if(rt.join("|").replace(new RegExp(Math.round(fzDefault()*100)+"%\\|?","g"),"")!=="")
+      return "重置后读数不同步 "+rt.join("|");
     if(before!==after)return "自测竟改存值";
     return true;});
   /* ⑰ 回看零记账（修缮二 C）＋组级定坐（修缮三 G）：
