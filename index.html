@@ -17,7 +17,7 @@
   深链：?selftest=1（VOCAB PASS 16/16）?reset=1 ?seed=N ?fam=根 ?w=词 ?review=1 ?pop=词 ?dict=词(转五更书词典页)
        ?fz=N（.5~3 调试字号，仅生效不落盘）
   字号：--fz 乘基准（桌面 16px / 移动 17px）；域 .7~2.4 步 .08；平台默认 移动 1.5 / 桌面 1；存 ky_vocab_fz（仅本机）
-       大字加固（追记八）＝内容区 rem 整体缩放 + chrome 钉扎（min(Xrem,Ypx) 封顶）+ 逐视图行容器 wrap
+       大字加固（追记十二）＝内容区 rem 整体缩放 + chrome 钉扎（min(Xrem,Ypx) 封顶）+ 逐视图行容器 wrap
   存档：ky_vocab_v1（短键+日粒度；金=渲染谓词不落盘；孤立数派生）；句柄 window.__V
   共建：铸辞（2026.7，铸影奠基——磋商定案+机装层+壳 v1+试点三根）
 -->
@@ -49,7 +49,7 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp
 
 /* —— 影壁 —— */
 #vwall h1{font-size:1.05rem;color:var(--dim);font-weight:400;letter-spacing:.4em;margin-bottom:1.2rem}
-#vwall{overflow-y:auto;padding-bottom:0}                    /* 追记八：大字下整墙可滚，底栏 sticky 常驻 */
+#vwall{overflow-y:auto;padding-bottom:0}                    /* 追记十二：大字下整墙可滚，底栏 sticky 常驻 */
 #fband{display:flex;gap:.55rem;flex-wrap:wrap;margin-bottom:1.4rem}
 .fcell{background:var(--chrome);border:1px solid var(--line);padding:.55rem .7rem;cursor:pointer;
   min-width:min(8.5rem,100%);overflow-wrap:anywhere}
@@ -61,14 +61,14 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp
 .fcell.kaishan{border-color:var(--gold);}
 .fcell.kaishan .fl::after{content:" · 开山";color:var(--gold)}
 #bband{display:grid;grid-template-columns:repeat(auto-fill,minmax(2.1rem,1fr));gap:.25rem;overflow:visible;
-  flex:1 0 auto;align-content:start}                        /* 追记八：不再 overflow:hidden 裁批格 */
+  flex:1 0 auto;align-content:start}                        /* 追记十二：不再 overflow:hidden 裁批格 */
 .bcell{height:1.5rem;background:var(--chrome);border:1px solid var(--hair);cursor:pointer;position:relative}
 .bcell>i{position:absolute;left:0;top:0;bottom:0;background:var(--faint2)}
 .bcell:hover{border-color:var(--faint)}
 .bcell b{position:absolute;right:.2em;bottom:0;font:.5625rem var(--mono);color:var(--faint);font-weight:400} /* 9px@fz1 */
 #wfoot{display:flex;justify-content:space-between;align-items:baseline;margin-top:1rem;font-size:min(.8rem,22px);color:var(--dim);
   flex-wrap:wrap;row-gap:.4em;position:sticky;bottom:0;background:var(--paper);padding-bottom:2.6rem}
-  /* 追记八：底栏 sticky 常驻可点；容器底内距搬进本条（sticky 只被内容盒约束）＝fz1 几何零漂移；
+  /* 追记十二：底栏 sticky 常驻可点；容器底内距搬进本条（sticky 只被内容盒约束）＝fz1 几何零漂移；
      字号封顶 22px＝chrome 不随 --fz 长个（fz1 时 .8rem=12.8px 封顶不咬，旧观不动） */
 #wfoot>span:first-child{min-width:0}
 #wfoot .act{color:var(--s1);margin-right:1.6em;display:inline-block}
@@ -87,7 +87,7 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp
 #isopanel em{color:var(--s1)}
 
 /* —— 房（手牌/开铸/长卷共用骨架） —— */
-/* 追记八：justify-content:center 在大字下会把溢出内容顶出屏且不可滚 → 改 flex-start + margin:auto 0（短则居中，长则可滚） */
+/* 追记十二：justify-content:center 在大字下会把溢出内容顶出屏且不可滚 → 改 flex-start + margin:auto 0（短则居中，长则可滚） */
 #vroom{align-items:center;justify-content:flex-start;overflow-y:auto}
 #rcard{width:min(46rem,100%);margin:auto 0}
 #rtop{font-size:min(.72rem,20px);color:var(--faint);letter-spacing:.25em;margin-bottom:1.1rem;display:flex;justify-content:space-between;
@@ -231,7 +231,7 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
 }
 
 /* —— 移动端（每天主战场：iPhone 主屏 PWA；平台默认 --fz=1.5）——
-   追记八 大字加固：内容区照旧 rem 整体缩放；chrome（顶/底栏·轮转栏·浮层小键）用 min(Xrem,Ypx) 封顶
+   追记十二 大字加固：内容区照旧 rem 整体缩放；chrome（顶/底栏·轮转栏·浮层小键）用 min(Xrem,Ypx) 封顶
    ——fz=1 时封顶不咬（旧观零漂移），大字下不长个吃屏；行容器一律 wrap；点按目标 ≥2.4em。 */
 @media (max-width:820px){
   html{font-size:calc(17px*var(--fz,1))}
@@ -427,7 +427,7 @@ function dictHref(w){
   return (sub?"../universe/":"universe.html")+"?dict="+encodeURIComponent(w);
 }
 /* ===== 全局字号（--fz 同乘桌面 16px / 移动 17px 基准；域 .7~2.4 步 .08） =====
-   追记八 大字加固：平台默认＝移动 1.5 / 桌面 1（判据与 17px 基准同断点 820px）；
+   追记十二 大字加固：平台默认＝移动 1.5 / 桌面 1（判据与 17px 基准同断点 820px）；
    老存值只要落在新域内一律原样生效（1.56 零迁移）；?fz=N（.5~3）只生效不落盘；#fzpct 点击=回平台默认。 */
 var FZKEY="ky_vocab_fz",FZMIN=.7,FZMAX=2.4,FZSTEP=.08;
 var FZQ=(function(){var v=parseFloat(Q.get("fz"));
@@ -1575,7 +1575,7 @@ function selftest(){
       if(sample){var q=qClozeP(sample);
         if(!q||!q.opts||q.opts.filter(function(o){return o.ok;}).length!==1)return "粒子缺口题不可产";}}
     return true;});
-  /* ⑯ 字号器（追记八 大字加固）：域/平台默认/老存值零迁移/基准×fz/读数与重置/?fz 不落盘 */
+  /* ⑯ 字号器（追记十二 大字加固）：域/平台默认/老存值零迁移/基准×fz/读数与重置/?fz 不落盘 */
   A("字号器",function(){
     if(FZMIN!==.7||FZMAX!==2.4||FZSTEP!==.08)return "域 "+FZMIN+"~"+FZMAX+" 步 "+FZSTEP;
     if(!$("#fzpct"))return "无百分比读数键";
