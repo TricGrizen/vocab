@@ -14,12 +14,15 @@
   铸影 · 英语一词汇宇宙 · P1 壳 v1（铸辞 2026-07）
   形制承宪：tools/eng_vocab/DESIGN_铸影.md（三条元律：第一法+两失自揭 / 反审计 / 零编造）
   内容法：CONTENT_GUIDE_VOCAB.md；数据：vocab_data.js（build_vocab.py 产，戳 meta.build）
-  深链：?selftest=1（VOCAB PASS 18/18）?reset=1 ?seed=N ?fam=根 ?w=词 ?review=1 ?pop=词 ?dict=词(转五更书词典页)
+  深链：?selftest=1（VOCAB PASS 19/19）?reset=1 ?seed=N ?fam=根 ?w=词 ?review=1 ?pop=词 ?dict=词(转五更书词典页)
        ?fz=N（.5~3 调试字号，仅生效不落盘）?relook=根（已铸章回看，零记账）
   字号：--fz 乘基准（桌面 16px / 移动 17px）；域 .7~2.4 步 .08；平台默认 移动 1.5 / 桌面 1；存 ky_vocab_fz（仅本机）
        大字加固（追记十二）＝内容区 rem 整体缩放 + chrome 钉扎（min(Xrem,Ypx) 封顶）+ 逐视图行容器 wrap
   修缮二（2026-07）＝云档 404 人话化（探针在 vocab_sync.js，补丁段在 build_vocab.py）／底衬单次律
        ／回看 BROWSE 零记账三保／安全区 --sat/--sab 钳内校正（窄屏钳 width=500 不动）
+  修缮三（2026-07）＝返回栈重构（history.state 带层 payload＋popstate 单点渲染＋处理器内零同步 pushState，
+       治 iOS 侧滑「闪主页→卡几秒→落族页」）／族页组级入口 #famgrp（已过组回看·当前组继续·未到组暗灰）
+       ／主页底带再压（#wfoot 上距与上下衬压到点按红线）
   存档：ky_vocab_v1（短键+日粒度；金=渲染谓词不落盘；孤立数派生）；句柄 window.__V
   共建：铸辞（2026.7，铸影奠基——磋商定案+机装层+壳 v1+试点三根）
 -->
@@ -139,6 +142,14 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp
 .pgbar{display:flex;gap:1.2em;margin-top:.9rem;font-size:min(.8rem,22px);color:var(--dim);flex-wrap:wrap;row-gap:.5em}
 .pgbar button:hover{color:var(--txt)}
 #famreview{color:var(--faint)}#famreview:hover{color:var(--s1)}   /* 回看整章＝次要键，灰阶不抢金 */
+/* 组行（修缮三 G）：族多组时逐组一门——已过组回看／当前组继续／未到组暗灰。样式承 #rtoc 灰阶，一律不抢金 */
+#famgrp{display:flex;flex-wrap:wrap;gap:.35rem .5rem;margin-top:.7rem}
+#famgrp .gb{border:1px solid var(--hair);color:var(--dim);padding:.18em .6em;font-size:min(.75rem,20px);
+  cursor:pointer;display:inline-block}
+#famgrp .gb:hover{border-color:var(--faint);color:var(--s1)}
+#famgrp .gb.cur{border-color:var(--faint);color:var(--s1)}
+#famgrp .gb.off{color:var(--faint);cursor:default}
+#famgrp .gb.off:hover{border-color:var(--hair);color:var(--faint)}
 
 /* —— 点兵 —— */
 #vtri{align-items:center;justify-content:flex-start;text-align:center;overflow-y:auto}
@@ -256,10 +267,14 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
   #bband{grid-template-columns:repeat(auto-fill,minmax(2.7rem,1fr))}
   .bcell{height:2.3rem}
   /* 底栏＝sticky（原 fixed+margin 预留：大字下预留量算不准会遮批格；sticky 在流内，天然不遮） */
-  #wfoot{margin:.6rem -.95rem 0;padding:.5em .95rem calc(.5em + var(--sab));
+  #wfoot{margin:.3rem -.95rem 0;padding:.35em .95rem calc(.35em + var(--sab));
     border-top:1px solid var(--hair);align-items:center;font-size:min(.95rem,18px);
+    row-gap:.25em;
     padding-right:2.6em}                      /* 右让 ⇅ 云档钮（vocab_sync 钉 right:10px/bottom:44px） */
-    /* 修缮二 B：上外距 1rem→.6rem；底衬全壳唯此一处（#vwall padding-bottom:0），黑边不再叠算 */
+    /* 修缮二 B：上外距 1rem→.6rem；底衬全壳唯此一处（#vwall padding-bottom:0），黑边不再叠算
+       修缮三 H：再压一档——上距 .6→.3rem、上下衬 .5→.35em、换行槽 .4→.25em。
+       余下高度＝两行点按目标本身（.act 39.1css/33.5物理、#iso 35.4css）＋1px 描边：
+       再压就得动 .act/#iso 自身衬垫＝直接削点按面，触 ≥40px 物理红线，故到此为止（量值见交卷报告）。 */
   #wfoot .act{font-size:1em;margin-right:.8em;padding:.42em .18em}
   #wfoot .fzb{font-size:.95em;margin-right:.45em}
   #iso{font-size:.95em;margin-left:auto;padding:.45em .1em}  /* 底栏换行时孤立数仍靠右＝悬展面板 right:0 恒在屏内 */
@@ -298,6 +313,8 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
   .pgbar{gap:1.2em;row-gap:.5em;font-size:min(1rem,20px)}
     /* 修缮二 B：撤自带底衬——族页/词单/帮助页的 .pgbar 在 .view 内，底衬已由 .view 出一次（单次律） */
   .pgbar button{font-size:1em;padding:.45em .2em}
+  #famgrp{gap:.4em .5em;margin-top:.6rem}
+  #famgrp .gb{font-size:min(.8rem,17px);padding:.6em .8em}   /* 点按面 47.4css≈40.6 物理（428 钳内），过红线 */
   #tribtns .opt{flex:1 1 0;min-width:0;padding:1rem .4em;text-align:center}
   #triw{font-size:min(2.5rem,13vw)}
   #pop{max-width:88vw;font-size:.95rem}
@@ -386,6 +403,7 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
   <div id="famstory"></div><div id="fampref"></div>
   <div class="rows" id="famrows"></div>
   <div class="pgbar"><button id="famforge">进入开铸 ⟶</button><button id="famreview" class="hide">回看整章</button><button id="famback">⟵ 主页</button></div>
+  <div id="famgrp" class="hide"></div>
 </section>
 
 <section id="vbatch" class="view">
@@ -729,17 +747,79 @@ function buildHand(){
 
 /* ===== 房渲染（手牌/长卷/速度轮共用） ===== */
 var ROOM={queue:[],idx:0,mode:"hand",fid:null,ret:"wall",t0:0,timer:null};
-function goView(v){document.body.dataset.v=v;}
-/* 自建返回栈：侧滑/返回=退一层（不依赖外部 histShim） */
-var NAVOK=!MEMONLY;
-function pushNav(d){if(!NAVOK)return;
-  try{if(history.state&&history.state.d===d)return;history.pushState({d:d},"");}catch(e){}}
-window.addEventListener("popstate",function(){
-  var v=document.body.dataset.v;
-  if(v==="room"){var o=(ROOM&&ROOM.from)||{v:"wall"};closeRoom();
-    if(o.v!=="wall")pushNav(1);}
-  else if(v!=="wall"){goView("wall");renderWall();}
+var VTRACE=null;                              /* 渲染轨迹探针（selftest ⑲/验收 CDP 用；常态 null 零开销） */
+function goView(v){document.body.dataset.v=v;if(VTRACE)VTRACE.push(v);}
+
+/* ===== 返回栈（修缮三 F） =====
+   模型：history.state 就是「层」——{v,fid,bi,pg,from,n}，n＝本文档内已压层数（基层 0）。
+   三律：①下行＝push（进房时来处层若不在栈上，先补压来处 → 保证「房内一退直落来处」）
+        ②上行＝history.back()（⟵/完成/回主页一律走它，杜绝 goView-only 与栈错位）
+        ③popstate 单点渲染目标层，**处理器内零同步 pushState**
+          ——iOS 侧滑手势期同文档 pushState 是 WebKit 卡死点：手势快照展示陈旧画面（＝用户见的「闪主页」）、
+            冻到手势结算才重画（＝「卡几秒」），旧码正是在 popstate 里补层（gbar 进房那条路必现）。
+   不变量：任意导航序列后 history.state.v 与 body[data-v] 恒一致；处理器内不动 history。 */
+var NAVOK=!MEMONLY,NAVN=0;
+function layerOf(o){                          /* 来处对象/视图名 → 层 payload（不含 n，压栈时补） */
+  if(!o)return {v:"wall"};
+  if(typeof o==="string")o={v:o};
+  var p={v:o.v||"wall"};
+  if(p.v==="fam")p.fid=(o.fid!=null?o.fid:FAMPG.fid);
+  if(p.v==="batch"){p.bi=(o.bi!=null?o.bi:BATPG.bi);p.pg=o.pg||0;}
+  if(p.v==="room")p.from=layerOf(o.from||{v:"wall"});
+  return p;
+}
+function sameLayer(a,b){
+  if(!a||!b||a.v!==b.v)return false;
+  if(a.v==="fam")return a.fid===b.fid;
+  if(a.v==="batch")return a.bi===b.bi;
+  return true;
+}
+function navPush(p){if(!NAVOK)return;try{p.n=NAVN+1;history.pushState(p,"");NAVN=p.n;}catch(e){}}
+function navRepl(p){if(!NAVOK)return;try{p.n=NAVN;history.replaceState(p,"");}catch(e){}}
+function navGo(p){                            /* 下行一层；同层重入＝原地替换（栈不长个） */
+  if(!NAVOK)return;
+  var c=history.state;
+  if(c&&sameLayer(c,p))navRepl(p);else navPush(p);
+}
+function navBack(fb){                         /* 上行：脚下有我们压的层就退栈（渲染交给 popstate），否则原地替换并渲染 */
+  if(NAVOK&&NAVN>0){history.back();return;}
+  var p=layerOf(fb||{v:"wall"});navRepl(p);renderLayer(p);
+}
+function roomLeave(){                         /* 离房清场：房作废＋计时器归零＋回看快照还原（零记账·保③） */
+  if(ROOM){ROOM.closed=true;if(ROOM.timer){clearInterval(ROOM.timer);ROOM.timer=null;}}
+  browseExit();
+}
+function renderLayer(p){                      /* 层 → 画面：全壳唯一渲染入口（popstate 单点） */
+  p=p||{v:"wall"};
+  var v=p.v||"wall";
+  if(document.body.dataset.v==="room"&&v!=="room")roomLeave();
+  if(v==="fam"&&p.fid&&VD.R[p.fid]){renderFam(p.fid);return;}
+  if(v==="batch"&&p.bi!=null&&VD.B[p.bi]){renderBatchPage(p.bi,p.pg||0);return;}
+  if(v==="help"){goView("help");return;}
+  if(v==="tri"){goView("tri");triNext();return;}
+  if(v==="room"){                             /* 前进/刷新落回房层：房态不可复原 → 渲来处层，payload 延迟对齐
+                                                 （延迟到手势结算之后：处理器内一律不动 history） */
+    var o=layerOf(p.from||{v:"wall"});
+    renderLayer(o);
+    setTimeout(function(){navRepl(o);},0);
+    return;}
+  goView("wall");renderWall();
+}
+window.addEventListener("popstate",function(ev){
+  var p=(ev&&ev.state)||{v:"wall",n:0};
+  NAVN=(typeof p.n==="number")?p.n:0;         /* 层序随 state 走（后退/前进皆准） */
+  renderLayer(p);                             /* ←处理器内零 pushState（不变量·代码审读点） */
 });
+function enterRoom(){                         /* 进房：来处层不在栈顶就先补压（gbar 从主页直入亦然），再压房层 */
+  var o=layerOf((ROOM&&ROOM.from)||{v:"wall"});
+  var wasRoom=(document.body.dataset.v==="room");
+  goView("room");
+  if(!NAVOK)return;
+  var c=history.state;
+  if(wasRoom&&c&&c.v==="room"){navRepl({v:"room",from:o});return;}   /* 房内换局（再来一组/转单题）＝原地替换 */
+  if(!c||!sameLayer(c,o))navPush(o);
+  navPush({v:"room",from:o});
+}
 function note(m){$("#rnote").textContent=m||"";}
 var GKIND={
   touch:"读句子，选出这个词在这里的意思——答对进长间隔",
@@ -888,7 +968,8 @@ function showQ(q){
   var pvq=ROOM.queue[ROOM.idx-2];
   $("#rprev").classList.toggle("hide",!(ROOM.idx>1&&pvq&&pvq.noRecord===true));
   $("#rt1").textContent=ROOM.label+(ROOM.queue.length?"　"+ROOM.idx+" / "+ROOM.queue.length:"");
-  var bdg=$("#rbadge");if(bdg)bdg.classList.toggle("hide",!BROWSE);   /* 回看徽常驻（每拍都摆一次） */
+  var bdg=$("#rbadge");if(bdg){bdg.classList.toggle("hide",!BROWSE);   /* 回看徽常驻（每拍都摆一次） */
+    if(BROWSE)bdg.textContent="回看"+(ROOM.bseat!=null?" · 第 "+(ROOM.bseat+1)+" 组":"")+" · 不记账";}
   var _o=(ROOM.from||{}).v;
   $("#rback").textContent="⟵ "+(_o==="fam"?"词族页":_o==="batch"?"词单":"主页");
   $("#rstem").innerHTML=q.stem;
@@ -960,7 +1041,7 @@ function endRoom(){
     note(sec>bud?"今日约 "+Math.round(sec/60)+" 分钟 · 预算已满，再抓也行":"");
     ROOM.endstate=more?"redeal":"wall";
   }else if(ROOM.mode==="forge"){ forgeNext(); }
-  else if(ROOM.mode==="scroll"){ openBatch(ROOM.bi); }
+  else if(ROOM.mode==="scroll"){ closeRoom(); }   /* 来处＝该批词单页（修缮三 F：上行一律退栈） */
   else{ closeRoom(); }
 }
 
@@ -971,37 +1052,38 @@ function curOrigin(){ /* 进房前身处何页（返回栈用） */
   if(v==="batch")return {v:"batch",bi:BATPG.bi};
   return {v:"wall"};
 }
-function closeRoom(){ /* 左滑/返回=退一层：回到进房前那页；回看退房＝先还原快照（零记账·保③） */
-  browseExit();
-  var o=(ROOM&&ROOM.from)||{v:"wall"};
-  if(o.v==="fam"&&o.fid&&VD.R[o.fid]){openFam(o.fid);}
-  else if(o.v==="batch"&&o.bi!=null){openBatch(o.bi);}
-  else{goView("wall");renderWall();}
+function closeRoom(){ /* 退房＝回到来处那一层（⟵键／完成／侧滑同一条路）；回看退房先还原快照（零记账·保③） */
+  var o=layerOf((ROOM&&ROOM.from)||{v:"wall"});
+  if(ROOM)ROOM.closed=true;   /* 退栈渲染是异步的（popstate 才落地）：房当场作废，杜绝这一窗口内再推拍改档 */
+  if(NAVOK&&NAVN>0&&history.state&&history.state.v==="room"){history.back();return;}  /* 渲染交给 popstate 单点 */
+  roomLeave();navRepl(o);renderLayer(o);
 }
 function startHand(){
   var hand=buildHand();
-  if(!hand.length){goView("wall");renderWall();return;}
+  if(!hand.length){
+    if(document.body.dataset.v==="room"){closeRoom();return;}
+    goView("wall");renderWall();return;}
   ROOM={queue:hand,idx:0,mode:"hand",label:"复习",ret:"wall",from:{v:"wall"},usedCn:{},answered:false};
-  goView("room");pushNav(2);nextQ();
+  enterRoom();nextQ();
 }
 function startScroll(bi){
   var list=VD.B[bi].filter(function(w){return !wv(w).s&&VD.W[w].s.length;}).slice(0,15);
   if(!list.length){openBatch(bi);return;}
   ROOM={queue:list.map(gateCard),idx:0,mode:"scroll",label:"词单 · 批"+(bi+1),ret:"batch",bi:bi,from:{v:"batch",bi:bi},usedCn:{}};
-  goView("room");pushNav(2);nextQ();
+  enterRoom();nextQ();
 }
 function startSpeed(){
   var cand=Object.keys(S.w).filter(function(w){return S.w[w].s&&VD.W[w]&&VD.W[w].co;});
   if(cand.length<4){cand=W1.filter(function(w){return VD.W[w].h&&VD.W[w].co;}).slice(0,200);}
   var qs=shuf(cand).slice(0,10).map(qFlash);
   ROOM={queue:qs,idx:0,mode:"speed",label:"限时练（全系统唯一计时处）",ret:"wall",from:{v:"wall"},usedCn:{}};
-  goView("room");pushNav(2);nextQ();
+  enterRoom();nextQ();
 }
 function startSingle(w){
   var from=curOrigin();
   var e=wv(w),q=e.s?qForW(w,false):qCtx(w,true);
   ROOM={queue:[q],idx:0,mode:"single",label:esc(w),ret:"wall",from:from,usedCn:{}};
-  goView("room");pushNav(2);nextQ();
+  enterRoom();nextQ();
 }
 
 /* ===== 开铸（六拍 · 坐次 · 拍级断点） ===== */
@@ -1013,22 +1095,26 @@ function seatsOf(ch){
 function startKin(fid){ /* 铸完的族：认亲一局（拼拣真族） */
   ROOM={queue:[qKin(fid)],idx:0,mode:"single",label:"选同族 · "+esc(VD.R[fid].lemma),
         ret:"fam",from:{v:"fam",fid:fid},usedCn:{}};
-  goView("room");pushNav(2);nextQ();
+  enterRoom();nextQ();
 }
 function startForge(fid,opt){
   var ch=VD.R[fid];if(!ch)return;
   var browse=!!(opt&&opt.browse);
+  var seat=(browse&&opt&&opt.seat!=null)?(+opt.seat||0):null;   /* 组级回看（修缮三 G）：定坐某一组；null＝整章 */
   if(browse){
-    if(!famForged(fid))return;                      /* 回看只对已铸章开门（唯一入口＝族页 #famreview / ?relook） */
+    var f0=S.f[fid];
+    /* 开门口径：已铸章＝全章/任一组皆可回看；未铸章＝只开「已走过的组」（seat<st）。
+       唯一入口＝族页 #famreview / #famgrp 组行 / ?relook */
+    if(!(famForged(fid)||(seat!=null&&f0&&seat<(f0.st||0))))return;
     browseEnter();                                  /* 保①：快照必须早于任何写 S 的动作 */
     var fb=S.f[fid]||(S.f[fid]={r:0,d:0,b:0,st:0});
-    fb.b=0;fb.st=0;                                 /* 从第 1 组第 1 步整章重走；改的是快照之后的 S，退房即抹平 */
+    fb.b=0;fb.st=(seat!=null?seat:0);               /* 从该组（或第 1 组）第 1 步重走；改的是快照之后的 S，退房即抹平 */
   }
   var f=S.f[fid]||(S.f[fid]={r:0,d:0,b:0,st:0});
   if(f.b===99){startKin(fid);return;}
-  ROOM={mode:"forge",fid:fid,label:(browse?"回看 ":"学 ")+esc(ch.lemma),ret:"fam",
-        from:{v:"fam",fid:fid},queue:[],idx:0,usedCn:{},browse:browse};
-  goView("room");pushNav(2);forgeBeat();
+  ROOM={mode:"forge",fid:fid,label:(browse?"回看 ":"学 ")+esc(ch.lemma)+((browse&&seat!=null)?" · 第 "+(seat+1)+" 组":""),
+        ret:"fam",from:{v:"fam",fid:fid},queue:[],idx:0,usedCn:{},browse:browse,bseat:(browse?seat:null)};
+  enterRoom();forgeBeat();
 }
 var FBEATS=["找词根","逐词讲解","拼词","例句自测","本章小结"];
 function fbTOC(ch,f,seat){ /* 轮转栏：拍段+（逐词拍时）词序，可随机跳转 */
@@ -1051,14 +1137,17 @@ function forgeBeat(){
   var fid=ROOM.fid,ch=VD.R[fid],f=S.f[fid],seats=seatsOf(ch),seat=seats[f.st]||seats[0];
   var beats=[beatRoot,beatSplit,beatCast,beatEdge,beatWall];
   if(f.b>=beats.length){f.b=0;f.st++;save();
+    if(BROWSE&&ROOM.bseat!=null&&f.st>ROOM.bseat){closeRoom();return;}  /* 组级回看：该组末步即收（修缮三 G） */
     if(f.st>=seats.length){
-      if(BROWSE){browseExit();openFam(fid);return;}   /* 回看走完整章＝退房还原（零记账·保③），不动钟不晋阶 */
-      f.b=99;f.d=today()+7;save();openFam(fid);return;}
+      if(BROWSE){closeRoom();return;}                 /* 回看走完整章＝退房还原（零记账·保③），不动钟不晋阶 */
+      f.b=99;f.d=today()+7;save();closeRoom();return;}
     seat=seats[f.st];}
   beats[f.b](ch,f,seat);
   fbTOC(ch,f,seat);
 }
-function forgeNext(){var f=S.f[ROOM.fid];f.b++;save();forgeBeat();}
+function forgeNext(){
+  if(!ROOM||ROOM.closed||ROOM.mode!=="forge")return;   /* 房已作废（退栈在途/连点）：不再推拍、不再动档 */
+  var f=S.f[ROOM.fid];f.b++;save();forgeBeat();}
 function beatRoot(ch,f,seat){
   var forms=(ch.allo||[]).map(function(a){return a[0];}).filter(Boolean);
   var corr=forms[0]||ch.id.replace(/^[pf]_/,"");
@@ -1212,7 +1301,19 @@ function famRowsHtml(ch){ /* 族谱表骨架（族页/上壁拍共用；点行�
     return '<div class="row '+stateCls(m.w)+'" data-w="'+esc(m.w)+'"><span class="w">'+esc(m.w)+"</span>"
       +'<span class="zh">'+esc(m.f||firstCn(m.w))+"</span></div>";}).join("");
 }
-function openFam(fid){
+function famGroupsHtml(fid){ /* 组行（修缮三 G）：已过组＝回看该组／当前组＝继续／未到组＝暗灰不可点；单组族不出行 */
+  var ch=VD.R[fid],f=S.f[fid],seats=seatsOf(ch);
+  if(seats.length<2)return "";
+  var forged=famForged(fid),cur=forged?-1:((f&&f.st)||0);
+  return seats.map(function(s,i){
+    var lab="第 "+(i+1)+" 组";
+    if(forged||i<cur)return '<button class="gb" data-grp="'+i+'">'+lab+" ✓ 回看</button>";
+    if(i===cur)return '<button class="gb cur" data-grp="cur">'+lab+" · 学到这</button>";
+    return '<span class="gb off">'+lab+"</span>";
+  }).join("");
+}
+function openFam(fid){renderFam(fid);navGo({v:"fam",fid:fid});}
+function renderFam(fid){   /* 纯渲染（不动 history）：popstate 单点渲染与 openFam 共用 */
   FAMPG.fid=fid;var ch=VD.R[fid],f=S.f[fid];
   $("#famh").textContent=ch.lemma+" · "+ch.gloss;
   var guideLn=(f&&f.b===99)?"":'<span class="gsub">▸ '+(f?"点下方金字继续学——进度记在每一步，不会丢":"先不用点上面的词（点了也只是看一眼）——直接点下方金字开始学，这家词会在课里逐个过；学完之后这页就是复习入口")+"</span>";
@@ -1238,11 +1339,15 @@ function openFam(fid){
   $("#famrows").innerHTML=famRowsHtml(ch);
   $("#famforge").textContent=(f&&f.b===99)?"选同族测验 ⟶":(f&&(f.b>0||f.st>0))?"继续学（第 "+((f.st||0)+1)+" 组第 "+((f.b||0)+1)+" 步）⟶":"开始学这一族 ⟶";
   $("#famreview").classList.toggle("hide",!famForged(fid));   /* 学过的章才给回看（修缮二 C） */
-  goView("fam");pushNav(1);
+  var gh=famGroupsHtml(fid);
+  $("#famgrp").innerHTML=gh;
+  $("#famgrp").classList.toggle("hide",!gh);
+  goView("fam");
 }
 var BATPG={bi:0,pg:0};
-function openBatch(bi){
-  BATPG.bi=bi;BATPG.pg=0;renderBatch();goView("batch");pushNav(1);
+function openBatch(bi){renderBatchPage(bi,0);navGo({v:"batch",bi:bi,pg:0});}
+function renderBatchPage(bi,pg){   /* 纯渲染（不动 history） */
+  BATPG.bi=bi;BATPG.pg=pg||0;renderBatch();goView("batch");
 }
 function renderBatch(){
   var list=VD.B[BATPG.bi],pg=BATPG.pg,slice=list.slice(pg*24,pg*24+24);
@@ -1256,12 +1361,12 @@ function renderBatch(){
       +'<span class="zh">'+esc(firstCn(w))+"</span></div>";}).join("");
 }
 function startTri(){
-  goView("tri");pushNav(1);triNext();
+  goView("tri");navGo({v:"tri"});triNext();
 }
 function triNext(){
   var cur=S.tri.cur;
   if(cur>=WORDS.length){$("#triw").textContent="点兵毕。";$("#tribtns").style.display="none";
-    $("#trinote").textContent="先验已记，回影壁。";setTimeout(function(){goView("wall");renderWall();},900);return;}
+    $("#trinote").textContent="先验已记，回影壁。";setTimeout(function(){navBack();},900);return;}
   var order=triOrder();
   $("#triw").textContent=order[cur];
   $("#trinote").textContent=(cur+1)+" / "+order.length+"　识=从 14 天档起（首审即考）· 疑=3 天 · 生=照常";
@@ -1343,11 +1448,17 @@ document.addEventListener("click",function(ev){
   if(t.id==="ahand"){startHand();return;}
   if(t.id==="aspeed"){startSpeed();return;}
   if(t.id==="atri"){startTri();return;}
-  if(t.id==="famback"||t.id==="bback"){goView("wall");renderWall();return;}
+  if(t.id==="famback"||t.id==="bback"){navBack();return;}   /* 上行一律退栈（修缮三 F） */
   if(t.id==="famforge"){startForge(FAMPG.fid);return;}
   if(t.id==="famreview"){startForge(FAMPG.fid,{browse:true});return;}
-  if(t.id==="bprev"){if(BATPG.pg>0){BATPG.pg--;renderBatch();}return;}
-  if(t.id==="bnext"){if((BATPG.pg+1)*24<VD.B[BATPG.bi].length){BATPG.pg++;renderBatch();}return;}
+  var gbn=t.closest("#famgrp [data-grp]");                  /* 组行（修缮三 G） */
+  if(gbn){var gv=gbn.dataset.grp;
+    if(gv==="cur")startForge(FAMPG.fid);
+    else startForge(FAMPG.fid,{browse:true,seat:+gv});
+    return;}
+  if(t.id==="bprev"){if(BATPG.pg>0){BATPG.pg--;renderBatch();navRepl({v:"batch",bi:BATPG.bi,pg:BATPG.pg});}return;}
+  if(t.id==="bnext"){if((BATPG.pg+1)*24<VD.B[BATPG.bi].length){BATPG.pg++;renderBatch();
+    navRepl({v:"batch",bi:BATPG.bi,pg:BATPG.pg});}return;}   /* 同层换页＝原地替换（栈不长个，payload 不撒谎） */
   if(t.id==="blearn"){startScroll(BATPG.bi);return;}
   if(t.id==="rback"){closeRoom();return;}
   if(t.id==="rprev"&&ROOM.idx>1){var pq=ROOM.queue[ROOM.idx-2];
@@ -1357,8 +1468,8 @@ document.addEventListener("click",function(ev){
   if(t.id==="fzup"){fzStep(FZSTEP);return;}
   if(t.id==="fzdn"){fzStep(-FZSTEP);return;}
   if(t.id==="fzpct"){fzReset();return;}
-  if(t.id==="ahelp"){goView("help");pushNav(1);return;}
-  if(t.id==="helpback"){goView("wall");renderWall();return;}
+  if(t.id==="ahelp"){goView("help");navGo({v:"help"});return;}
+  if(t.id==="helpback"){navBack();return;}
   if(t.id==="famstg"){var st1=$("#famstory");
     var was=st1.classList.toggle("clamp");
     t.textContent=was?"展开全文 ▾":"收起 ▴";return;}
@@ -1447,7 +1558,7 @@ document.addEventListener("click",function(ev){
       note("先落一子（再点一次=自揭，无罚）");return;
     }
     if(ROOM.endstate==="redeal"){ROOM.endstate=null;startHand();return;}
-    if(ROOM.endstate==="wall"){ROOM.endstate=null;goView("wall");renderWall();return;}
+    if(ROOM.endstate==="wall"){ROOM.endstate=null;closeRoom();return;}   /* 上行退栈（修缮三 F） */
     var qadv=ROOM.queue[ROOM.idx-1];
     if(qadv&&qadv.kind==="probe"&&qadv.starLit){ /* 星未熄=这义还要再看：标弱，明天优先 */
       var ep=wv(qadv.w);ep.k[qadv.si]=(ep.k[qadv.si]||0)+1;save();}
@@ -1476,8 +1587,9 @@ document.addEventListener("touchend",function(ev){
   _lt=t;_lx=to.clientX;_ly=to.clientY;
 },{passive:true});
 
-/* ===== selftest（VOCAB PASS 18/18；MEMONLY） =====
-   ⑱ 为异步断言（stub fetch 走 sync 探针）：A() 收到 thenable 即登记待决，末尾统一收口后才写 #st。 */
+/* ===== selftest（VOCAB PASS 19/19；MEMONLY） =====
+   ⑱⑲ 为异步断言（⑱ stub fetch 走 sync 探针；⑲ 真跑 history.back() 逐格退栈）：
+   A() 收到 thenable 即登记待决，末尾统一收口后才写 #st。 */
 function selftest(){
   var st=$("#st"),fails=[],n=0,pend=[];
   function A(name,fn){n++;var i=n;
@@ -1647,22 +1759,31 @@ function selftest(){
     if(pc!=="200%")return "读数 "+pc;
     if(before!==after)return "自测竟改存值";
     return true;});
-  /* ⑰ 回看零记账（修缮二 C）：已铸章进 BROWSE 走一拍并做会写档的操作 → 退房 → S 逐字复原、localStorage 未写 */
+  /* ⑰ 回看零记账（修缮二 C）＋组级定坐（修缮三 G）：
+     A 整章回看走一拍 + 三种会写档的操作 → 退房 → S 逐字复原、localStorage 未写；
+     B 组级回看定坐第 2 组（st 正确、b 归零、首拍即该组的字）；
+     C 组末即收：定坐第 1 组走到底 → 绝不越进第 2 组，S 仍逐字复原、localStorage 未写。 */
   A("回看零记账",function(){
     var fid=null,best=-1;
-    FAMS.forEach(function(k){var c=(VD.R[k].members||[]).filter(function(m){return VD.W[m.w]&&m.f;}).length;
-      if(c>best){best=c;fid=k;}});                       /* 取成员最多的章：一拍走不完，回看态可验 */
+    FAMS.forEach(function(k){var c=(VD.R[k].members||[]).filter(function(m){return VD.W[m.w];}).length;
+      if(c>best){best=c;fid=k;}});                       /* 取成员最多的章：分得出组，回看态可验 */
     if(!fid||best<8)return "无足量成员的章可回看";
+    var seats=seatsOf(VD.R[fid]);
+    if(seats.length<2)return fid+" 只一组，组级回看无从验";
     var m0=null;(VD.R[fid].members||[]).forEach(function(m){
       if(!m0&&VD.W[m.w]&&VD.W[m.w].s.length)m0=m.w;});
     if(!m0)return fid+" 无可用成员";
     var bakS=S,bakRoom=ROOM,bakB=BROWSE,bakSnap=BSNAP,bakV=document.body.dataset.v,out=true;
     var ls0=null;try{ls0=localStorage.getItem(SKEY);}catch(e){}
-    try{
+    function mkS(){                                      /* 造已铸态，返回其逐字签名 */
       S=freshS();
-      S.f[fid]={r:1,d:today()+7,b:99,st:0};              /* 造已铸态 */
+      S.f[fid]={r:1,d:today()+7,b:99,st:0};
       S.w[m0]={r:3,d:today()+14,n:5,o:4,l:1,v:{"0":[today(),2]},k:{},t:[],lf:[],s:1};
-      var sig0=JSON.stringify(S);
+      return JSON.stringify(S);}
+    function lsSame(){var x=null;try{x=localStorage.getItem(SKEY);}catch(e){}return x===ls0;}
+    try{
+      var sig0=mkS();
+      /* —— A 整章回看 —— */
       startForge(fid,{browse:true});
       if(!BROWSE)out="进房未入回看态";
       else if(document.body.dataset.v!=="room")out="回看未进房";
@@ -1678,9 +1799,32 @@ function selftest(){
           closeRoom();
           if(BROWSE)out="退房未离回看态";
           else if(JSON.stringify(S)!==sig0)out="退房后 S 未逐字复原";
-          else{var ls1=null;try{ls1=localStorage.getItem(SKEY);}catch(e){}
-            if(ls1!==ls0)out="回看竟写了 localStorage";}
+          else if(!lsSame())out="回看竟写了 localStorage";
         }
+      }
+      /* —— B 组级定坐（第 2 组） —— */
+      if(out===true){
+        sig0=mkS();
+        startForge(fid,{browse:true,seat:1});
+        if(!BROWSE)out="组级回看未入回看态";
+        else if(S.f[fid].st!==1)out="组级定坐错 st="+S.f[fid].st;
+        else if(S.f[fid].b!==0)out="组级回看未从该组第 1 步起 b="+S.f[fid].b;
+        else if($("#rstem").innerHTML.indexOf(seats[1][0].w)<0)out="首拍不是第 2 组的字";
+        else{closeRoom();
+          if(BROWSE)out="组级回看退房未离态";
+          else if(JSON.stringify(S)!==sig0)out="组级回看退房后 S 未逐字复原";}
+      }
+      /* —— C 组末即收（第 1 组走到底，不得越进第 2 组） —— */
+      if(out===true){
+        sig0=mkS();
+        startForge(fid,{browse:true,seat:0});
+        var maxst=-1,steps=0;
+        while(BROWSE&&steps<40){maxst=Math.max(maxst,S.f[fid].st);steps++;forgeNext();}
+        if(BROWSE)out="组级回看 40 拍未收（组末闸失灵）";
+        else if(maxst!==0)out="组级回看越进了第 "+(maxst+1)+" 组";
+        else if(document.body.dataset.v!=="fam")out="组末收房未落族页："+document.body.dataset.v;
+        else if(JSON.stringify(S)!==sig0)out="组末收房后 S 未逐字复原";
+        else if(!lsSame())out="组级回看竟写了 localStorage";
       }
     }catch(e){out="throw "+e.message;}
     S=bakS;ROOM=bakRoom;BROWSE=bakB;BSNAP=bakSnap;document.body.dataset.v=bakV;
@@ -1742,6 +1886,72 @@ function selftest(){
         for(var i=0;i<urls.length;i++)if(!/^https:\/\/api\.github\.com\//.test(urls[i]))return "越界请求 "+urls[i];
         return true;
       },function(e){window.fetch=real;unstub();return "throw "+(e&&e.message);});});
+  /* ⑲ 返回栈对齐（修缮三 F）：程序化跑 wall→族→房→退×2 ／ 批→房→退 ／ 帮助→退 ／
+     「主页金字直入房」（来处＝族页而栈上本无族页层，＝用户实测卡顿那条路）→ 一退直落族页。
+     每步断言 history.state.v 与 body[data-v] 对齐；房内一退的渲染轨迹不得出现 wall；
+     pushState 探针断言 popstate 处理器内零同步 push（iOS 手势期卡死点）。 */
+  A("返回栈对齐",function(){
+    var fid=VD.R.ten?"ten":null;if(!fid){for(var k0 in VD.R){fid=k0;break;}}
+    if(!fid)return "无章可用";
+    var bakS=S,bakRoom=ROOM,bakV=document.body.dataset.v,bakN=NAVN,bakOK=NAVOK,
+        bakFam=FAMPG.fid,bakBi=BATPG.bi,st0=null;
+    try{st0=history.state;}catch(e){}
+    var realPush=null,pushes=0;
+    try{realPush=history.pushState;
+      history.pushState=function(){pushes++;return realPush.apply(history,arguments);};}catch(e){realPush=null;}
+    function restore(){
+      try{if(realPush)history.pushState=realPush;}catch(e){}
+      NAVOK=bakOK;NAVN=bakN;S=bakS;ROOM=bakRoom;FAMPG.fid=bakFam;BATPG.bi=bakBi;VTRACE=null;
+      document.body.dataset.v=bakV;
+      try{history.replaceState(st0,"");}catch(e){}
+      try{renderWall();}catch(e){}}
+    S=freshS();NAVOK=true;NAVN=0;
+    try{history.replaceState({v:"wall",n:0},"");}catch(e){restore();return "history 不可用";}
+    var errs=[];
+    function chk(tag,v){
+      var sv=null;try{sv=(history.state||{}).v;}catch(e){}
+      if(document.body.dataset.v!==v)errs.push(tag+" 视图 "+document.body.dataset.v+"≠"+v);
+      if(sv!==v)errs.push(tag+" state "+sv+"≠"+v);}
+    function backBy(tag,v,noWall,fn){   /* 退一格（默认 history.back()，或经 UI 返回键），等 popstate 收口再断言 */
+      return new Promise(function(res){
+        VTRACE=[];var p0=pushes,fired=false;
+        var tmo=setTimeout(function(){if(fired)return;fired=true;
+          window.removeEventListener("popstate",done);errs.push(tag+" popstate 未触发");VTRACE=null;res(null);},1500);
+        function done(){if(fired)return;fired=true;clearTimeout(tmo);
+          window.removeEventListener("popstate",done);
+          setTimeout(function(){
+            if(realPush&&pushes!==p0)errs.push(tag+" popstate 内同步 push "+(pushes-p0)+" 次");
+            if(noWall&&VTRACE&&VTRACE.indexOf("wall")>=0)errs.push(tag+" 中途渲染 wall："+VTRACE.join(">"));
+            VTRACE=null;chk(tag,v);res(null);},0);}
+        window.addEventListener("popstate",done);
+        (fn||function(){history.back();})();});}
+    return Promise.resolve()
+      .then(function(){
+        chk("①主页","wall");
+        openFam(fid);chk("②族页","fam");
+        if(NAVN!==1)errs.push("②NAVN="+NAVN);
+        startForge(fid);chk("③房","room");
+        if(NAVN!==2)errs.push("③NAVN="+NAVN);
+        return backBy("④房退","fam",true);})
+      .then(function(){return backBy("⑤族退","wall");})
+      .then(function(){
+        openBatch(0);chk("⑥词单","batch");
+        startScroll(0);chk("⑦房","room");
+        return backBy("⑧房退","batch",true);})
+      .then(function(){return backBy("⑨批退","wall");})
+      .then(function(){
+        $("#ahelp").click();chk("⑩帮助","help");
+        return backBy("⑪帮助退","wall",false,function(){$("#helpback").click();});})
+      .then(function(){
+        startForge(fid);chk("⑫金字直入房","room");     /* 栈上本无族页层 → 应自动补压来处 */
+        if(NAVN!==2)errs.push("⑫补压来处失败 NAVN="+NAVN);
+        return backBy("⑬房退","fam",true);})
+      .then(function(){return backBy("⑭族退","wall");})
+      .then(function(){
+        if(NAVN!==0)errs.push("收口 NAVN="+NAVN);
+        restore();
+        return errs.length?errs.join(" ／ "):true;},
+        function(e){restore();return "throw "+(e&&e.message);});});
   function fin(){
     st.className="on "+(fails.length?"bad":"ok");
     st.textContent=fails.length?("VOCAB FAIL "+fails.join(" ｜ ")):("VOCAB PASS "+n+"/"+n+" · build "+VD.meta.build+" · 池外降级 "+window.__V_degraded+" 词");
@@ -1749,7 +1959,7 @@ function selftest(){
   }
   if(pend.length){
     st.className="on";st.textContent="VOCAB … 异步断言 "+pend.length+" 项在途";
-    var tmo=setTimeout(function(){tmo=0;fails.push(n+".异步断言超时");fin();},5000);
+    var tmo=setTimeout(function(){tmo=0;fails.push(n+".异步断言超时");fin();},9000);   /* ⑲ 逐格退栈需真实计时 */
     Promise.all(pend).then(function(){if(tmo){clearTimeout(tmo);fin();}},
                            function(e){if(tmo){clearTimeout(tmo);fails.push("异步收口 throw "+(e&&e.message));fin();}});
   }else fin();
@@ -1781,6 +1991,12 @@ function mountSync(){
 function boot(){
   fzApply();
   renderWall();
+  var s0=null;                                   /* 返回栈基层（修缮三 F）：history.state 跨刷新存活，n 决定脚下还有几层 */
+  if(NAVOK){
+    try{s0=history.state;}catch(e){}
+    if(s0&&typeof s0.n==="number")NAVN=s0.n;
+    else{s0=null;navRepl({v:"wall"});}
+  }
   if(location.protocol.indexOf("http")===0&&"serviceWorker" in navigator){
     try{navigator.serviceWorker.register("sw.js");}catch(e){}
   }
@@ -1795,7 +2011,7 @@ function boot(){
         if(mm)return teachSeq(VD.R[fid],mm);}
       return teachCardW(tw);})();
     ROOM={queue:qsT,idx:0,mode:"single",label:esc(tw),ret:"wall",from:{v:"wall"},usedCn:{}};
-    goView("room");nextQ();return;}
+    enterRoom();nextQ();return;}
   if(Q.has("relook")&&VD.R[Q.get("relook")]){    /* 回看深链（验收/截图用；回看本就不写档） */
     var rf=Q.get("relook");
     if(famForged(rf)){startForge(rf,{browse:true});return;}
@@ -1803,11 +2019,18 @@ function boot(){
   if(Q.has("fam")&&VD.R[Q.get("fam")]){openFam(Q.get("fam"));return;}
   if(Q.has("w")&&VD.W[Q.get("w")]){startSingle(Q.get("w"));return;}
   if(Q.has("review")){startHand();return;}
+  if(s0&&s0.v&&s0.v!=="wall")renderLayer(s0);    /* 无深链而 state 残留在别层（刷新/回退）：照层复位，守住「state 与 view 恒一致」 */
 }
 window.__V={S:function(){return S;},VD:VD,save:save,selftest:selftest,goldOf:goldOf,isoCount:isoCount,
   qCtx:qCtx,qCloze:qCloze,qKin:qKin,buildHand:buildHand,migrate:migrate,wv:wv,freshS:freshS,
   lookupW:lookupW,fzStep:fzStep,fzReset:fzReset,fzDefault:fzDefault,fzNorm:fzNorm,
   startForge:startForge,closeRoom:closeRoom,openFam:openFam,famForged:famForged,
+  openBatch:openBatch,startScroll:startScroll,startHand:startHand,seatsOf:seatsOf,
+  forgeNext:forgeNext,room:function(){return ROOM;},famGroups:famGroupsHtml,
+  nav:function(){var s=null;try{s=history.state;}catch(e){}
+    return {n:NAVN,st:s,v:document.body.dataset.v,ok:NAVOK};},
+  trace:function(on){if(on===true)VTRACE=[];else if(on===false)VTRACE=null;   /* 渲染轨迹探针（验收用） */
+    return VTRACE?VTRACE.slice():null;},
   browse:function(){return BROWSE;},renderWall:renderWall,
   fz:function(v){if(v!=null){FZ=v;fzApply();}return FZ;}};
 boot();
