@@ -14,10 +14,12 @@
   铸影 · 英语一词汇宇宙 · P1 壳 v1（铸辞 2026-07）
   形制承宪：tools/eng_vocab/DESIGN_铸影.md（三条元律：第一法+两失自揭 / 反审计 / 零编造）
   内容法：CONTENT_GUIDE_VOCAB.md；数据：vocab_data.js（build_vocab.py 产，戳 meta.build）
-  深链：?selftest=1（VOCAB PASS 16/16）?reset=1 ?seed=N ?fam=根 ?w=词 ?review=1 ?pop=词 ?dict=词(转五更书词典页)
-       ?fz=N（.5~3 调试字号，仅生效不落盘）
+  深链：?selftest=1（VOCAB PASS 18/18）?reset=1 ?seed=N ?fam=根 ?w=词 ?review=1 ?pop=词 ?dict=词(转五更书词典页)
+       ?fz=N（.5~3 调试字号，仅生效不落盘）?relook=根（已铸章回看，零记账）
   字号：--fz 乘基准（桌面 16px / 移动 17px）；域 .7~2.4 步 .08；平台默认 移动 1.5 / 桌面 1；存 ky_vocab_fz（仅本机）
        大字加固（追记十二）＝内容区 rem 整体缩放 + chrome 钉扎（min(Xrem,Ypx) 封顶）+ 逐视图行容器 wrap
+  修缮二（2026-07）＝云档 404 人话化（探针在 vocab_sync.js，补丁段在 build_vocab.py）／底衬单次律
+       ／回看 BROWSE 零记账三保／安全区 --sat/--sab 钳内校正（窄屏钳 width=500 不动）
   存档：ky_vocab_v1（短键+日粒度；金=渲染谓词不落盘；孤立数派生）；句柄 window.__V
   共建：铸辞（2026.7，铸影奠基——磋商定案+机装层+壳 v1+试点三根）
 -->
@@ -29,6 +31,9 @@
   --txt:#d2d5db; --dim:#6b707a; --faint:#373b44; --faint2:#262a33;
   --sans:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;
   --mono:"Cascadia Mono",Consolas,monospace; --fz:1;
+  --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
+  /* 安全区单一出口（修缮二 D/E）：全壳只用 var(--sat)/var(--sab)，移动档在钳内乘补偿；
+     桌面/无刘海机 env=0，两者恒 0＝几何零漂移。一处衬垫只允许出现一次（底衬单次律）。 */
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 button{touch-action:manipulation}
@@ -93,6 +98,7 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp
 #rtop{font-size:min(.72rem,20px);color:var(--faint);letter-spacing:.25em;margin-bottom:1.1rem;display:flex;justify-content:space-between;
   flex-wrap:wrap;gap:.3em 1em}
 #rtop .bk{cursor:pointer;color:var(--dim)}#rtop .bk:hover{color:var(--s1)}
+#rbadge{color:var(--faint);letter-spacing:.18em;white-space:nowrap}  /* 回看徽（暗灰常驻，不抢金调） */
 #rstem{font-size:1.12rem;color:var(--txt);line-height:1.75;margin-bottom:1.5rem;min-height:3.2rem;overflow-wrap:break-word}
 #rstem .bigw{font-size:min(2rem,12vw);letter-spacing:.06em;color:var(--gold2)}
 #rstem .mf{color:var(--dim);font-size:.95rem;margin-left:.8em}
@@ -132,6 +138,7 @@ body[data-v="batch"] #vbatch,body[data-v="tri"] #vtri,body[data-v="help"] #vhelp
 .row.st1 .w{color:var(--s1)}.row.stG .w{color:var(--gold)}.row.stD .w{color:var(--dun)}.row.st0 .w{color:var(--s0)}
 .pgbar{display:flex;gap:1.2em;margin-top:.9rem;font-size:min(.8rem,22px);color:var(--dim);flex-wrap:wrap;row-gap:.5em}
 .pgbar button:hover{color:var(--txt)}
+#famreview{color:var(--faint)}#famreview:hover{color:var(--s1)}   /* 回看整章＝次要键，灰阶不抢金 */
 
 /* —— 点兵 —— */
 #vtri{align-items:center;justify-content:flex-start;text-align:center;overflow-y:auto}
@@ -234,33 +241,40 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
    追记十二 大字加固：内容区照旧 rem 整体缩放；chrome（顶/底栏·轮转栏·浮层小键）用 min(Xrem,Ypx) 封顶
    ——fz=1 时封顶不咬（旧观零漂移），大字下不长个吃屏；行容器一律 wrap；点按目标 ≥2.4em。 */
 @media (max-width:820px){
+  :root{--sat:calc(env(safe-area-inset-top)*1.2);--sab:env(safe-area-inset-bottom)}
+  /* 底衬乘数取 1.0（主脑定）：Home 条是手势区可压暗底，用户嫌黑边厚——顶衬保 1.2 防状态栏压字 */
+  /* 钳内校正（修缮二 D/E）：窄屏钳把视口钉 500，428/430 机整页缩到 .856/.86 呈现；
+     安全区衬垫按 500/428≈1.168 圆整乘 1.2 补回物理高度，宁多勿少（少＝状态栏/Home 条压字）。
+     iPad/无刘海机/桌面 env=0，乘数无害；窄屏钳 width=500 本身不动（体感已调定）。 */
   html{font-size:calc(17px*var(--fz,1))}
-  .view{padding:calc(.9rem + env(safe-area-inset-top)) .95rem calc(1.3rem + env(safe-area-inset-bottom))}
-  #vwall{overflow-y:auto;padding-bottom:0}
-  #vwall h1{margin:0 0 .9rem;padding-top:env(safe-area-inset-top)}
+  .view{padding:calc(.9rem + var(--sat)) .95rem calc(1.3rem + var(--sab))}
+  #vwall{overflow-y:auto;padding-bottom:0}   /* 影壁底衬归 sticky #wfoot 独家携带（单次律） */
+  #vwall h1{margin:0 0 .9rem}                /* 顶衬只由 .view 出一次（原此处重复 env → 双倍顶衬） */
   #fband{gap:.5rem}
   .fcell{flex:1 1 42%;min-width:0}
   .fcell .dots{max-width:none}
   #bband{grid-template-columns:repeat(auto-fill,minmax(2.7rem,1fr))}
   .bcell{height:2.3rem}
   /* 底栏＝sticky（原 fixed+margin 预留：大字下预留量算不准会遮批格；sticky 在流内，天然不遮） */
-  #wfoot{margin:1rem -.95rem 0;padding:.5em .95rem calc(.5em + env(safe-area-inset-bottom));
+  #wfoot{margin:.6rem -.95rem 0;padding:.5em .95rem calc(.5em + var(--sab));
     border-top:1px solid var(--hair);align-items:center;font-size:min(.95rem,18px);
     padding-right:2.6em}                      /* 右让 ⇅ 云档钮（vocab_sync 钉 right:10px/bottom:44px） */
+    /* 修缮二 B：上外距 1rem→.6rem；底衬全壳唯此一处（#vwall padding-bottom:0），黑边不再叠算 */
   #wfoot .act{font-size:1em;margin-right:.8em;padding:.42em .18em}
   #wfoot .fzb{font-size:.95em;margin-right:.45em}
   #iso{font-size:.95em;margin-left:auto;padding:.45em .1em}  /* 底栏换行时孤立数仍靠右＝悬展面板 right:0 恒在屏内 */
   #isopanel{font-size:.82rem;max-width:86vw;bottom:2em}   /* 仪表＝内容，随 --fz 长；宽触顶即折行内滚 */
   body[data-v="room"] #vroom{display:block}
-  #vroom{justify-content:flex-start;overflow-y:auto;padding-top:1.4rem}
-  #rcard{width:100%;padding-bottom:calc(170px + env(safe-area-inset-bottom))} /* 钉扎后 #rbar 高度有界(≤3行≈160px) */
+  #vroom{justify-content:flex-start;overflow-y:auto;padding-top:calc(1.4rem + var(--sat))}
+    /* 修缮二 D：本条整段覆盖 .view 的 padding-top，原缺 env → 房内顶穿状态栏（用户实拍） */
+  #rcard{width:100%;padding-bottom:calc(170px + var(--sab))} /* 钉扎后 #rbar 高度有界(≤3行≈160px) */
   #rstem{font-size:1.08rem}
   .opt{padding:.95rem 1rem;font-size:1rem}
   .optgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
   #rtoc{gap:.4em .5em}
   #rtoc .tb,#rtoc .tw{font-size:min(.75rem,16px);padding:.5em .8em}
   #rbar{position:fixed;left:0;right:0;bottom:0;margin:0;background:var(--paper);
-    padding:.5em .95rem calc(.5em + env(safe-area-inset-bottom));border-top:1px solid var(--hair);
+    padding:.5em .95rem calc(.5em + var(--sab));border-top:1px solid var(--hair);
     font-size:min(.85rem,18px);gap:.9em;row-gap:.45em}
   #rgo{flex:1 1 8em;text-align:center;padding:.85em 0;letter-spacing:.5em;font-size:min(1rem,21px)}
   #rsteady,#rprev{font-size:.95em;padding:.5em .8em}
@@ -281,7 +295,8 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
   #gbar i{text-align:left}
   .fcell .fn{font-size:1.05rem}
   .fcell .fl{font-size:.82rem}
-  .pgbar{padding-bottom:env(safe-area-inset-bottom);gap:1.2em;row-gap:.5em;font-size:min(1rem,20px)}
+  .pgbar{gap:1.2em;row-gap:.5em;font-size:min(1rem,20px)}
+    /* 修缮二 B：撤自带底衬——族页/词单/帮助页的 .pgbar 在 .view 内，底衬已由 .view 出一次（单次律） */
   .pgbar button{font-size:1em;padding:.45em .2em}
   #tribtns .opt{flex:1 1 0;min-width:0;padding:1rem .4em;text-align:center}
   #triw{font-size:min(2.5rem,13vw)}
@@ -350,7 +365,7 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
 
 <section id="vroom" class="view">
   <div id="rcard">
-    <div id="rtop"><span id="rt1"></span><button class="bk" id="rback">⟵ 主页</button></div>
+    <div id="rtop"><span id="rt1"></span><span id="rbadge" class="hide">回看 · 不记账</span><button class="bk" id="rback">⟵ 主页</button></div>
     <div id="rtoc" class="hide"></div>
     <div id="rguide"></div>
     <div id="rtimer"><i></i></div>
@@ -370,7 +385,7 @@ html.fzbig .bcell b{font-size:.68rem}                       /* 批格序号：�
   <h2 id="famh"></h2><div class="sub" id="famsub"></div>
   <div id="famstory"></div><div id="fampref"></div>
   <div class="rows" id="famrows"></div>
-  <div class="pgbar"><button id="famforge">进入开铸 ⟶</button><button id="famback">⟵ 主页</button></div>
+  <div class="pgbar"><button id="famforge">进入开铸 ⟶</button><button id="famreview" class="hide">回看整章</button><button id="famback">⟵ 主页</button></div>
 </section>
 
 <section id="vbatch" class="view">
@@ -481,8 +496,18 @@ function migrate(d){
 }
 function wv(w){var e=S.w[w];if(!e){e={r:-1,d:0,n:0,o:0,l:0,v:{},k:{},t:[],lf:[],s:0};S.w[w]=e;}
   if(e.v===undefined)e.v={}; if(e.t===undefined)e.t=[]; if(e.lf===undefined)e.lf=[]; return e;}
+/* ===== 回看 BROWSE（修缮二 C）：学过的章整章重走，全程零记账 =====
+   三保：①进房前 S 深拷贝快照 ②BROWSE 期间 save() 顶部熄火（云档 blocked 亦同步停）
+        ③退房任意路径（⟵ / 完成 / popstate / 房内转单题后关房）恢复快照并 render。
+   星号、自评等控件照常可点——点了也只在内存里，退房即抹平。 */
+var BROWSE=false,BSNAP=null;
+function browseEnter(){BROWSE=true;BSNAP=JSON.stringify(S);}
+function browseExit(){if(!BROWSE)return;
+  BROWSE=false;
+  try{if(BSNAP!=null)S=JSON.parse(BSNAP);}catch(e){}
+  BSNAP=null;}
 var saveT=null;
-function save(){ if(MEMONLY)return;
+function save(){ if(MEMONLY||BROWSE)return;   /* 回看零记账·保②：连防抖都不排，云档 saved() 亦不触发 */
   S.meta.last=Date.now();
   clearTimeout(saveT);
   saveT=setTimeout(function(){ try{
@@ -863,6 +888,7 @@ function showQ(q){
   var pvq=ROOM.queue[ROOM.idx-2];
   $("#rprev").classList.toggle("hide",!(ROOM.idx>1&&pvq&&pvq.noRecord===true));
   $("#rt1").textContent=ROOM.label+(ROOM.queue.length?"　"+ROOM.idx+" / "+ROOM.queue.length:"");
+  var bdg=$("#rbadge");if(bdg)bdg.classList.toggle("hide",!BROWSE);   /* 回看徽常驻（每拍都摆一次） */
   var _o=(ROOM.from||{}).v;
   $("#rback").textContent="⟵ "+(_o==="fam"?"词族页":_o==="batch"?"词单":"主页");
   $("#rstem").innerHTML=q.stem;
@@ -945,7 +971,8 @@ function curOrigin(){ /* 进房前身处何页（返回栈用） */
   if(v==="batch")return {v:"batch",bi:BATPG.bi};
   return {v:"wall"};
 }
-function closeRoom(){ /* 左滑/返回=退一层：回到进房前那页 */
+function closeRoom(){ /* 左滑/返回=退一层：回到进房前那页；回看退房＝先还原快照（零记账·保③） */
+  browseExit();
   var o=(ROOM&&ROOM.from)||{v:"wall"};
   if(o.v==="fam"&&o.fid&&VD.R[o.fid]){openFam(o.fid);}
   else if(o.v==="batch"&&o.bi!=null){openBatch(o.bi);}
@@ -988,11 +1015,19 @@ function startKin(fid){ /* 铸完的族：认亲一局（拼拣真族） */
         ret:"fam",from:{v:"fam",fid:fid},usedCn:{}};
   goView("room");pushNav(2);nextQ();
 }
-function startForge(fid){
+function startForge(fid,opt){
   var ch=VD.R[fid];if(!ch)return;
+  var browse=!!(opt&&opt.browse);
+  if(browse){
+    if(!famForged(fid))return;                      /* 回看只对已铸章开门（唯一入口＝族页 #famreview / ?relook） */
+    browseEnter();                                  /* 保①：快照必须早于任何写 S 的动作 */
+    var fb=S.f[fid]||(S.f[fid]={r:0,d:0,b:0,st:0});
+    fb.b=0;fb.st=0;                                 /* 从第 1 组第 1 步整章重走；改的是快照之后的 S，退房即抹平 */
+  }
   var f=S.f[fid]||(S.f[fid]={r:0,d:0,b:0,st:0});
   if(f.b===99){startKin(fid);return;}
-  ROOM={mode:"forge",fid:fid,label:"学 "+esc(ch.lemma),ret:"fam",from:{v:"fam",fid:fid},queue:[],idx:0,usedCn:{}};
+  ROOM={mode:"forge",fid:fid,label:(browse?"回看 ":"学 ")+esc(ch.lemma),ret:"fam",
+        from:{v:"fam",fid:fid},queue:[],idx:0,usedCn:{},browse:browse};
   goView("room");pushNav(2);forgeBeat();
 }
 var FBEATS=["找词根","逐词讲解","拼词","例句自测","本章小结"];
@@ -1016,7 +1051,9 @@ function forgeBeat(){
   var fid=ROOM.fid,ch=VD.R[fid],f=S.f[fid],seats=seatsOf(ch),seat=seats[f.st]||seats[0];
   var beats=[beatRoot,beatSplit,beatCast,beatEdge,beatWall];
   if(f.b>=beats.length){f.b=0;f.st++;save();
-    if(f.st>=seats.length){f.b=99;f.d=today()+7;save();openFam(fid);return;}
+    if(f.st>=seats.length){
+      if(BROWSE){browseExit();openFam(fid);return;}   /* 回看走完整章＝退房还原（零记账·保③），不动钟不晋阶 */
+      f.b=99;f.d=today()+7;save();openFam(fid);return;}
     seat=seats[f.st];}
   beats[f.b](ch,f,seat);
   fbTOC(ch,f,seat);
@@ -1200,6 +1237,7 @@ function openFam(fid){
   $("#famforge").classList.toggle("gnext",!(f&&f.b===99));
   $("#famrows").innerHTML=famRowsHtml(ch);
   $("#famforge").textContent=(f&&f.b===99)?"选同族测验 ⟶":(f&&(f.b>0||f.st>0))?"继续学（第 "+((f.st||0)+1)+" 组第 "+((f.b||0)+1)+" 步）⟶":"开始学这一族 ⟶";
+  $("#famreview").classList.toggle("hide",!famForged(fid));   /* 学过的章才给回看（修缮二 C） */
   goView("fam");pushNav(1);
 }
 var BATPG={bi:0,pg:0};
@@ -1307,6 +1345,7 @@ document.addEventListener("click",function(ev){
   if(t.id==="atri"){startTri();return;}
   if(t.id==="famback"||t.id==="bback"){goView("wall");renderWall();return;}
   if(t.id==="famforge"){startForge(FAMPG.fid);return;}
+  if(t.id==="famreview"){startForge(FAMPG.fid,{browse:true});return;}
   if(t.id==="bprev"){if(BATPG.pg>0){BATPG.pg--;renderBatch();}return;}
   if(t.id==="bnext"){if((BATPG.pg+1)*24<VD.B[BATPG.bi].length){BATPG.pg++;renderBatch();}return;}
   if(t.id==="blearn"){startScroll(BATPG.bi);return;}
@@ -1437,11 +1476,18 @@ document.addEventListener("touchend",function(ev){
   _lt=t;_lx=to.clientX;_ly=to.clientY;
 },{passive:true});
 
-/* ===== selftest（VOCAB PASS 16/16；MEMONLY） ===== */
+/* ===== selftest（VOCAB PASS 18/18；MEMONLY） =====
+   ⑱ 为异步断言（stub fetch 走 sync 探针）：A() 收到 thenable 即登记待决，末尾统一收口后才写 #st。 */
 function selftest(){
-  var st=$("#st"),fails=[],n=0;
-  function A(name,fn){n++;try{var r=fn();if(r!==true)fails.push(n+"."+name+(typeof r==="string"?"："+r:""));}
-    catch(e){fails.push(n+"."+name+"：throw "+e.message);}}
+  var st=$("#st"),fails=[],n=0,pend=[];
+  function A(name,fn){n++;var i=n;
+    function bad(r){fails.push(i+"."+name+(typeof r==="string"?"："+r:""));}
+    try{var r=fn();
+      if(r&&typeof r.then==="function"){
+        pend.push(r.then(function(v){if(v!==true)bad(v);},function(e){bad("throw "+(e&&e.message));}));
+        return;}
+      if(r!==true)bad(r);}
+    catch(e){bad("throw "+e.message);}}
   /* ① 第一法 */
   A("第一法",function(){
     arm({kind:"ctx",opts:[]});var threw=false;
@@ -1601,8 +1647,112 @@ function selftest(){
     if(pc!=="200%")return "读数 "+pc;
     if(before!==after)return "自测竟改存值";
     return true;});
-  st.className="on "+(fails.length?"bad":"ok");
-  st.textContent=fails.length?("VOCAB FAIL "+fails.join(" ｜ ")):("VOCAB PASS "+n+"/"+n+" · build "+VD.meta.build+" · 池外降级 "+window.__V_degraded+" 词");
+  /* ⑰ 回看零记账（修缮二 C）：已铸章进 BROWSE 走一拍并做会写档的操作 → 退房 → S 逐字复原、localStorage 未写 */
+  A("回看零记账",function(){
+    var fid=null,best=-1;
+    FAMS.forEach(function(k){var c=(VD.R[k].members||[]).filter(function(m){return VD.W[m.w]&&m.f;}).length;
+      if(c>best){best=c;fid=k;}});                       /* 取成员最多的章：一拍走不完，回看态可验 */
+    if(!fid||best<8)return "无足量成员的章可回看";
+    var m0=null;(VD.R[fid].members||[]).forEach(function(m){
+      if(!m0&&VD.W[m.w]&&VD.W[m.w].s.length)m0=m.w;});
+    if(!m0)return fid+" 无可用成员";
+    var bakS=S,bakRoom=ROOM,bakB=BROWSE,bakSnap=BSNAP,bakV=document.body.dataset.v,out=true;
+    var ls0=null;try{ls0=localStorage.getItem(SKEY);}catch(e){}
+    try{
+      S=freshS();
+      S.f[fid]={r:1,d:today()+7,b:99,st:0};              /* 造已铸态 */
+      S.w[m0]={r:3,d:today()+14,n:5,o:4,l:1,v:{"0":[today(),2]},k:{},t:[],lf:[],s:1};
+      var sig0=JSON.stringify(S);
+      startForge(fid,{browse:true});
+      if(!BROWSE)out="进房未入回看态";
+      else if(document.body.dataset.v!=="room")out="回看未进房";
+      else if($("#rbadge").classList.contains("hide"))out="回看徽未挂";
+      else{
+        forgeNext();                                     /* 走下一拍 */
+        applyTeach(m0);                                  /* 会写档①：授学 */
+        var q=qCtx(m0,false);q.ms=1;applyAnswer(q,false,false);  /* 会写档②：答错记账 */
+        save();                                          /* 会写档③：直呼落盘 */
+        if(!BROWSE)out="回看中途竟自行离态";
+        else if(JSON.stringify(S)===sig0)out="回看期 S 毫无变动（本断言失效）";
+        else{
+          closeRoom();
+          if(BROWSE)out="退房未离回看态";
+          else if(JSON.stringify(S)!==sig0)out="退房后 S 未逐字复原";
+          else{var ls1=null;try{ls1=localStorage.getItem(SKEY);}catch(e){}
+            if(ls1!==ls0)out="回看竟写了 localStorage";}
+        }
+      }
+    }catch(e){out="throw "+e.message;}
+    S=bakS;ROOM=bakRoom;BROWSE=bakB;BSNAP=bakSnap;document.body.dataset.v=bakV;
+    try{renderWall();}catch(e){}
+    return out;});
+  /* ⑱ 云档探针（修缮二 A）：离线 stub fetch 仿 404 应答 → 走 pull/探针与 push 路径 → 断言人话文案；零真实出网 */
+  A("云档探针",function(){
+    var K=window.KySync;
+    if(!K||typeof K._io!=="function")return "vocab_sync 缺 _io 离线通道（补丁未生效？）";
+    var real=window.fetch,urls=[],msg={};
+    function stub(repoCode){
+      window.fetch=function(u){var s=String(u);urls.push(s);
+        var isRepo=/\/repos\/[^\/]+\/[^\/]+$/.test(s.split("?")[0]);    /* 仓探针 vs 店文件 */
+        return Promise.resolve({status:isRepo?repoCode:404,
+                                json:function(){return Promise.resolve(null);}});};
+    }
+    var FC={tok:"selftest-fake",repo:"selftest/none",branch:"main",dev:"selftest",on:false};
+    function run(code,op){stub(code);return K._io(FC,op||"pull","ky_vocab_v1");}
+    function step(code,op,key){
+      return run(code,op).then(function(r){msg[key]={ok:r};return null;},
+                               function(e){msg[key]={err:String(e&&e.message||e)};return null;});}
+    /* e 翻代保险柜（修缮三）：高代云端空档 + 非处女本机店 → 走 genAuth → 本机真档须先落保险柜。
+       只经内存店（真存档不碰）；补丁会写 ky_svault_/ky_sgen_ 两键，测后原样还原（缺则删）。 */
+    var VK="ky_svault_ky_vocab_v1",GK="ky_sgen_ky_vocab_v1",kv0=null,kg0=null,vres={};
+    try{kv0=localStorage.getItem(VK);kg0=localStorage.getItem(GK);}catch(e){}
+    function unstub(){
+      try{if(kv0==null)localStorage.removeItem(VK);else localStorage.setItem(VK,kv0);
+          if(kg0==null)localStorage.removeItem(GK);else localStorage.setItem(GK,kg0);}catch(e){}}
+    var LOC={w:{ten:{r:2,d:"2026-07-25",n:3,o:2,l:0,v:{"0":[20260725,2]},k:{},t:[],lf:[],s:0}},
+             f:{},p:{},meta:{last:1}},LSIG=JSON.stringify(LOC);
+    function stepVault(){
+      var CENV={v:1,t:1,dev:"cloud",gen:9e12,data:{w:{},f:{},p:{}}};   /* 高代空档=险些抹档的实况 */
+      window.fetch=function(u){urls.push(String(u));
+        return Promise.resolve({status:200,json:function(){return Promise.resolve(
+          {sha:"vaultsha",content:btoa(unescape(encodeURIComponent(JSON.stringify(CENV))))});}});};
+      var got=null;
+      return K._io(FC,"sync","ky_vocab_v1",null,
+                   {key:"ky_vocab_v1",get:function(){return LOC;},set:function(d){got=d;}})
+        .then(function(r){vres={r:r,set:got};return null;},
+              function(e){vres={err:String(e&&e.message||e)};return null;});}
+    return step(404,null,"a")
+      .then(function(){return step(401,null,"b");})
+      .then(function(){return step(200,null,"c");})
+      .then(function(){return step(404,"push","d");})
+      .then(stepVault)
+      .then(function(){
+        window.fetch=real;
+        var vs=null;try{vs=JSON.parse(localStorage.getItem(VK)||"null");}catch(e){}
+        unstub();
+        if(!/云仓不可见/.test((msg.a.err)||""))return "仓探针404 文案："+JSON.stringify(msg.a);
+        if(!/token 无效或过期/.test((msg.b.err)||""))return "仓探针401 文案："+JSON.stringify(msg.b);
+        if(!msg.c.ok||msg.c.ok.sha!==null||msg.c.ok.env!==null)return "仓探针200 未走空档："+JSON.stringify(msg.c);
+        if(!/404/.test(msg.d.err||"")||!/无写权或已失效/.test(msg.d.err||""))return "push404 文案："+JSON.stringify(msg.d);
+        if(vres.err)return "翻代 throw "+vres.err;
+        if(!vres.set||Object.keys(vres.set.w||{}).length)return "翻代未采纳云端空档："+JSON.stringify(vres.set);
+        if(!vs||JSON.stringify(vs.data)!==LSIG)return "保险柜未存翻代前本机档："+JSON.stringify(vs&&vs.data);
+        if(!(vs.t>0))return "保险柜无时戳："+JSON.stringify(vs.t);
+        if(!urls.length||!/^https:\/\/api\.github\.com\//.test(urls[0]))return "请求未走 API 前缀："+urls[0];
+        for(var i=0;i<urls.length;i++)if(!/^https:\/\/api\.github\.com\//.test(urls[i]))return "越界请求 "+urls[i];
+        return true;
+      },function(e){window.fetch=real;unstub();return "throw "+(e&&e.message);});});
+  function fin(){
+    st.className="on "+(fails.length?"bad":"ok");
+    st.textContent=fails.length?("VOCAB FAIL "+fails.join(" ｜ ")):("VOCAB PASS "+n+"/"+n+" · build "+VD.meta.build+" · 池外降级 "+window.__V_degraded+" 词");
+    window.__V_done=true;
+  }
+  if(pend.length){
+    st.className="on";st.textContent="VOCAB … 异步断言 "+pend.length+" 项在途";
+    var tmo=setTimeout(function(){tmo=0;fails.push(n+".异步断言超时");fin();},5000);
+    Promise.all(pend).then(function(){if(tmo){clearTimeout(tmo);fin();}},
+                           function(e){if(tmo){clearTimeout(tmo);fails.push("异步收口 throw "+(e&&e.message));fin();}});
+  }else fin();
   return fails;
 }
 
@@ -1611,13 +1761,13 @@ function mountSync(){
   if(!window.KySync)return;
   try{
     var _osv=save;
-    save=function(){_osv();try{KySync.saved();}catch(e){}};
+    save=function(){_osv();if(BROWSE)return;try{KySync.saved();}catch(e){}};  /* 回看期连上推防抖都不排 */
   }catch(e){}
   try{
     KySync.mount({
       page:"vocab",
       ready:function(){try{return typeof S==="object"&&!!S.w;}catch(e){return false;}},
-      blocked:function(){return !!MEMONLY;},
+      blocked:function(){return !!MEMONLY||BROWSE;},   /* 回看期一票禁同步：轮询/可见性回归都不得把临时态推上云 */
       firstForce:Q.has("reset")?"pushAll":null,
       stores:[{key:SKEY,
         get:function(){try{return S;}catch(e){return null;}},
@@ -1646,6 +1796,10 @@ function boot(){
       return teachCardW(tw);})();
     ROOM={queue:qsT,idx:0,mode:"single",label:esc(tw),ret:"wall",from:{v:"wall"},usedCn:{}};
     goView("room");nextQ();return;}
+  if(Q.has("relook")&&VD.R[Q.get("relook")]){    /* 回看深链（验收/截图用；回看本就不写档） */
+    var rf=Q.get("relook");
+    if(famForged(rf)){startForge(rf,{browse:true});return;}
+    openFam(rf);return;}
   if(Q.has("fam")&&VD.R[Q.get("fam")]){openFam(Q.get("fam"));return;}
   if(Q.has("w")&&VD.W[Q.get("w")]){startSingle(Q.get("w"));return;}
   if(Q.has("review")){startHand();return;}
@@ -1653,6 +1807,8 @@ function boot(){
 window.__V={S:function(){return S;},VD:VD,save:save,selftest:selftest,goldOf:goldOf,isoCount:isoCount,
   qCtx:qCtx,qCloze:qCloze,qKin:qKin,buildHand:buildHand,migrate:migrate,wv:wv,freshS:freshS,
   lookupW:lookupW,fzStep:fzStep,fzReset:fzReset,fzDefault:fzDefault,fzNorm:fzNorm,
+  startForge:startForge,closeRoom:closeRoom,openFam:openFam,famForged:famForged,
+  browse:function(){return BROWSE;},renderWall:renderWall,
   fz:function(v){if(v!=null){FZ=v;fzApply();}return FZ;}};
 boot();
 </script>

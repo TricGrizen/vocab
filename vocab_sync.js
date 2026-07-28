@@ -240,10 +240,32 @@ function gh(method,path,body){
     return r.json().catch(function(){return null;}).then(function(j){return {s:r.status,j:j};});
   });
 }
+/* —— 云仓探针（build_vocab.py 注入自家拷贝；修缮二 A） —— */
+var probeP=null;                                                  /* 本轮缓存：每次 syncNow 至多探一次 */
+function repoProbe(){
+  if(probeP)return probeP;
+  probeP=gh("GET","/repos/"+cfg.repo).then(function(r){
+    if(r.s===200)return true;                                     /* 仓可见 = 真空档，照旧行为 */
+    if(r.s===401)throw new Error("token 无效或过期（⇅ 重贴）");
+    if(r.s===404||r.s===403)throw new Error("云仓不可见：token 失效或仓名不对（⇅ 重贴）");
+    throw new Error("云仓探针 HTTP "+r.s);
+  });
+  return probeP;
+}
+function _io(fakeCfg,op,key,env,st){ /* 壳 selftest ⑱ 专用离线通道：注入 cfg 走一趟 pull/push/syncStore
+                                     （不碰 A / busy；op==="sync" 只动调用方传入的内存店 st，不碰真存档；
+                                      调用方 stub window.fetch，零真实出网） */
+  var bak=cfg;cfg=fakeCfg;probeP=null;
+  function back(){cfg=bak;probeP=null;}
+  var p=(op==="sync")?syncStore(st,env||null)
+       :(op==="push")?push(key,env||{v:1,t:0,dev:"selftest",gen:0,data:{}},null)
+       :pull(key);
+  return p.then(function(r){back();return r;},function(e){back();throw e;});
+}
 function fpath(key){return "/repos/"+cfg.repo+"/contents/s/"+encodeURIComponent(key)+".json";}
 function pull(key){
   return gh("GET",fpath(key)+"?ref="+(cfg.branch||"main")).then(function(r){
-    if(r.s===404)return {sha:null,env:null};                    /* 仅 404 = 云端无此店（空档） */
+    if(r.s===404)return repoProbe().then(function(){return {sha:null,env:null};});  /* 404 二义：探仓可见性，仓在=真空档（修缮二 A） */
     if(r.s!==200||!r.j)throw new Error("拉取失败 HTTP "+r.s);
     if(r.j.content==null)throw new Error("店文件不可解(疑>1MB)");  /* >1MB 时 GitHub 返 200 但 content=null；fail-closed 报错不当空档（E6） */
     var env;try{env=JSON.parse(b64d(r.j.content));}catch(e){throw new Error("店文件不可解(疑>1MB)");}
@@ -258,6 +280,7 @@ function push(key,env,sha){
   return gh("PUT",fpath(key),body).then(function(r){
     if(r.s===200||r.s===201)return true;
     if(r.s===409||r.s===422)return "conflict";
+    if(r.s===404)throw new Error("上推失败 HTTP 404（token 无写权或已失效——⇅ 重贴）");
     throw new Error("上推失败 HTTP "+r.s);
   });
 }
@@ -265,6 +288,33 @@ function push(key,env,sha){
 /* ---------------- 同步引擎 ---------------- */
 var A=null, busy=false, lastOkT=0, lastMsg="未配置", savedT=0, pollT=0, nearLimit=false;
 var SGEN_PRE="ky_sgen_";                                          /* 代际 gen 键前缀（E2）：每店本地记已见代号，缺省 0 */
+/* —— 翻代保险柜（build_vocab.py 注入自家拷贝；修缮三） ——
+   代际权威(genAuth)是整档直采云端、跳过合并律：云端若是「置空档 + 高代」而本机有真进度，
+   旧行为即无声抹平（用户手机 token 装错 + 云端置空的实况）。此处在采纳之前把本机真档单槽存底
+   （每店一槽，下次翻代才覆写），⇅ 面板可一键取回。纯本地 localStorage，无出网、不改同步语义。 */
+var VAULT_PRE="ky_svault_";
+function vaultPut(key,gen,data){
+  try{localStorage.setItem(VAULT_PRE+key,JSON.stringify({t:Date.now(),gen:gen,data:data}));}catch(e){}
+}
+function vaultFind(){                                             /* 取最近一槽（多店按存入时刻择新） */
+  var best=null;
+  try{
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i);
+      if(!k||k.indexOf(VAULT_PRE)!==0)continue;
+      var v=null;try{v=JSON.parse(localStorage.getItem(k)||"null");}catch(e2){v=null;}
+      if(!v||typeof v!=="object"||v.data===undefined||v.data===null)continue;
+      v.key=k.slice(VAULT_PRE.length);
+      if(!best||(v.t||0)>(best.t||0))best=v;
+    }
+  }catch(e){}
+  return best;
+}
+function vaultLabel(v){
+  var d=new Date(v.t||0);
+  return "找回翻代前档（"+v.key+" · "+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)
+        +" "+hhmm(v.t||0)+"）";
+}
 function sgenGet(key){var v=parseFloat(localStorage.getItem(SGEN_PRE+key));return isFinite(v)?v:0;}
 function sgenSet(key,v){try{localStorage.setItem(SGEN_PRE+key,String(v));}catch(e){}}
 function setMsg(m){lastMsg=m;renderStatus();}
@@ -285,7 +335,9 @@ function syncStore(st,force){ /* force="pushAll"|"pullAll"|null */
     else if(local==null&&remote==null)return {key:st.key,what:"empty"};
     else if(local==null){merged=remote;envGen=Math.max(localGen,remoteGen);}
     else if(remote==null){merged=local;envGen=localGen;}             /* 404/首推：沿用本地代（E2-c） */
-    else if(remoteGen>localGen){merged=remote;genAuth=true;envGen=remoteGen;}  /* 云端代际权威：直采云端、跳过合并（E2-b） */
+    else if(remoteGen>localGen){                                     /* 云端代际权威：直采云端、跳过合并（E2-b） */
+      if(local!=null&&!lib.virgin(local))vaultPut(st.key,localGen,local);  /* 翻代保险柜：本机真档将被整档覆盖，先存底（修缮三） */
+      merged=remote;genAuth=true;envGen=remoteGen;}
     else{merged=lib.merge(local,remote,{base:shadowGet(st.key)});envGen=Math.max(localGen,remoteGen);}
     if(merged==null)return {key:st.key,what:"empty"};
     var sigM=lib.sig(merged);
@@ -332,7 +384,7 @@ function syncNow(manual,force){
   loadCfg();
   if(!enabled()){if(manual)setMsg("未配置 token");renderStatus();return Promise.resolve();}
   if(busy){if(manual)setMsg("同步中…");return Promise.resolve();}
-  busy=true;setMsg("同步中…");nearLimit=false;
+  busy=true;setMsg("同步中…");nearLimit=false;probeP=null;   /* 探针每轮至多一次（修缮二 A） */
   var changed=[],pushed=0,errs=[],settled=false,timer=0;
   var chain=Promise.resolve();
   A.stores.forEach(function(st){                                  /* 逐店 .catch 收集错误继续下店：一店坏（含 fetch 悬挂/坏文件）不拖垮整轮（E10） */
@@ -344,7 +396,7 @@ function syncNow(manual,force){
   var done=chain.then(function(){
     if(settled)return;settled=true;clearTimeout(timer);
     busy=false;lastOkT=Date.now();
-    if(errs.length)setMsg("✗ "+errs.length+"店失败:"+errs[0].msg.slice(0,28));
+    if(errs.length)setMsg("✗ "+errs.length+"店失败:"+errs[0].msg.slice(0,44));
     else setMsg("✓ "+hhmm(lastOkT)+(changed.length?" 收"+changed.length:"")+(pushed?" 发"+pushed:"")+(nearLimit?" ⚠店近1MB界":""));
     if(changed.length&&A.applied){try{A.applied(changed);}catch(e){}}
   }).catch(function(e){
@@ -395,10 +447,17 @@ var UI_CSS=[
 ].join("\n");
 
 function el(tag,attrs,html){var e=document.createElement(tag);if(attrs)Object.keys(attrs).forEach(function(k){e.setAttribute(k,attrs[k]);});if(html!=null)e.innerHTML=html;return e;}
-var $btn=null,$panel=null,$st=null,$stBtn=null;
+var $btn=null,$panel=null,$st=null,$stBtn=null,$vault=null;
+function vaultRefresh(){                                          /* 保险柜有槽才现身（修缮三） */
+  if(!$vault)return;
+  var v=vaultFind();
+  if(v){$vault.textContent=vaultLabel(v);$vault.style.display="block";}
+  else $vault.style.display="none";
+}
 
 function renderStatus(){
   if($st)$st.textContent=lastMsg;
+  vaultRefresh();                                                 /* 修缮三：翻代刚发生也能当场现身 */
   if($btn){
     $btn.classList.toggle("kys-on",enabled());
     $btn.classList.toggle("kys-err",/^✗/.test(lastMsg));
@@ -426,6 +485,8 @@ function buildUI(){
   var bUp=el("button",null,"本机覆盖云端");var bDown=el("button",null,"云端覆盖本机");
   more.appendChild(bExp);more.appendChild(document.createTextNode(" "));more.appendChild(bImp);
   more.appendChild(document.createTextNode(" "));more.appendChild(bUp);more.appendChild(document.createTextNode(" "));more.appendChild(bDown);
+  $vault=el("button",{id:"kysync-vault",style:"display:none;margin-top:.4rem;width:100%;"},"找回翻代前档");  /* 修缮三 */
+  more.appendChild($vault);
   var io=el("textarea",{id:"kysync-io",placeholder:"存档 JSON（导出结果 / 粘贴后点导入）"});
   $st=el("div",{id:"kysync-st"},"");
   var hint=el("div",{id:"kysync-hint"},
@@ -475,6 +536,18 @@ function buildUI(){
   bDown.addEventListener("click",function(){
     if(!confirm("以云端档覆盖本机（跳过合并，本机未上推的进度将丢失）？"))return;
     grab(onCk.checked);syncNow(true,"pullAll");
+  });
+  $vault.addEventListener("click",function(){                     /* 修缮三：取回翻代前的本机档 */
+    var v=vaultFind();
+    if(!v){setMsg("无翻代前档");vaultRefresh();return;}
+    if(A&&A.blocked&&A.blocked()){setMsg("本页免写模式，不取回");return;}   /* MEMONLY/selftest/回看：零写入 */
+    var sv=null;(A?A.stores:[]).forEach(function(s){if(s.key===v.key)sv=s;});
+    if(!sv){setMsg("✗ 本页无 "+v.key+" 店");return;}
+    if(!confirm("用翻代前的本机档覆盖当前本机档？随后自动同步会把它合并上云"))return;
+    sv.set(clone(v.data));                                        /* 不动 sgen：本地代照旧，下一轮走常规合并律上云 */
+    if(A&&A.applied)try{A.applied([v.key]);}catch(e){}
+    setMsg("已取回翻代前档，正在同步…");
+    syncNow(true);
   });
   renderStatus();
 }
@@ -602,5 +675,5 @@ function lsStores(keys){
 }
 return {mount:mount,saved:saved,syncNow:syncNow,lsStores:lsStores,histShim:histShim,
         _m:{m408:m408,mWugeng:mWugeng,mMath:mMath,mWB:mWB,mArr:mArr,STORES:STORES,stab:stab},
-        cfg:loadCfg,enabled:enabled};
+        cfg:loadCfg,enabled:enabled,_io:_io};
 })();
