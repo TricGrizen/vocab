@@ -2047,6 +2047,10 @@ function boot(){
   if(ST){selftest();return;}
   mountSync();
   if(Q.has("dict")){location.href=dictHref(Q.get("dict"));return;}
+  /* M1 站群回传（KyEvSite 随 vocab_sync.js 同件带入）：页面进出 → 经纪中心账本。
+     blocked 只认 MEMONLY——BROWSE（回看整章）是真在屏阅读，该记时长，只是不许推云档。
+     置于 dict 跳转之后：免留 0 秒幽灵段。无 token 即静默；file:// 壁纸不上场。 */
+  if(window.KyEvSite){try{KyEvSite.init({app:"词汇书",blocked:function(){return !!MEMONLY;}});}catch(e){}}
   if(Q.has("pop")){var pw=Q.get("pop");setTimeout(function(){popShow(pw,innerWidth/2,innerHeight/2);},80);}
   if(Q.has("teach")&&VD.W[Q.get("teach")]){
     var tw=Q.get("teach");
