@@ -170,6 +170,7 @@ function mMath(l,r){
     c.star=!!(w.star);
     c.hits=mArr(a.hits,b.hits,120);       /* 战绩流水并集（去重定序），封顶护信封（并集后必须 cap，防 1MB 界） */
     c.mc=mTMap(a.mc,b.mc,false);          /* 微测：复习覆盖语义＝取新 */
+    c.rmc=mTMap(a.rmc,b.rmc,false);       /* 回看战绩（P3）：同律取新——双端重学互认，切设备不清零 */
     c.dr=mTMap(a.dr,b.dr,true);           /* 真题：一击定案做过不重判＝取早 */
     c.pos=mPos(a.pos,b.pos);
     o.cases[id]=c;
