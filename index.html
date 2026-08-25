@@ -517,7 +517,7 @@ var FAMORDER=(function(){
     var e=VD.W[m.w];if(e)s2+=e.f+(e.h?2:0);});return s2;}
   var pri=["ten","f_link","p_out","f_argue","p_up"].filter(function(f){return VD.R[f];});
   var rest=FAMS.filter(function(f){return pri.indexOf(f)<0;});
-  rest.sort(function(a,b){return fw(b)-fw(a);});
+  rest.sort(function(a,b){var la=VD.R[a].std==="v1"?1:0,lb=VD.R[b].std==="v1"?1:0;if(la!==lb)return la-lb;return fw(b)-fw(a);});  /* 旧版章（std=v1，义未全）一律排到完全体之后 */
   return pri.concat(rest);
 })();
 function famForged(fid){var f=S.f[fid];return !!f&&f.b===99;}
@@ -1293,7 +1293,7 @@ function renderWall(){
     var dots=ch.members.filter(function(m){return VD.W[m.w];}).map(function(m){
       var c=stateCls(m.w);return '<span class="dot '+(c==="stG"?"g":c==="stD"?"dun":c==="st1"?"s1":"")+'"></span>';}).join("");
     var kaishan=(fid==="ten"&&(!f||f.b!==99))?" kaishan":"";
-    var kmark=ch.kind==="particle"?" · 粒子":ch.kind==="frames"?" · 骨架":"";
+    var kmark=ch.kind==="particle"?" · 粒子":ch.kind==="frames"?" · 骨架":"";if(ch.std==="v1")kmark+=" · 旧版·义未全";
     return '<div class="fcell'+kaishan+'" data-fam="'+fid+'"><div class="fn">'+esc(ch.lemma)+'</div>'
       +'<div class="fl">'+esc(ch.gloss)+esc(kmark)+'</div><div class="dots">'+dots+"</div></div>";
   }).join("");
@@ -1346,7 +1346,8 @@ function renderFam(fid){   /* 纯渲染（不动 history）：popstate 单点渲
   FAMPG.fid=fid;var ch=VD.R[fid],f=S.f[fid];
   $("#famh").textContent=ch.lemma+" · "+ch.gloss;
   var guideLn=(f&&f.b===99)?"":'<span class="gsub">▸ '+(f?"点下方金字继续学——进度记在每一步，不会丢":"先不用点上面的词（点了也只是看一眼）——直接点下方金字开始学，这家词会在课里逐个过；学完之后这页就是复习入口")+"</span>";
-  $("#famsub").innerHTML=guideLn+esc(ch.pic);
+  var legacy=ch.std==="v1"?'<span class="gsub" style="color:var(--dim)">▸ 旧版章：只讲头词全义、其余成员各一两义（义全律立法前所铸，待重铸）——建议先学墙上其他族，这族留到重铸后再学</span>':"";
+  $("#famsub").innerHTML=legacy+guideLn+esc(ch.pic);
   var st0=$("#famstory");
   st0.textContent=ch.story||"";
   var clamped=!!f;                                  /* 进过族默认收起，反复操作表格不占屏 */
